@@ -18,8 +18,8 @@ sourceDir(paste(getwd(), '/finalFrontier', sep = ''))
 my.L1.frontier <- finalFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"),
                                 metric = 'L1')
 
-my.Diff.frontier <- finalFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"),
-                                metric = 'Diff')
+# my.Diff.frontier <- finalFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"),
+#                                 metric = 'Diff')
 
 my.Mahal.frontier <- finalFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"),
                                 metric = 'Mahal')
@@ -35,7 +35,7 @@ frontierPlot(my.Mahal.frontier, LL, myform, zoom = NULL)
 frontierPlot(my.L1.frontier, LL, myform, zoom = NULL)
 
 # With Diff in means
-frontierPlot(my.Diff.frontier, LL, myform, zoom = NULL)
+# frontierPlot(my.Diff.frontier, LL, myform, zoom = NULL)
 
 # Zoom in on 175 - 200 in the mahalanobis frontier
 frontierPlot(my.Mahal.frontier, LL, myform, zoom = 175:200)
