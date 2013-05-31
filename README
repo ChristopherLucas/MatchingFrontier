@@ -1,0 +1,43 @@
+finalFrontier
+===================
+
+This simple R package implements the imbalance frontier, as proposed by King, Lucas, and Nielsen. This is a beta version. 
+
+SETUP
+----------
+
+Instead of actually installing the package, load it with source(). This prevents users from having to uninstall and reinstall the package each time changes are pushed. For ease of use, finalFrontier.R contains a function sourceDir() that will read all the files in the child directory /finalFrontier, as well as a call to this function. Simply run this portion of finalFrontier.R to load the current version of the package. finalFrontier.R also contains example calls to the functions detailed below. 
+ 
+USAGE
+----------
+
+There are three main functions for the user to call. They are explained below. 
+
+---
+
+finalFrontier(treatment, dataset, drop, metric)
+ 
+  treatment - a character string specifying the treatment in the data set
+  dataset - the data
+  drop - a vector of character strings specifying the variables that are to be dropped
+  metric - the imbalance metric to be optimized. Possible arguments are 'L1', 'Diff', and 'Mahalanobis'.
+
+---
+
+frontierPlot(frontierObject, dataset, model, zoom = NULL)
+
+  frontierObject - an object from finalFrontier.
+  dataset - the dataset associated with the finalFrontier object.
+  model - a regression model of the form [y ~ x + z]. Will be passed to lm().
+  zoom - this is optional, and lets you zoom in on a specific part of the frontier. Arguments should be of the following form - [starting index]:[ending index]
+
+---
+
+generateDataset(frontierObject, dataset, N)
+
+  frontierObject - an object from finalFrontier.
+  dataset - the dataset associated with the finalFrontier object.
+  N - the number of observations to be dropped. 
+
+
+    
