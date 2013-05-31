@@ -1,9 +1,11 @@
 # This is a file for testing the package, so we don't have to install during development.
 
+# Load the Lalonde data set from CEM for testing. 
 library(cem)
 data(LL)
 detach(package:cem)
 
+# Function for loading all the files in a subdirectory
 sourceDir <- function(path, trace = TRUE, ...) {
    for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
       if(trace) cat(nm,":")           
@@ -12,6 +14,7 @@ sourceDir <- function(path, trace = TRUE, ...) {
    }
 }
 
+# Load files in subdirectory
 sourceDir(paste(getwd(), '/finalFrontier', sep = ''))
 
 # Create frontiers
