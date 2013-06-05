@@ -10,7 +10,7 @@ myMH <- function(Tnms, Cnms, inv.cov, data) {
  rowSums((xdiffs %*% inv.cov) * xdiffs)
 }
 
-MahalFrontier <- function(treatment, dataset, drop){
+MahalFrontier <- function(treatment, dataset, drop, mdist = NULL){
 ## the vector of matching covariates
   matchVars <-  colnames(dataset)[!(colnames(dataset) %in% drop)]
   rownames(dataset) <- seq(nrow(dataset))
@@ -21,11 +21,24 @@ MahalFrontier <- function(treatment, dataset, drop){
   trtnms <- row.names(dataset)[as.logical(dataset[[treatment]])]
   ## and the names of the control units
   ctlnms <- row.names(dataset)[!as.logical(dataset[[treatment]])]
-  ## calculate the mahalanobis distances
-  mdist <- outer(trtnms, ctlnms, FUN = myMH, inv.cov = icv, data = dataset)
-  ## lable the distance matrix with the unit names
-  dimnames(mdist) <- list(trtnms, ctlnms)
+  ## calculate the mahalanobis distances if not specified
+  if(is.null(mdist)){
+    mdist <- outer(trtnms, ctlnms, FUN = myMH, inv.cov = icv, data = dataset)                                                                                  
+    dimnames(mdist) <- list(trtnms, ctlnms)
+  }
 
+  ## Check matrix
+  if(!is.matrix(mdist)){stop("the mdist provided is not a matrix")}
+  ## are all the rownames of mdist treated units in the data?
+  if(sum(rownames(mdist) %in% rownames(dataset[dataset[[treatment]]==1,])) != nrow(mdist)){stop("the rownames of mdist do not match the names of the treated units in the data.")}
+  ## are all the treated units in the data listed as rows in mdist?
+  if(sum(rownames(dataset[dataset[[treatment]]==1,]) %in% rownames(mdist)) != nrow(mdist)){stop("the rownames of mdist do not match the names of the treated units in the data.")}
+
+  ## are all the colnames of mdist control units in the data?
+#  if(sum(colnames(mdist) %in% rownames(dataset[dataset[[treatment]]==0,])) != nrow(mdist)){stop("the colnames of mdist do not match the names of the control units in the data.")}
+  
+  ## are all the control units in the data listed as columns in mdist?
+#  if(sum(rownames(dataset[dataset[[treatment]]==0,]) %in% colnames(mdist)) != nrow(mdist)){stop("the colnames of mdist do not match the names of the control units in the data.")}
 
   ## calculate the length to the closest unit in the opposite treatment condition
   ## for each unit.
