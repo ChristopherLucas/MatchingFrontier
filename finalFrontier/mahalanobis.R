@@ -10,7 +10,7 @@ myMH <- function(Tnms, Cnms, inv.cov, data) {
  rowSums((xdiffs %*% inv.cov) * xdiffs)
 }
 
-MahalFrontier <- function(treatment, dataset, drop, mdist = NULL){
+MahalFrontier <- function(treatment, dataset, drop, mdist){
 ## the vector of matching covariates
   matchVars <-  colnames(dataset)[!(colnames(dataset) %in% drop)]
   rownames(dataset) <- seq(nrow(dataset))

@@ -3,7 +3,7 @@ library(ggplot2)
 # These are the functions that users are supposed to call. 
 
 # This gets the frontier
-finalFrontier <- function(treatment, dataset, drop, metric){
+finalFrontier <- function(treatment, dataset, drop, metric, mdist = NULL){
 
   # get frontier
   if(metric == 'L1'){
@@ -11,13 +11,10 @@ finalFrontier <- function(treatment, dataset, drop, metric){
   }
 
     if(metric == 'Mahal'){
-    frontier <- MahalFrontier(treatment, dataset, drop)
+    frontier <- MahalFrontier(treatment, dataset, drop, mdist)
   }
 
-    if(metric == 'Diff'){
-    frontier <- DiffFrontier(treatment, dataset, drop)
-  }
-return(frontier)
+  return(frontier)
 }
 
 plotFrontier <- function(finalFrontierObject, dataset, zoom = NULL){
