@@ -13,16 +13,15 @@ myMH <- function(Tnms, Cnms, inv.cov, data) {
 MahalFrontier <- function(treatment, dataset, drop, mdist){
 ## the vector of matching covariates
   matchVars <-  colnames(dataset)[!(colnames(dataset) %in% drop)]
-  rownames(dataset) <- seq(nrow(dataset))
 
-  ## calculate the inverse covariance matrix
-  icv <- solve(cov(dataset[, matchVars]))
-  ## get the names of the treated
-  trtnms <- row.names(dataset)[as.logical(dataset[[treatment]])]
-  ## and the names of the control units
-  ctlnms <- row.names(dataset)[!as.logical(dataset[[treatment]])]
-  ## calculate the mahalanobis distances if not specified
   if(is.null(mdist)){
+    ## calculate the inverse covariance matrix
+    icv <- solve(cov(dataset[, matchVars]))
+    ## get the names of the treated
+    trtnms <- row.names(dataset)[as.logical(dataset[[treatment]])]
+    ## and the names of the control units
+    ctlnms <- row.names(dataset)[!as.logical(dataset[[treatment]])]
+    ## calculate the mahalanobis distances if not specified
     mdist <- outer(trtnms, ctlnms, FUN = myMH, inv.cov = icv, data = dataset)                                                                                  
     dimnames(mdist) <- list(trtnms, ctlnms)
   }
@@ -33,12 +32,10 @@ MahalFrontier <- function(treatment, dataset, drop, mdist){
   if(sum(rownames(mdist) %in% rownames(dataset[dataset[[treatment]]==1,])) != nrow(mdist)){stop("the rownames of mdist do not match the names of the treated units in the data.")}
   ## are all the treated units in the data listed as rows in mdist?
   if(sum(rownames(dataset[dataset[[treatment]]==1,]) %in% rownames(mdist)) != nrow(mdist)){stop("the rownames of mdist do not match the names of the treated units in the data.")}
-
   ## are all the colnames of mdist control units in the data?
-#  if(sum(colnames(mdist) %in% rownames(dataset[dataset[[treatment]]==0,])) != nrow(mdist)){stop("the colnames of mdist do not match the names of the control units in the data.")}
-  
+  if(sum(colnames(mdist) %in% rownames(dataset[dataset[[treatment]]==0,])) != ncol(mdist)){stop("the colnames of mdist do not match the names of the control units in the data.")}  
   ## are all the control units in the data listed as columns in mdist?
-#  if(sum(rownames(dataset[dataset[[treatment]]==0,]) %in% colnames(mdist)) != nrow(mdist)){stop("the colnames of mdist do not match the names of the control units in the data.")}
+  if(sum(rownames(dataset[dataset[[treatment]]==0,]) %in% colnames(mdist)) != ncol(mdist)){stop("the colnames of mdist do not match the names of the control units in the data.")}
 
   ## calculate the length to the closest unit in the opposite treatment condition
   ## for each unit.
@@ -55,6 +52,7 @@ MahalFrontier <- function(treatment, dataset, drop, mdist){
   outholder <- c()
   dropped <- c()
   imbalance <- c()
+  matchedSampleSize <- c()
 
   ## Start a loop over the number of unique minimum distances
   for(i in 1:length(distvec)){
@@ -62,18 +60,17 @@ MahalFrontier <- function(treatment, dataset, drop, mdist){
     currentThreshold <- distvec[i]
     ## This is the subset of minimum units that remain
     remainingMinimums <- minlist[minlist <= currentThreshold]
+    ## we need the matched sample size
+    matchedSampleSize <- c(matchedSampleSize, length(remainingMinimums))
 
-    this.drop <- seq(nrow(dataset))[!(seq(nrow(dataset)) %in% c(names(remainingMinimums), dropped))]
+    this.drop <- rownames(dataset)[!(rownames(dataset) %in% c(names(remainingMinimums), dropped))]
     dropped <- c(dropped, this.drop)
 
     ## calculate the Avg of all the minimum Mahalanobis discrepancies
-    imbalance <- c(imbalance, rep(mean(remainingMinimums), length(this.drop)))
+    imbalance <- c(imbalance, mean(remainingMinimums))
   }
-  return(list(balance = imbalance, drops = dropped))
+  return(list(balance = imbalance, drops = dropped, samplesize = matchedSampleSize, metric="Mahal"))
 }
-
-
-
 
 
 

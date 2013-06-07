@@ -1,6 +1,6 @@
 # This creates the L1 frontier
 
-get.strata <- function(treatment, dataset, drop){
+get.strata <- function(treatment, dataset, drop, breaks=NULL){
 
   # Remove dropped observations
   dropped <- match(drop, colnames(dataset))
@@ -8,39 +8,78 @@ get.strata <- function(treatment, dataset, drop){
     dataset <- dataset[-dropped]
   }
 
-  # Bin data
-  for (i in 1:dim(dataset)[2]) { # For each column
-    dataset[[i]] <- reduce.var(dataset[[i]]) # Collapse with Sturges'
+  ## stuff borrowed from cem.main to add user defined breaks
+  vnames <- colnames(dataset)
+  nv <- dim(dataset)[2]
+  mycut <- vector(nv, mode="list")
+  names(mycut) <- vnames
+  for (i in 1:nv) {	
+    tmp <- reduce.var(dataset[[i]], breaks[[vnames[i]]])
+    dataset[[i]] <- tmp$x
+    mycut[[vnames[i]]] <- tmp$breaks
   }
 
   # Calculate strata
   strata <- stratify(dataset)
-  return(strata)
+  return(list(strata=strata, mycut=mycut))
 }
 
 
 # Takes a column of data and uses Sturges' formula to bin the values. 
-reduce.var <- function(x){
+#reduce.var <- function(x){
+#
+#  # Calculate breaks
+#  breaks <- nclass.Sturges(x) 
+#  if(length(breaks) > 0){
+#
+#    # If there is only one break, instead
+#    # set the breaks at the min and max values
+#    if(length(breaks)==1){ 
+#      rg <- range(x, na.rm=TRUE)
+#      breaks <- seq(rg[1],rg[2], length = breaks)
+#    }
+#
+#    # If there are more than one break,
+#    # cut x according to the breaks
+#    if(length(breaks)>1)
+#      x <- cut(x, breaks=breaks, include.lowest = TRUE, labels = FALSE)
+#  }
+#
+#  return(x)
+#}
 
-  # Calculate breaks
-  breaks <- nclass.Sturges(x) 
-  if(length(breaks) > 0){
-
-    # If there is only one break, instead
-    # set the breaks at the min and max values
-    if(length(breaks)==1){ 
-      rg <- range(x, na.rm=TRUE)
-      breaks <- seq(rg[1],rg[2], length = breaks)
-    }
-
-    # If there are more than one break,
-    # cut x according to the breaks
-    if(length(breaks)>1)
-      x <- cut(x, breaks=breaks, include.lowest = TRUE, labels = FALSE)
-  }
-
-  return(x)
+## the original reduce.var from cem
+reduce.var <- function(x, breaks=NULL){
+	if(is.numeric(x) | is.integer(x)){
+	 if(is.null(breaks)){
+	  breaks <- "sturges"
+	  }
+	 if(is.character(breaks)){
+       breaks <- match.arg(tolower(breaks), c("sturges", 
+                "fd", "scott", "ss"))
+            breaks <- switch(breaks, sturges = nclass.Sturges(x), 
+                 fd = nclass.FD(x), 
+				 scott = nclass.scott(x), 
+				 ss = nclass.ss(x),
+                stop("unknown 'breaks' algorithm"))
+        }
+	 if(length(breaks) > 0){
+		if(length(breaks)==1){
+			rg <- range(x, na.rm=TRUE)
+			breaks <- seq(rg[1],rg[2], length = breaks)
+		}
+		breaks <- unique(breaks)
+		if(length(breaks)>1)
+	     x <- cut(x, breaks=breaks, include.lowest = TRUE, labels = FALSE)
+		else 	
+		 x <- as.numeric(x) 
+	 }
+	} else {
+	  x <- as.numeric(x) 
+	}
+	return(list(x=x, breaks=breaks)) 
 }
+
 
 
 # Takes a dataframe and returns a vector of length nrow(data), where
@@ -53,8 +92,10 @@ stratify <- function (dataset){
   return(strata)
 }
 
-L1Frontier <- function(treatment, dataset, drop){
-  strata <- get.strata(treatment, dataset, drop)
+L1Frontier <- function(treatment, dataset, drop, breaks=NULL){
+  gs <- get.strata(treatment, dataset, drop, breaks=breaks)
+  strata <- gs$strata
+  mycut <- gs$mycut
   names(strata) <- dataset[,which(colnames(dataset) == treatment)]
   unique.strata <- unique(strata)
   strataholder <- list()
@@ -63,12 +104,15 @@ L1Frontier <- function(treatment, dataset, drop){
   }
   drops <- c()
   L1s <- c()
+  samplesize <- c()
 
 # Remove strata w/ one obs
   while(sum(lapply(strataholder, length) == 1) > 0){
     dropped.strata <- which(lapply(strataholder, length) == 1)[1]
     drop <- strataholder[[dropped.strata]]
-    drops <- c(drops, drop)
+#    drops <- c(drops, drop)
+    drops <- c(drops, rownames(dataset)[drop])
+    samplesize <- c(samplesize, nrow(dataset)-length(drops))
     strataholder[dropped.strata] <- NULL
     L1s <- c(L1s, L1(strataholder))
   }  
@@ -91,21 +135,26 @@ L1Frontier <- function(treatment, dataset, drop){
     if(sign < 0){
       drop.obs <- which(names(strataholder[[drop]]) == 0)[1]
       dropped <- strataholder[[drop]][drop.obs]
-      drops <- c(drops, dropped)
+#      drops <- c(drops, dropped)
+      drops <- c(drops, rownames(dataset)[dropped])
+      samplesize <- c(samplesize, nrow(dataset)-length(drops))
       strataholder[[drop]] <- strataholder[[drop]][-drop.obs]
     }
 
     if(sign > 0){
       drop.obs <- which(names(strataholder[[drop]]) == 1)[1]
       dropped <- strataholder[[drop]][drop.obs]
-      drops <- c(drops, dropped)
+#      drops <- c(drops, dropped)
+      drops <- c(drops, rownames(dataset)[dropped])
+      samplesize <- c(samplesize, nrow(dataset)-length(drops))
       strataholder[[drop]] <- strataholder[[drop]][-drop.obs]
     }
   
     L1s <- c(L1s, L1(strataholder))
   }
-  return(list(balance = L1s, drops = unname(drops)))
+  return(list(balance = L1s, drops = unname(drops), samplesize=samplesize, metric="L1", breaks=mycut))
 }
+
 
 L1 <- function(strataholder){
   L1 <- 0
