@@ -13,7 +13,7 @@ sourceDir <- function(path, trace = TRUE, ...) {
 }
 
 # Load files in subdirectory
-setwd("C:\\Users\\Rich\\finalFrontier_mine\\finalFrontier4am")
+setwd("C:\\Users\\Rich\\finalFrontier\\finalFrontier")
 sourceDir(getwd())
 
 
@@ -48,11 +48,12 @@ step1m <- finalFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, m
 ## calculate ATE using default lm()
 step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
 ## recalculate ATE using user-specified function
-## NOTE: the data MUST be called "DATASET" and the result of the user-specified call
+## NOTE: the data MUST be called "dataset" and the weights must be specified as
+##       "weights = WEIGHTS".  The result of the user-specified call
 ##       MUST be a two-element numeric vector that is c(estimate, standardError).
 ##       The call can be as many lines as you want.  All quotes must be backslashed.
 myEstCall <- "summary(lm(re78 ~ treated +age + education + black + married + nodegree
-                     + re74 + re75 + hispanic + u74 + u75, data=DATASET))$coeff[2,1:2]"
+                     + re74 + re75 + hispanic + u74 + u75, data=dataset, weights=WEIGHTS))$coeff[2,1:2]"
 step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop, estCall=myEstCall)
 ## plot the frontier
 frontierPlot(step1m, mydataset, step2m, drop=mydrop)
@@ -60,10 +61,36 @@ frontierPlot(step1m, mydataset, step2m, drop=mydrop)
 covStuff <- frontierPlot(step1m, mydataset, step2m, drop=mydrop)
 head(covStuff$covs.mat)
 ## make a data set
-generateDataset(step1m, mydataset, number.dropped=100)
+mdat <- generateDataset(step1m, mydataset, number.dropped=100)
+## and estimate a model with the data set we generated, using the weights
+summary(lm(re78~treated,mdat,weights=w))
 ## Note that if you try to specify a number.dropped for which there isn't a point
 ##  on the mahalanobis frontier, you get an error with some suggestions.
 generateDataset(step1m, mydataset, number.dropped=500)
+
+#################
+## Mahal frontier: j-to-k matching option
+#################
+## use j=1, k=1
+step1m2 <- finalFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, metric = 'Mahalj2k', j=1, k=1)
+step1m2$metric
+## calculate ATE using default lm()
+step2m2 <- frontierEst(step1m2,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
+## plot the frontier
+frontierPlot(step1m2, mydataset, step2m2, drop=mydrop)
+## make a data set
+mdat <- generateDataset(step1m2, mydataset, number.dropped=100)
+mdat <- generateDataset(step1m2, mydataset, number.dropped=470)
+## and estimate a model with the data set we generated, using the weights
+summary(lm(re78~treated,mdat,weights=w))
+## try j=2, k=3
+step1m2 <- finalFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, metric = 'Mahalj2k', j=2, k=3)
+step1m2$metric
+## calculate ATE using default lm()
+step2m2 <- frontierEst(step1m2,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
+## plot the frontier
+frontierPlot(step1m2, mydataset, step2m2, drop=mydrop)
+
 
 ##############
 ## L1 frontier
