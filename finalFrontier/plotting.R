@@ -222,7 +222,7 @@ frontierPlot <- function(frontierObject, dataset, frontierEstObject=NULL, zoom =
     frontierPlotL1(frontierObject=frontierObject, dataset=dataset, frontierEstObject=frontierEstObject, zoom=zoom, drop=drop)
   }
   ## Plot Mahal frontier
-  if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k"){
+  if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
     frontierPlotMahal(frontierObject=frontierObject, dataset=dataset, frontierEstObject=frontierEstObject, zoom=zoom, drop=drop)
   }
 }

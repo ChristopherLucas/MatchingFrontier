@@ -9,8 +9,8 @@ finalFrontier <- function(treatment, dataset, drop, metric, mdist = NULL, breaks
   if(metric == 'L1'){
     frontier <- L1Frontier(treatment, dataset, drop, breaks)
   }
-  if(metric == 'L1j2k'){
-    frontier <- L1Frontier2(treatment, dataset, drop, breaks, j, k)
+  if(metric == 'L1w'){
+    frontier <- L1Frontier2(treatment, dataset, drop, breaks)
   }
   if(metric == 'Mahal'){
     frontier <- MahalFrontier(treatment, dataset, drop, mdist)
@@ -27,7 +27,7 @@ finalFrontier <- function(treatment, dataset, drop, metric, mdist = NULL, breaks
 frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, estCall=NULL, drop=NULL){
 
   ## Mahal
-  if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" ){
+  if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
     # Causal Effects
     effectholder <- c()
     seholder <- c() 
@@ -51,7 +51,7 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
     for(i in 1:length(frontierObject$balance)){
       setTxtProgressBar(pb, i)
       ## how far through drops do we go?
-      dropseq <- (nrow(dataset)-frontierObject$samplesize[1]):(nrow(dataset)-frontierObject$samplesize[i])
+#      dropseq <- (nrow(dataset)-frontierObject$samplesize[1]):(nrow(dataset)-frontierObject$samplesize[i])
       ## If there isn't a model specified, we just do linear regression with the formula
       if(is.null(estCall)){
         dataset$myw <- frontierObject$weights[[i]][rownames(dataset)]
@@ -75,45 +75,45 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
   }
 
   ## Mahal2 -- DELETE THIS VERSION IF THE WEIGHTS END UP WORKING ABOVE
-  if(frontierObject$metric=="Mahalj2kXXXXXXXXXXX"){
-    # Causal Effects
-    effectholder <- c()
-    seholder <- c() 
-
-    cat("Calculating estimates along the frontier\n")
-    pb <- txtProgressBar(min=1,max=length(frontierObject$balance),initial = 1, style = 3)
-
-    ## replace the name DATASET with the subsetted data
-    if(!is.null(estCall)){
-      estCall <- gsub("DATASET","dataset[!(rownames(dataset) %in% frontierObject$drops[dropseq]),]",estCall, fixed=T)
-    } else { 
-    ## some warnings 
-      if(is.null(treatment)){stop("\"treatment\" must be specified (as a string).")}
-      if(is.null(myform)){stop("\"myform\" must be specified (as a formula).")}
-    }
-    for(i in 1:length(frontierObject$balance)){
-      setTxtProgressBar(pb, i)
-      ## how far through drops do we go?
-      dropseq <- (nrow(dataset)-frontierObject$samplesize[1]):(nrow(dataset)-frontierObject$samplesize[i])
-      ## If there isn't a model specified, we just do linear regression with the formula
-      if(is.null(estCall)){
-        m1 <- lm(myform, data=dataset[!(rownames(dataset) %in% frontierObject$drops[dropseq]),])
-        effectholder <- c(effectholder, summary(m1)$coeff[treatment,1])
-        seholder <- c(seholder, summary(m1)$coeff[treatment,2])
-      }
-      ## if estCall is specified, then we just take whatever quantity of interest it is
-      if(!is.null(estCall)){
-        est <- eval(parse(text=estCall))
-        effectholder <- c(effectholder, est[1])
-        seholder <- c(seholder, est[2])
-      }
-    }
-    close(pb)
-
-    q <- data.frame(x = nrow(dataset)-frontierObject$samplesize)
-    q$mean <- effectholder
-    q$sd <- seholder
-  }
+#  if(frontierObject$metric=="Mahalj2kXXXXXXXXXXX"){
+#    # Causal Effects
+#    effectholder <- c()
+#    seholder <- c() 
+#
+#    cat("Calculating estimates along the frontier\n")
+#    pb <- txtProgressBar(min=1,max=length(frontierObject$balance),initial = 1, style = 3)
+#
+#    ## replace the name DATASET with the subsetted data
+#    if(!is.null(estCall)){
+#      estCall <- gsub("DATASET","dataset[!(rownames(dataset) %in% frontierObject$drops[dropseq]),]",estCall, fixed=T)
+#    } else { 
+#    ## some warnings 
+#      if(is.null(treatment)){stop("\"treatment\" must be specified (as a string).")}
+#      if(is.null(myform)){stop("\"myform\" must be specified (as a formula).")}
+#    }
+#    for(i in 1:length(frontierObject$balance)){
+#      setTxtProgressBar(pb, i)
+#      ## how far through drops do we go?
+#      dropseq <- (nrow(dataset)-frontierObject$samplesize[1]):(nrow(dataset)-frontierObject$samplesize[i])
+#      ## If there isn't a model specified, we just do linear regression with the formula
+#      if(is.null(estCall)){
+#        m1 <- lm(myform, data=dataset[!(rownames(dataset) %in% frontierObject$drops[dropseq]),])
+#        effectholder <- c(effectholder, summary(m1)$coeff[treatment,1])
+#        seholder <- c(seholder, summary(m1)$coeff[treatment,2])
+#      }
+#      ## if estCall is specified, then we just take whatever quantity of interest it is
+#      if(!is.null(estCall)){
+#        est <- eval(parse(text=estCall))
+#        effectholder <- c(effectholder, est[1])
+#        seholder <- c(seholder, est[2])
+#      }
+#    }
+#    close(pb)
+#
+#    q <- data.frame(x = nrow(dataset)-frontierObject$samplesize)
+#    q$mean <- effectholder
+#    q$sd <- seholder
+#  }
 
   ## L1
   if(frontierObject$metric=="L1"){
@@ -155,7 +155,50 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
 
   }
   return(q)
+
+  ## L1w
+  if(frontierObject$metric=="L1w"){
+    # Causal Effects
+    effectholder <- c()
+    seholder <- c() 
+
+    ## replace the name DATASET with the subsetted data
+    if(!is.null(estCall)){
+      estCall <- gsub("DATASET","dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),]",estCall, fixed=T)
+    } else { 
+    ## some warnings 
+      if(is.null(treatment)){stop("\"treatment\" must be specified (as a string).")}
+      if(is.null(myform)){stop("\"myform\" must be specified (as a formula).")}
+    }
+
+    cat("Calculating estimates along the frontier\n")
+    pb <- txtProgressBar(min=1,max=length(frontierObject$balance),initial = 1, style = 3)
+
+    for(i in 1:length(frontierObject$drops)){
+      setTxtProgressBar(pb, i)
+      if(is.null(estCall)){
+        m1 <- lm(myform, data=dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),], )
+        effectholder <- c(effectholder, summary(m1)$coeff["treated",1])
+        seholder <- c(seholder, summary(m1)$coeff["treated",2])
+      }
+      if(!is.null(estCall)){
+        est <- eval(parse(text=estCall))
+        effectholder <- c(effectholder, est[1])
+        seholder <- c(seholder, est[2])
+      }     
+    }
+    close(pb)
+
+    q <- data.frame(x = seq(1, length(frontierObject$drops)))
+
+    q$mean <- effectholder
+    q$sd <- seholder
+
+  }
+  return(q)
+
 }
+
 
 
 

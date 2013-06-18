@@ -85,7 +85,6 @@ mdat <- generateDataset(step1m2, mydataset, number.dropped=470)
 summary(lm(re78~treated,mdat,weights=w))
 ## try j=2, k=3
 step1m2 <- finalFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, metric = 'Mahalj2k', j=2, k=3)
-step1m2$metric
 ## calculate ATE using default lm()
 step2m2 <- frontierEst(step1m2,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
 ## plot the frontier
@@ -103,6 +102,18 @@ step1L <- finalFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, m
 step2L <- frontierEst(step1L,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
 ## plot the frontier
 frontierPlot(step1L, mydataset, step2L, drop=mydrop)
+
+
+##############
+## L1w frontier (with weights)
+##############
+## calculate L1 frontier
+step1L <- finalFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, metric = 'L1w')
+## calculate the ATEs
+step2L <- frontierEst(step1L,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
+## plot the frontier
+frontierPlot(step1L, mydataset, step2L, drop=mydrop)
+
 
 ##################
 ## Pscore Frontier
