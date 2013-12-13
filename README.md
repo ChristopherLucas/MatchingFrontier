@@ -30,4 +30,4 @@ optimal combinations of the data but it does not do any of the estimation.
 
 `generateDataset` returns a dataset corresponding to a specific point on the frontier. 
 
-<code>generateDataset(finalFrontierObject, dataset, number.dropped)<\code>
+<code>generateDataset(finalFrontierObject, dataset, number.dropped)</code>
