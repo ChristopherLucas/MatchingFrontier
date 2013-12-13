@@ -1,7 +1,7 @@
 finalFrontier
 =============
 
-Using the Lalonde data from the CEM package, the following examples demonstrate how to 
+`Using the Lalonde data from the CEM package, the following examples demonstrate how to 
 generate each of the three frontiers we've implemented. 
 
 
@@ -42,4 +42,4 @@ step1m <- makeFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"
 step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
 frontierPlot(step1m, mydataset, step2m, drop=mydrop)
 mdat <- generateDataset(step1m, mydataset, number.dropped=100)
-summary(lm(re78~treated,mdat,weights=w))
+summary(lm(re78~treated,mdat,weights=w))`
