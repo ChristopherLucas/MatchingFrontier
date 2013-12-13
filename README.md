@@ -1,44 +1,33 @@
 finalFrontier
 =============
 
-Using the Lalonde data from the CEM package, the following examples demonstrate how to 
-generate each of the three frontiers we've implemented. 
+At the moment, the software does three frontiers. They are Mahalanobis FSATT, L1 SATT, and L1 FSATT (S = 0). 
 
+# Key Functions
 
-# Mahalanobis FSATT Frontier
-<code>library(cem)
-data(LL)
-detach(package:cem)
-\# S=1 is fixed ratio matching
+There are only a few functions you need to know. 
 
-\# Label stuff we'll use for each of the frontiers
-mytreatment <- "treated"
-mydataset <- LL
-mydrop <- c("treated","re78")
-myform <- as.formula(re78 ~ treated +age + education + black + married + nodegree
-                     + re74 + re75 + hispanic + u74 + u75)
-mypsform <- as.formula(treated~age+education+black+married+nodegree+re74+re75+hispanic+u74+u75)
-</code>
+### makeFrontier
 
-step1m <- makeFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"), QOI = 'FSATT', metric = 'Mahal', S = 0)
-\## calculate ATE using default lm()
-step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
-frontierPlot(step1m, mydataset, step2m, drop=mydrop)
-mdat <- generateDataset(step1m, mydataset, number.dropped=100)
-summary(lm(re78~treated,mdat,weights=w))
+`makeFrontier` creates the frontier object. It stores the actual values for the frontier and the 
+optimal combinations of the data but it does not do any of the estimation.
 
-# L1 SATT Frontier
-step1m <- makeFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"), QOI = 'SATT', metric = 'L1', S = 1)
-\## calculate ATE using default lm()
-step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
-frontierPlot(step1m, mydataset, step2m, drop=mydrop)
-mdat <- generateDataset(step1m, mydataset, number.dropped=100)
-summary(lm(re78~treated,mdat))
+<code>makefrontier(treatment, dataset, drop, mdist = NULL, QOI, metric, S)</code>
 
-# L1 FSATT S = 0 Frontier
-step1m <- makeFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"), QOI = 'FSATT', metric = 'L1', S = 0)
-\## calculate ATE using default lm()
-step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
-frontierPlot(step1m, mydataset, step2m, drop=mydrop)
-mdat <- generateDataset(step1m, mydataset, number.dropped=100)
-summary(lm(re78~treated,mdat,weights=w))</code>
+### frontierEst
+
+`frontierEst` estimates a quantity of interest along the defined values of the frontier. 
+
+<code>frontierEst(frontierObject, dataset, myform=NULL, treatment=NULL, estCall=NULL, drop=NULL)</code>
+
+### frontierPlot
+
+'frontierPlot' plots the object from frontierEst.
+
+<code>frontierPlot(frontierObject, dataset, frontierEstObject, zoom = NULL, drop=NULL)
+
+### generateDataset
+
+'generateDataset' returns a dataset corresponding to a specific point on the frontier. 
+
+generateDataset(finalFrontierObject, dataset, number.dropped)
