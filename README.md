@@ -1,11 +1,11 @@
 finalFrontier
 =============
 
-<code>Using the Lalonde data from the CEM package, the following examples demonstrate how to 
+Using the Lalonde data from the CEM package, the following examples demonstrate how to 
 generate each of the three frontiers we've implemented. 
 
 
-library(cem)
+<code>library(cem)
 data(LL)
 detach(package:cem)
 
