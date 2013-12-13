@@ -22,12 +22,12 @@ optimal combinations of the data but it does not do any of the estimation.
 
 ### frontierPlot
 
-'frontierPlot' plots the object from frontierEst.
+`frontierPlot` plots the object from frontierEst.
 
 <code>frontierPlot(frontierObject, dataset, frontierEstObject, zoom = NULL, drop=NULL)
 
 ### generateDataset
 
-'generateDataset' returns a dataset corresponding to a specific point on the frontier. 
+`generateDataset` returns a dataset corresponding to a specific point on the frontier. 
 
 generateDataset(finalFrontierObject, dataset, number.dropped)
