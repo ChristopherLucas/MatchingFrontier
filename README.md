@@ -3,6 +3,10 @@ finalFrontier
 
 At the moment, the software does three frontiers. They are Mahalanobis FSATT, L1 SATT, and L1 FSATT (S = 0). 
 
+# Installation
+
+To install, simply navigate to the directory containing the tarball, launch R, and enter the command `install.packages('finalFrontier.tar.gz')`.
+
 # Key Functions
 
 There are only a few functions you need to know. 
