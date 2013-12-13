@@ -5,13 +5,10 @@ Using the Lalonde data from the CEM package, the following examples demonstrate 
 generate each of the three frontiers we've implemented. 
 
 
+# Mahalanobis FSATT Frontier
 <code>library(cem)
 data(LL)
 detach(package:cem)
-
-
-
-# Mahalanobis FSATT Frontier
 \# S=1 is fixed ratio matching
 
 \# Label stuff we'll use for each of the frontiers
@@ -21,7 +18,7 @@ mydrop <- c("treated","re78")
 myform <- as.formula(re78 ~ treated +age + education + black + married + nodegree
                      + re74 + re75 + hispanic + u74 + u75)
 mypsform <- as.formula(treated~age+education+black+married+nodegree+re74+re75+hispanic+u74+u75)
-
+</code>
 
 step1m <- makeFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"), QOI = 'FSATT', metric = 'Mahal', S = 0)
 \## calculate ATE using default lm()
