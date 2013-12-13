@@ -1,0 +1,34 @@
+useDynLib("topicmodels")
+
+import("methods")
+importFrom("modeltools", "posterior")
+importFrom("stats", "terms")
+importFrom("stats4", "logLik")
+importFrom("slam", "as.simple_triplet_matrix", "row_sums", "simple_triplet_matrix")
+importFrom("tm", "as.DocumentTermMatrix", "weightTf")
+
+export("LDA",
+       "CTM",
+       "distHellinger",
+       "get_terms",
+       "get_topics",
+       "dtm2ldaformat",
+       "ldaformat2dtm",
+       "build_graph",
+       "perplexity",
+       "terms",
+       "topics")
+
+exportClass("TopicModel",
+            "LDA",
+            "CTM",
+            "LDA_VEMcontrol",
+            "LDA_Gibbscontrol",
+            "CTM_VEMcontrol",
+            "OPTcontrol")
+
+exportMethods("logLik",
+              "posterior")
+
+S3method("distHellinger", "default")
+S3method("distHellinger", "simple_triplet_matrix")
