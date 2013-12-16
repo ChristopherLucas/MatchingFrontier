@@ -1,5 +1,3 @@
-library(ggplot2)
-library(reshape) # To convert dataframe to long format
 library(MASS) # For the moment, stealing their parallel plot
 
 library(cem)
@@ -282,9 +280,9 @@ frontierPlotL1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom
   rownames(covs.mat) <- seq(nrow(covs.mat))
 
   data.long <- melt(covs.mat[starting.index:ending.index,])
-
+  print(data.long)
   p3 <- ggplot(data=data.long,
-               aes(x=X1, y=value, colour=X2)) +
+               aes(x=Var1, y=value, colour=Var2)) +
     geom_line() +
     xlab("Number of Observations Dropped") +
     ylab("Standardized Mean Value") +
@@ -705,34 +703,38 @@ L1FrontierSATT <- function(treatment, dataset, drop, breaks=NULL){
     for(i in 1:length(unique.strata)){
         strataholder[[i]] <- which(strata==unique.strata[i])
     }
+
     drops <- c()
-    L1s <- c()
+    L1s <- c(L1(strataholder))
     samplesize <- c()
-    
+
     # Remove obs from imbalanced strata
     while(1){
     # get differences
         difference.vec <- c()
-        
-        for(s in 1:length(strataholder)){
-            d <- sum(names(strataholder[[s]]) == '1') - sum(names(strataholder[[s]]) == '0')
-            difference.vec <- c(difference.vec, d)
+     
+        treated.vec <- c()
+        control.vec <- c()
+        for(strat in strataholder){
+            treated.vec <- c(treated.vec, sum((names(strat) == 1)))
+            control.vec <- c(control.vec, sum((names(strat) == 0)))
         }
+        difference.vec <- treated.vec/sum(treated.vec) - control.vec/sum(control.vec)
 
         difference.vec[difference.vec > 0] <- 0
-        if(max(abs(difference.vec)) == 0){break}
-        
+       
         drop <- which(abs(difference.vec) == max(abs(difference.vec)))[1]
         drop.obs <- which(names(strataholder[[drop]]) == 0)[1]
         dropped <- strataholder[[drop]][drop.obs]
         drops <- c(drops, rownames(dataset)[dropped])
         samplesize <- c(samplesize, nrow(dataset)-length(drops))
         strataholder[[drop]] <- strataholder[[drop]][-drop.obs]
-        
+
         L1s <- c(L1s, L1(strataholder))
-        print(L1(strataholder))
+        if(L1s[length(L1s)] > L1s[length(L1s) - 1]){break}
     }
-    return(list(balance = L1s, drops = unname(drops), samplesize=samplesize, metric="L1", breaks=mycut))
+    return(list(balance = L1s[1:length(L1s) - 1], drops = unname(drops)[1:length(drops) - 1],
+                samplesize=samplesize[1:length(samplesize) - 1], metric="L1", breaks=mycut))
 }
 
 # THIS CODE IS FOR L1 SATT AND HAS A BUG!!!
@@ -829,3 +831,4 @@ L1FrontierSATT <- function(treatment, dataset, drop, breaks=NULL){
 ##   }
 ##   return(frontierObject)
 ## }
+

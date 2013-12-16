@@ -6,4 +6,5 @@ Date: 2013-12-13
 Author: King, Lucas, and Nielsen
 Maintainer: Christopher Lucas <lucas.christopherd@gmail.com>
 Description: Implements methods from King, Lucas, and Nielsen (working)
-License: GPL
+Imports: ggplot2, reshape2
+License: GPL-2
