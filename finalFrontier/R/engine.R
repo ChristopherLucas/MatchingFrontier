@@ -1,5 +1,3 @@
-library(MASS) # For the moment, stealing their parallel plot
-
 library(cem)
 data(LL)
 detach(package:cem)
@@ -280,7 +278,7 @@ frontierPlotL1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom
   rownames(covs.mat) <- seq(nrow(covs.mat))
 
   data.long <- melt(covs.mat[starting.index:ending.index,])
-  print(data.long)
+
   p3 <- ggplot(data=data.long,
                aes(x=Var1, y=value, colour=Var2)) +
     geom_line() +
@@ -365,9 +363,9 @@ frontierPlotMahal <- function(frontierObject, dataset, frontierEstObject=NULL, z
   rownames(covs.mat) <- nrow(dataset) - frontierObject$samplesize
 
   data.long <- melt(covs.mat[starting.index:ending.index,])
-
+  print(head(data.long))
   p3 <- ggplot(data=data.long,
-               aes(x=X1, y=value, colour=X2)) +
+               aes(x=Var1, y=value, colour=Var2)) +
     geom_line() + 
     xlab("Number of Observations Dropped") +
     ylab("Standardized Mean Value") +

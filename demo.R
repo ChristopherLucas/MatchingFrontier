@@ -4,6 +4,7 @@
 library(cem)
 data(LL)
 detach(package:cem)
+library(finalFrontier)
 
 # S=1 is fixed ratio matching
 # Label stuff we'll use for each of the frontiers
@@ -13,7 +14,6 @@ mydrop <- c("treated","re78")
 myform <- as.formula(re78 ~ treated +age + education + black + married + nodegree
                      + re74 + re75 + hispanic + u74 + u75)
 mypsform <- as.formula(treated~age+education+black+married+nodegree+re74+re75+hispanic+u74+u75)
-</code>
 
 # Mahalanobis FSATT Frontier
 step1m <- makeFrontier(treatment="treated", dataset=LL, drop=c("re78", "treated"), QOI = 'FSATT', metric = 'Mahal', S = 0)
