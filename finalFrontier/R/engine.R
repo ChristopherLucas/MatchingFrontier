@@ -1,7 +1,3 @@
-library(cem)
-data(LL)
-detach(package:cem)
-
 #####################
 # CONTROL FUNCTIONS #
 #####################
@@ -9,21 +5,26 @@ detach(package:cem)
 # These are the functions that users are supposed to call. 
 
 # This gets the frontier
+
 makeFrontier <- function(treatment, dataset, drop, mdist = NULL, QOI, metric, S){
+    if(sum(is.na(dataset)) > 0) stop('ERROR: Dataframe has missing values')
     if(QOI == 'FSATT' & metric == 'Mahal' & S == 0){
-        return(MahalFrontierFSATT(treatment="treated", dataset, drop, mdist))
+        return(MahalFrontierFSATT(treatment=treatment, dataset, drop, mdist))
     }
     if(QOI == 'SATT' & metric == 'Mahal' & S == 0){
-        return(MahalFrontierSATT(treatment="treated", dataset, drop, mdist))
+        return(MahalFrontierSATT(treatment=treatment, dataset, drop, mdist))
+    }
+    if(QOI == 'FSATT' & metric == 'L1' & S == 1){
+        return(L1FrontierFSATT(treatment=treatment, dataset, drop))
     }
     if(QOI == 'SATT' & metric == 'L1' & S == 1){
-        return(L1FrontierSATT(treatment="treated", dataset, drop))
+        return(L1FrontierSATT(treatment=treatment, dataset, drop))
     }
     if(QOI == 'FSATT' & metric == 'L1' & S == 0){
-        return(L1FrontierCEM(treatment="treated", dataset, drop))
+        return(L1FrontierCEM(treatment=treatment, dataset, drop))
     }
 }
-
+ 
 ## A function to estimate causal effects
 frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, estCall=NULL, drop=NULL){
 
@@ -35,13 +36,9 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
 
     cat("Calculating estimates along the frontier\n")
     pb <- txtProgressBar(min=1,max=length(frontierObject$balance),initial = 1, style = 3)
-    if(!is.null(estCall)){
-      estCall <- gsub("WEIGHTS","frontierObject$weights[[i]][rownames(dataset)]",estCall, fixed=T)
-    } else { 
     ## some warnings 
-      if(is.null(treatment)){stop("\"treatment\" must be specified (as a string).")}
-      if(is.null(myform)){stop("\"myform\" must be specified (as a formula).")}
-    }
+    if(is.null(treatment)){stop("\"treatment\" must be specified (as a string).")}
+        
     for(i in 1:length(frontierObject$balance)){
       setTxtProgressBar(pb, i)
       ## how far through drops do we go?
@@ -56,9 +53,9 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
       }
       ## if estCall is specified, then we just take whatever quantity of interest it is
       if(!is.null(estCall)){
-        est <- eval(parse(text=estCall))
-        effectholder <- c(effectholder, est[1])
-        seholder <- c(seholder, est[2])
+        est <- estCall(dataset=dataset, weights=frontierObject$weights[[i]][rownames(dataset)])
+        effectholder <- c(effectholder, est$effect)
+        seholder <- c(seholder, est$se)
       }
     }
     close(pb)
@@ -74,15 +71,6 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
     effectholder <- c()
     seholder <- c() 
 
-    ## replace the name DATASET with the subsetted data
-    if(!is.null(estCall)){
-      estCall <- gsub("DATASET","dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),]",estCall, fixed=T)
-    } else { 
-    ## some warnings 
-      if(is.null(treatment)){stop("\"treatment\" must be specified (as a string).")}
-      if(is.null(myform)){stop("\"myform\" must be specified (as a formula).")}
-    }
-
     cat("Calculating estimates along the frontier\n")
     pb <- txtProgressBar(min=1,max=length(frontierObject$balance),initial = 1, style = 3)
 
@@ -90,13 +78,13 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
       setTxtProgressBar(pb, i)
       if(is.null(estCall)){
         m1 <- lm(myform, data=dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),], )
-        effectholder <- c(effectholder, summary(m1)$coeff["treated",1])
-        seholder <- c(seholder, summary(m1)$coeff["treated",2])
+        effectholder <- c(effectholder, summary(m1)$coeff[treatment,1])
+        seholder <- c(seholder, summary(m1)$coeff[treatment,2])
       }
       if(!is.null(estCall)){
-        est <- eval(parse(text=estCall))
-        effectholder <- c(effectholder, est[1])
-        seholder <- c(seholder, est[2])
+        est <- estCall(data=dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),], weights=NULL)
+        effectholder <- c(effectholder, est$effect)
+        seholder <- c(seholder, est$se)
       }     
     }
     close(pb)
@@ -131,8 +119,8 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
       setTxtProgressBar(pb, i)
       if(is.null(estCall)){
         m1 <- lm(myform, data=dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),], )
-        effectholder <- c(effectholder, summary(m1)$coeff["treated",1])
-        seholder <- c(seholder, summary(m1)$coeff["treated",2])
+        effectholder <- c(effectholder, summary(m1)$coeff[treatment,1])
+        seholder <- c(seholder, summary(m1)$coeff[treatment,2])
       }
       if(!is.null(estCall)){
         est <- eval(parse(text=estCall))
@@ -257,7 +245,6 @@ frontierPlotL1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom
   }
 
   # Overall Means
-  drop <- c('treated', 're78')
   covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
 
   for(col in covs){
@@ -363,7 +350,7 @@ frontierPlotMahal <- function(frontierObject, dataset, frontierEstObject=NULL, z
   rownames(covs.mat) <- nrow(dataset) - frontierObject$samplesize
 
   data.long <- melt(covs.mat[starting.index:ending.index,])
-  print(head(data.long))
+
   p3 <- ggplot(data=data.long,
                aes(x=Var1, y=value, colour=Var2)) +
     geom_line() + 
@@ -401,24 +388,6 @@ frontierPlot <- function(frontierObject, dataset, frontierEstObject=NULL, zoom =
 # FRONTIER FUNCTIONS #
 ######################
 
-makeFrontier <- function(treatment, dataset, drop, mdist = NULL, QOI, metric, S){
-    if(QOI == 'FSATT' & metric == 'Mahal' & S == 0){
-        return(MahalFrontierFSATT(treatment="treated", dataset, drop, mdist))
-    }
-    if(QOI == 'SATT' & metric == 'Mahal' & S == 0){
-        return(MahalFrontierSATT(treatment="treated", dataset, drop, mdist))
-    }
-    if(QOI == 'FSATT' & metric == 'L1' & S == 1){
-        return(L1FrontierFSATT(treatment="treated", dataset, drop))
-    }
-    if(QOI == 'SATT' & metric == 'L1' & S == 1){
-        return(L1FrontierSATT(treatment="treated", dataset, drop))
-    }
-    if(QOI == 'FSATT' & metric == 'L1' & S == 0){
-        return(L1FrontierCEM(treatment="treated", dataset, drop))
-    }
-}
-
 myMH <- function(Tnms, Cnms, inv.cov, dataset) {
  stopifnot(!is.null(dimnames(inv.cov)[[1]]), dim(inv.cov)[1] >
  1, all.equal(dimnames(inv.cov)[[1]], dimnames(inv.cov)[[2]]),
@@ -449,7 +418,7 @@ calculateMdist <- function(dataset, treatment, matchVars){
     ## and the names of the control units
     ctlnms <- row.names(dataset)[!as.logical(dataset[[treatment]])]
     ## calculate the mahalanobis distances if not specified
-    mdist <- outer(trtnms, ctlnms, FUN = myMH, inv.cov = icv, data = dataset)                                                                                  
+    mdist <- outer(trtnms, ctlnms, FUN = myMH, inv.cov = icv, data = dataset)
     dimnames(mdist) <- list(trtnms, ctlnms)
     return(mdist)
 }
@@ -457,7 +426,7 @@ calculateMdist <- function(dataset, treatment, matchVars){
 frontierLoop <- function(dataset, treatment, distvec, minlist, mdist, strataList){
     ## Series of holders to store info about the frontier
     outholder <- c();dropped <- c();imbalance <- c(); matchedSampleSize <- c();wList <- list()
-    
+    flag <- 0
     ## Start a loop over the number of unique minimum distances
     for(i in 1:length(distvec)){
         ## We keep all units that have minimum distances <= this value
@@ -481,7 +450,8 @@ frontierLoop <- function(dataset, treatment, distvec, minlist, mdist, strataList
         names(W) <- rownames(dataset)
         ## fill in 1s for treated units that are still in
         W[(names(W) %in% rownames(mdist)) & (names(W) %in% names(remainingMinimums))] <- 1
-        ## fill in 0s for all units that re out
+        if(sum(W, na.rm=TRUE) < 10) flag <- 1
+        ## fill in 0s for all units that are out
         W[!(names(W) %in% names(remainingMinimums))] <- 0
         ## fill in weights for the rest
         cLeft <- W[(names(W) %in% colnames(mdist)) & (names(W) %in% names(remainingMinimums))]
@@ -491,7 +461,8 @@ frontierLoop <- function(dataset, treatment, distvec, minlist, mdist, strataList
             m_C_s <- sTab["0"]
             W[names(cLeft[j])] <- (m_C/m_T)*(m_T_s/m_C_s)
         }
-        wList[[i]] <- W 
+        wList[[i]] <- W
+        if(flag == TRUE) break
     }
     return(list(balance = imbalance, drops = dropped, samplesize = matchedSampleSize, metric="Mahal", weights=wList))
 }
@@ -541,10 +512,8 @@ makeStrata <- function(mdist, dataset, minlist){
 MahalFrontierFSATT <- function(treatment, dataset, drop, mdist = NULL){
 ## the vector of matching covariates
   matchVars <-  colnames(dataset)[!(colnames(dataset) %in% drop)]
-
   # Get distance matrix
   if(is.null(mdist)){mdist <- calculateMdist(dataset, treatment, matchVars)}
-
   # Check distance matrix
   checkMatrix(mdist, dataset, treatment)
 
@@ -654,8 +623,6 @@ L1 <- function(strataholder){
 
 
 L1FrontierCEM <- function(treatment, dataset, drop, breaks=NULL){
-  require(cem)
-
   gs <- getStrata(treatment, dataset, drop, breaks=breaks)
   strata <- gs$strata
   mycut <- gs$mycut
