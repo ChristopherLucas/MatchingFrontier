@@ -43,38 +43,36 @@ summary(lm(re78~treated,mdat,weights=w))</code>
 
 
 # NIELSEN ILLUSTRATION
- 
-# Label stuff we'll use for each of the frontiers    
-mydataset <- read.dta("./data/cwdata.dta", convert.underscore=T)
-mydataset <- na.omit(mydataset)
-mytreatment <- "aidshock11oecd"
-myform <- (prio ~ aidshock11oecd + lPTSave.filled + lassassinbanks + lriotsbanks + lstrikesbanks
-           + ldemonstrationsbanks + linfantmort + lnciv 
-           + lpartautocracy + lpartdemocracy + lfactionaldemoc
-           + lfulldemocracy 
-           + lln.rgdpc + lln.population + loil + linstab 
-           + ethfrac + relfrac + ncontig + logmtn + ColdWar
-           + .spline1 + .spline2 + .spline3 
-           + year  ## year is in here so that we have it later
-           )
-match.on <- c('prio', 'aidshock11oecd', 'lPTSave.filled', 'lassassinbanks', 'lriotsbanks', 'lstrikesbanks',
-           'ldemonstrationsbanks', 'linfantmort', 'lnciv', 
-           'lpartautocracy', 'lpartdemocracy', 'lfactionaldemoc',
-           'lfulldemocracy', 'lln.rgdpc', 'lln.population', 'loil', 'linstab', 
-           'ethfrac', 'relfrac', 'ncontig', 'logmtn', 'ColdWar',
-           '.spline1', '.spline2', '.spline3', 'year')
-mydrop <- colnames(mydataset)[!(colnames(mydataset) %in% match.on)]
+mydataset <- read.dta("./data/cwdata.dta",convert.factors=F)
+mydataset <- mydataset[mydataset$inmysample==1,]
+mydataset$coldwar <- NULL
+## fix underscores
+names(mydataset) <- tolower(gsub("_","",names(mydataset),fixed=T))
+
+myform <- prio~aidshock11+aidshock11pos+lptsavefilled+lassassinbanks+lriotsbanks+lstrikesbanks+ldemonstrationsbanks+linfantmort+lnciv+lpartautocracy+lpartdemocracy+lfactionaldemoc+lfulldemocracy+llnrgdpc+llnpopulation+loil+linstab+ethfrac+relfrac+ncontig+logmtn+coldwar+spline1+spline2+spline3
+
+## keep only these variables
+mvars <- c("lptsavefilled","lassassinbanks",
+           "lriotsbanks","lstrikesbanks","ldemonstrationsbanks","linfantmort",
+           "lnciv","lpartautocracy","lpartdemocracy","lfactionaldemoc",
+           "lfulldemocracy","llnrgdpc","llnpopulation","loil","linstab",
+           "ethfrac","relfrac","ncontig","logmtn","coldwar","spline1",
+           "spline2","spline3")
+
+mytreatment <- "aidshock11"
+outcome <- "prio"
+leavin <- c("year", "countryname","aidshock11pos","countrynum")
+mydataset <- mydataset[,c(mvars,mytreatment,outcome,leavin)]
+mydrop <- colnames(mydataset)[!(colnames(mydataset) %in% c(mvars))]
 
 estCall <- function(dataset, weights){
-    form3 <- (prio ~ aidshock11oecd + lPTSave.filled + lassassinbanks + lriotsbanks + lstrikesbanks
-             + ldemonstrationsbanks + linfantmort + lnciv 
-             + lpartautocracy + lpartdemocracy + lfactionaldemoc
-             + lfulldemocracy 
-             + lln.rgdpc + lln.population + loil + linstab 
-             + ethfrac + relfrac + ncontig + logmtn + ColdWar
-             + .spline1 + .spline2 + .spline3 
-             + year)    
-    m2<-glm(formula = form3, data = dataset, weights = weights, family = "binomial")
+    myform <- (prio ~ aidshock11 + aidshock11pos + lptsavefilled
+              + lassassinbanks + lriotsbanks + lstrikesbanks
+              + ldemonstrationsbanks + linfantmort + lnciv + lpartautocracy
+              + lpartdemocracy + lfactionaldemoc + lfulldemocracy
+              + llnrgdpc + llnpopulation + loil + linstab + ethfrac
+              + relfrac + ncontig + logmtn + coldwar + spline1 + spline2 + spline3)
+    m2<-glm(formula = myform, data = dataset, weights = weights, family = "binomial")
     return(list(effect=summary(m2)$coefficients[2,1], se=summary(m2)$coefficients[2,2]))
 }
 
@@ -85,9 +83,26 @@ estCall <- function(dataset, weights){
 step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, QOI = 'FSATT', metric = 'Mahal', S = 0)
 ## calculate ATE using default lm()
 step2m <- frontierEst(step1m,dataset=mydataset, treatment=mytreatment, drop=mydrop, estCall = estCall)
+
+pdf('NielsenMahalanobisFSATT.pdf')
 frontierPlot(step1m, mydataset, step2m, drop=mydrop)
+dev.off()
+
 mdat <- generateDataset(step1m, mydataset, number.dropped=100)
 summary(lm(re78~treated,mdat,weights=w))
+
+
+estCall <- function(dataset, weights){
+    myform <- (prio ~ aidshock11 + aidshock11pos + lptsavefilled
+              + lassassinbanks + lriotsbanks + lstrikesbanks
+              + ldemonstrationsbanks + linfantmort + lnciv + lpartautocracy
+              + lpartdemocracy + lfactionaldemoc + lfulldemocracy
+              + llnrgdpc + llnpopulation + loil + linstab + ethfrac
+              + relfrac + ncontig + logmtn + coldwar + spline1 + spline2 + spline3)
+    m2<-glm(formula = myform, data = dataset, family = "binomial")
+    return(list(effect=summary(m2)$coefficients[2,1], se=summary(m2)$coefficients[2,2]))
+}
+
 
 # L1 SATT Frontier
 step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, QOI = 'SATT', metric = 'L1', S = 1)
@@ -95,7 +110,6 @@ step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, QO
 step2m <- frontierEst(step1m,dataset=mydataset, treatment=mytreatment, drop=mydrop, estCall = estCall)
 frontierPlot(step1m, mydataset, step2m, drop=mydrop)
 mdat <- generateDataset(step1m, mydataset, number.dropped=100)
-summary(lm(re78~treated,mdat))
 
 # L1 FSATT S = 0 Frontier
 step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop, QOI = 'FSATT', metric = 'L1', S = 0)
