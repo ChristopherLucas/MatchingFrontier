@@ -96,46 +96,6 @@ frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, es
 
   }
   return(q)
-
-  ## L1w
-  if(frontierObject$metric=="L1w"){
-    # Causal Effects
-    effectholder <- c()
-    seholder <- c() 
-
-    ## replace the name DATASET with the subsetted data
-    if(!is.null(estCall)){
-      estCall <- gsub("DATASET","dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),]",estCall, fixed=T)
-    } else { 
-    ## some warnings 
-      if(is.null(treatment)){stop("\"treatment\" must be specified (as a string).")}
-      if(is.null(myform)){stop("\"myform\" must be specified (as a formula).")}
-    }
-
-    cat("Calculating estimates along the frontier\n")
-    pb <- txtProgressBar(min=1,max=length(frontierObject$balance),initial = 1, style = 3)
-
-    for(i in 1:length(frontierObject$drops)){
-      setTxtProgressBar(pb, i)
-      if(is.null(estCall)){
-        m1 <- lm(myform, data=dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),], )
-        effectholder <- c(effectholder, summary(m1)$coeff[treatment,1])
-        seholder <- c(seholder, summary(m1)$coeff[treatment,2])
-      }
-      if(!is.null(estCall)){
-        est <- eval(parse(text=estCall))
-        effectholder <- c(effectholder, est[1])
-        seholder <- c(seholder, est[2])
-      }     
-    }
-    close(pb)
-
-    q <- data.frame(x = seq(1, length(frontierObject$drops)))
-
-    q$mean <- effectholder
-    q$sd <- seholder
-  }
-  return(q)
 }
 
 generateDataset <- function(finalFrontierObject, dataset, number.dropped){
@@ -211,177 +171,189 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   }
 }
 
-
-frontierPlotL1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
-
-  starting.index <- 1
-  ending.index <- length(frontierObject$drops)
-  if(!is.null(zoom)){
-    starting.index <- zoom[1]
-    ending.index <- tail(zoom, 1)
-  }
-  
-  # Frontier
-  df <- data.frame(x = seq(starting.index, ending.index), y = frontierObject$balance[starting.index:ending.index])
-
-  p1 <- ggplot(df, aes(x=x, y=y)) +
+plotFrontier <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
+  if(frontierObject$metric == 'L1'){   
+    starting.index <- 1
+    ending.index <- length(frontierObject$drops)
+    if(!is.null(zoom)){
+      starting.index <- zoom[1]
+      ending.index <- tail(zoom, 1)
+    }
+    
+    # Frontier
+    df <- data.frame(x = seq(starting.index, ending.index), y = frontierObject$balance[starting.index:ending.index])
+    
+    p1 <- ggplot(df, aes(x=x, y=y)) +
       geom_line() +
       xlab("Number of Observations Dropped") +
       ylab("Imbalance") +
-      ggtitle("Imbalance Frontier")
-
-  # Causal Effects
-  if(!is.null(frontierEstObject)){
-    q <- frontierEstObject[starting.index:ending.index,]
-    eb <- aes(ymax = mean + sd, ymin = mean - sd)
-
-    p2 <- ggplot(data = q, aes(x = x, y = mean)) + 
-      geom_line(size = 1) + geom_point() +
-      geom_ribbon(eb, alpha = 0.5) +
-      xlab("Number of Observations Dropped") +
-      ylab("Effect Size and SEs")
-  } else {
-    p2 <- NULL
+      ggtitle("Imbalance Frontier")   
   }
 
-  # Overall Means
-  covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
-
-  for(col in covs){
-      dataset[,colnames(dataset) == col] <- range01(dataset[,colnames(dataset) == col])
-    }
-
-  covs.mat <- matrix(nrow = 0, ncol = length(covs), byrow = FALSE)
-  colnames(covs.mat) <- covs
-
-  for(i in 1:length(frontierObject$drops)){
-    iter.dat <- dataset[!(rownames(dataset) %in% frontierObject$drops[1:i]),]
-    new.row <- c()
-    for(c in colnames(covs.mat)){
-      new.row <- c(new.row, mean(iter.dat[,c]))
-      }
-    covs.mat <- rbind(covs.mat, new.row)
-  }
-  rownames(covs.mat) <- seq(nrow(covs.mat))
-
-  data.long <- melt(covs.mat[starting.index:ending.index,])
-
-  p3 <- ggplot(data=data.long,
-               aes(x=Var1, y=value, colour=Var2)) +
-    geom_line() +
-    xlab("Number of Observations Dropped") +
-    ylab("Standardized Mean Value") +
-    opts(legend.position="bottom") +
-    theme(legend.title=element_blank())
-
-  # Join
-  if(!is.null(p2)){
-    p.final <- multiplot(p1, p2, p3, cols=1)
-  } else {
-    p.final <- multiplot(p1, p3, cols=1)
-  }
-
-  return(list(p.final,covs.mat))
-}
-
-
-frontierPlotMahal <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
-
-  starting.index <- 1
-  #ending.index <- length(frontierObject$drops)
-  ending.index <- length(frontierObject$balance)
-  if(!is.null(zoom)){
-    ## I made a warning for zoom
-    if(zoom[1]<0 | tail(zoom, 1) > length(frontierObject$drops)){stop(paste("zoom must be between 0 and ",length(frontierObject$drops)," for this data  set.",sep=""))}
+  if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
+    
+    starting.index <- 1
+    ending.index <- length(frontierObject$balance)
+    if(!is.null(zoom)){
+      ## I made a warning for zoom
+      if(zoom[1]<0 | tail(zoom, 1) > length(frontierObject$drops)){stop(paste("zoom must be between 0 and ",length(frontierObject$drops)," for this data  set.",sep=""))}
     ## get the index corresponding with the requested number of obs to remove for the start of the zoom
-    starting.index <- which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-zoom[1]) == min(abs((frontierObject$samplesize[1] -  frontierObject$samplesize)-zoom[1])))[1]
-    ## get the index corresponding with the requested number of obs to remove for the end of the zoom
-    ending.index <- tail( which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-tail(zoom, 1)) == min(abs((frontierObject$samplesize[1]  - frontierObject$samplesize)-tail(zoom, 1)))), 1)
-  }
+      starting.index <- which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-zoom[1]) == min(abs((frontierObject$samplesize[1] -  frontierObject$samplesize)-zoom[1])))[1]
+      ## get the index corresponding with the requested number of obs to remove for the end of the zoom
+      ending.index <- tail( which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-tail(zoom, 1)) == min(abs((frontierObject$samplesize[1]  - frontierObject$samplesize)-tail(zoom, 1)))), 1)
+    }
   
   # Frontier
   #df <- data.frame(x = seq(starting.index, ending.index), y = frontierObject$balance[starting.index:ending.index])
-  df <- data.frame(x = nrow(dataset)-frontierObject$samplesize[starting.index:ending.index], 
-                   y = frontierObject$balance[starting.index:ending.index])
+    df <- data.frame(x = nrow(dataset)-frontierObject$samplesize[starting.index:ending.index], 
+                     y = frontierObject$balance[starting.index:ending.index])
   
-  p1 <- ggplot(df, aes(x=x, y=y)) +
+    p1 <- ggplot(df, aes(x=x, y=y)) +
       geom_line() + geom_point() +
       xlab("Number of Observations Dropped") +
       ylab("Imbalance") +
       ggtitle("Imbalance Frontier")
-
-
-  # Causal Effects
-  if(!is.null(frontierEstObject)){
-    q <- frontierEstObject[starting.index:ending.index,]
-    eb <- aes(ymax = mean + sd, ymin = mean - sd)
-
-    p2 <- ggplot(data = q, aes(x = x, y = mean)) + 
-      geom_line(size = 1) + geom_point() +
-      geom_ribbon(eb, alpha = 0.5) +
-      xlab("Number of Observations Dropped") +
-      ylab("Effect Size and SEs")
-  } else {
-    p2 <- NULL
   }
-
-
-  # Overall Means
-  covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
-
-  for(col in covs){
-      dataset[,colnames(dataset) == col] <- range01(dataset[,colnames(dataset) == col])
-    }
-
-  covs.mat <- matrix(nrow = 0, ncol = length(covs), byrow = FALSE)
-  colnames(covs.mat) <- covs
-
-  for(i in 1:length(frontierObject$balance)){
-    ## how far through drops do we go?
-    dropseq <- (nrow(dataset)-frontierObject$samplesize[1]):(nrow(dataset)-frontierObject$samplesize[i])
-    iter.dat <- dataset[!(rownames(dataset) %in% frontierObject$drops[dropseq]),]
-    new.row <- c()
-    for(c in colnames(covs.mat)){
-      new.row <- c(new.row, mean(iter.dat[,c]))
-      }
-    covs.mat <- rbind(covs.mat, new.row)
-  }
-  #rownames(covs.mat) <- seq(nrow(covs.mat))
-  rownames(covs.mat) <- nrow(dataset) - frontierObject$samplesize
-
-  data.long <- melt(covs.mat[starting.index:ending.index,])
-
-  p3 <- ggplot(data=data.long,
-               aes(x=Var1, y=value, colour=Var2)) +
-    geom_line() + 
-    xlab("Number of Observations Dropped") +
-    ylab("Standardized Mean Value") +
-    opts(legend.position="bottom") +
-    theme(legend.title=element_blank())
-
-  # Join
-  if(!is.null(p2)){
-    p.final <- multiplot(p1, p2, p3, cols=1)
-  } else {
-    p.final <- multiplot(p1, p3, cols=1)
-  }
-
-  p.final
-  #return(list(p.final,covs.mat))
-  return(invisible(list(covs.mat=covs.mat)))
+  return(p1)
 }
 
-
-# Function for user
-frontierPlot <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
-  ## Plot L1 frontier
-  if(frontierObject$metric=="L1"){
-    frontierPlotL1(frontierObject=frontierObject, dataset=dataset, frontierEstObject=frontierEstObject, zoom=zoom, drop=drop)
+plotEffects <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
+  if(frontierObject$metric == 'L1'){   
+    starting.index <- 1
+    ending.index <- length(frontierObject$drops)
+    if(!is.null(zoom)){
+      starting.index <- zoom[1]
+      ending.index <- tail(zoom, 1)
+    }
+    if(!is.null(frontierEstObject)){
+      q <- frontierEstObject[starting.index:ending.index,]
+      eb <- aes(ymax = mean + sd * 1.96, ymin = mean - sd * 1.96)
+      
+      p2 <- ggplot(data = q, aes(x = x, y = mean)) + 
+        geom_line(size = 1) + geom_point() +
+        geom_ribbon(eb, alpha = 0.5) +
+        xlab("Number of Observations Dropped") +
+        ylab("Effect Size and SEs")
+    }
   }
-  ## Plot Mahal frontier
   if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
-    frontierPlotMahal(frontierObject=frontierObject, dataset=dataset, frontierEstObject=frontierEstObject, zoom=zoom, drop=drop)
+    
+    starting.index <- 1
+    ending.index <- length(frontierObject$balance)
+    if(!is.null(zoom)){
+      ## I made a warning for zoom
+      if(zoom[1]<0 | tail(zoom, 1) > length(frontierObject$drops)){stop(paste("zoom must be between 0 and ",length(frontierObject$drops)," for this data  set.",sep=""))}
+      ## get the index corresponding with the requested number of obs to remove for the start of the zoom
+      starting.index <- which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-zoom[1]) == min(abs((frontierObject$samplesize[1] -  frontierObject$samplesize)-zoom[1])))[1]
+      ## get the index corresponding with the requested number of obs to remove for the end of the zoom
+      ending.index <- tail( which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-tail(zoom, 1)) == min(abs((frontierObject$samplesize[1]  - frontierObject$samplesize)-tail(zoom, 1)))), 1)
+    }
+      # Causal Effects
+    if(!is.null(frontierEstObject)){
+      q <- frontierEstObject[starting.index:ending.index,]
+      eb <- aes(ymax = mean + sd * 1.96, ymin = mean - sd * 1.96)
+      
+      p2 <- ggplot(data = q, aes(x = x, y = mean)) + 
+        geom_line(size = 1) + geom_point() +
+        geom_ribbon(eb, alpha = 0.5) +
+        xlab("Number of Observations Dropped") +
+        ylab("Effect Size and SEs")
+    }
   }
+  return(p2)
+}
+
+plotMeans <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
+  if(frontierObject$metric == 'L1'){   
+    starting.index <- 1
+    ending.index <- length(frontierObject$drops)
+    if(!is.null(zoom)){
+      starting.index <- zoom[1]
+      ending.index <- tail(zoom, 1)
+    }
+    covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
+    
+    for(col in covs){
+      dataset[,colnames(dataset) == col] <- range01(dataset[,colnames(dataset) == col])
+    }
+    
+    covs.mat <- matrix(nrow = 0, ncol = length(covs), byrow = FALSE)
+    colnames(covs.mat) <- covs
+    
+    for(i in 1:length(frontierObject$drops)){
+      iter.dat <- dataset[!(rownames(dataset) %in% frontierObject$drops[1:i]),]
+      new.row <- c()
+      for(c in colnames(covs.mat)){
+        new.row <- c(new.row, mean(iter.dat[,c]))
+      }
+      covs.mat <- rbind(covs.mat, new.row)
+    }
+    rownames(covs.mat) <- seq(nrow(covs.mat))
+    
+    data.long <- melt(covs.mat[starting.index:ending.index,])
+    
+    p3 <- ggplot(data=data.long,
+                 aes(x=Var1, y=value, colour=Var2)) +
+                 geom_line() +
+                 xlab("Number of Observations Dropped") +
+                 ylab("Standardized Mean Value") +
+                 opts(legend.position="bottom") +
+                 theme(legend.title=element_blank())
+  }
+
+  if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
+    
+    starting.index <- 1
+    ending.index <- length(frontierObject$balance)
+    if(!is.null(zoom)){
+      ## I made a warning for zoom
+      if(zoom[1]<0 | tail(zoom, 1) > length(frontierObject$drops)){stop(paste("zoom must be between 0 and ",length(frontierObject$drops)," for this data  set.",sep=""))}
+      ## get the index corresponding with the requested number of obs to remove for the start of the zoom
+      starting.index <- which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-zoom[1]) == min(abs((frontierObject$samplesize[1] -  frontierObject$samplesize)-zoom[1])))[1]
+      ## get the index corresponding with the requested number of obs to remove for the end of the zoom
+      ending.index <- tail( which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-tail(zoom, 1)) == min(abs((frontierObject$samplesize[1]  - frontierObject$samplesize)-tail(zoom, 1)))), 1)
+    }
+    covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
+    
+    for(col in covs){
+      dataset[,colnames(dataset) == col] <- range01(dataset[,colnames(dataset) == col])
+    }
+    
+    covs.mat <- matrix(nrow = 0, ncol = length(covs), byrow = FALSE)
+    colnames(covs.mat) <- covs
+    
+    for(i in 1:length(frontierObject$balance)){
+      ## how far through drops do we go?
+      dropseq <- (nrow(dataset)-frontierObject$samplesize[1]):(nrow(dataset)-frontierObject$samplesize[i])
+      iter.dat <- dataset[!(rownames(dataset) %in% frontierObject$drops[dropseq]),]
+      new.row <- c()
+      for(c in colnames(covs.mat)){
+        new.row <- c(new.row, mean(iter.dat[,c]))
+      }
+      covs.mat <- rbind(covs.mat, new.row)
+    }
+                                        #rownames(covs.mat) <- seq(nrow(covs.mat))
+    rownames(covs.mat) <- nrow(dataset) - frontierObject$samplesize
+
+    data.long <- melt(covs.mat[starting.index:ending.index,])
+    
+    p3 <- ggplot(data=data.long,
+                 aes(x=Var1, y=value, colour=Var2)) +
+                   geom_line() + 
+                     xlab("Number of Observations Dropped") +
+                       ylab("Standardized Mean Value") +
+                         opts(legend.position="bottom") +
+                           theme(legend.title=element_blank())    
+  }
+  return(p3)
+}
+
+frontierMultiPlot <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
+  p1 <- plotFrontier(frontierObject, dataset, frontierEstObject, zoom, drop)
+  p2 <- plotEffects(frontierObject, dataset, frontierEstObject, zoom, drop)
+  p3 <- plotMeans(frontierObject, dataset, frontierEstObject, zoom, drop)
+  p.final <- multiplot(p1, p2, p3, cols=1)
+  return(p.final)
 }
   
 ######################
@@ -426,7 +398,7 @@ calculateMdist <- function(dataset, treatment, matchVars){
 frontierLoop <- function(dataset, treatment, distvec, minlist, mdist, strataList){
     ## Series of holders to store info about the frontier
     outholder <- c();dropped <- c();imbalance <- c(); matchedSampleSize <- c();wList <- list()
-    flag <- 0
+
     ## Start a loop over the number of unique minimum distances
     for(i in 1:length(distvec)){
         ## We keep all units that have minimum distances <= this value
@@ -450,7 +422,7 @@ frontierLoop <- function(dataset, treatment, distvec, minlist, mdist, strataList
         names(W) <- rownames(dataset)
         ## fill in 1s for treated units that are still in
         W[(names(W) %in% rownames(mdist)) & (names(W) %in% names(remainingMinimums))] <- 1
-        if(sum(W, na.rm=TRUE) < 10) flag <- 1
+
         ## fill in 0s for all units that are out
         W[!(names(W) %in% names(remainingMinimums))] <- 0
         ## fill in weights for the rest
@@ -462,7 +434,7 @@ frontierLoop <- function(dataset, treatment, distvec, minlist, mdist, strataList
             W[names(cLeft[j])] <- (m_C/m_T)*(m_T_s/m_C_s)
         }
         wList[[i]] <- W
-        if(flag == TRUE) break
+        if(sum(W != 0, na.rm=TRUE) < 400) {break}
     }
     return(list(balance = imbalance, drops = dropped, samplesize = matchedSampleSize, metric="Mahal", weights=wList))
 }
@@ -672,7 +644,6 @@ L1FrontierSATT <- function(treatment, dataset, drop, breaks=NULL){
     drops <- c()
     L1s <- c(L1(strataholder))
     samplesize <- c()
-
     # Remove obs from imbalanced strata
     while(1){
     # get differences
