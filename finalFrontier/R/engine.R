@@ -295,7 +295,7 @@ plotMeans <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NU
     p3 <- ggplot(data=data.long,
                  aes(x=Var1, y=value, colour=Var2)) +
                  geom_line() +
-                 xlab("Number of Observations Dropped") +
+                 xlab("Number of Observations Pruned") +
                  ylab("Standardized Mean Value") +
                  opts(legend.position="bottom") +
                  theme(legend.title=element_blank())
@@ -400,7 +400,7 @@ frontierLoop <- function(dataset, treatment, distvec, minlist, mdist, strataList
     outholder <- c();dropped <- c();imbalance <- c(); matchedSampleSize <- c();wList <- list()
 
     ## Start a loop over the number of unique minimum distances
-    for(i in 1:length(distvec)){
+     for(i in 1:length(distvec)){
         ## We keep all units that have minimum distances <= this value
         currentThreshold <- distvec[i]
         ## This is the subset of minimum units that remain
@@ -667,6 +667,10 @@ L1FrontierSATT <- function(treatment, dataset, drop, breaks=NULL){
         strataholder[[drop]] <- strataholder[[drop]][-drop.obs]
 
         L1s <- c(L1s, L1(strataholder))
+        if(length(L1s) %% 1000 == 0){
+          print(length(L1s))
+          print(L1s[length(L1s)])
+        }
         if(L1s[length(L1s)] > L1s[length(L1s) - 1]){break}
     }
     return(list(balance = L1s[1:length(L1s) - 1], drops = unname(drops)[1:length(drops) - 1],
