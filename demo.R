@@ -4,13 +4,50 @@
 library(finalFrontier)
 library(foreign)
 library(sem)
-
+library(stargazer)
+require(ggplot2)
+require(reshape2)
 
 # ########################
 # FUNCTIONS NOT IN PACKAGE
 # ########################
 
 # FUNCTION ADD POINT TO IMBALANCE PL
+frontierEstBig <- function(frontierObject, dataset, myform=NULL, treatment=NULL, estCall=NULL, drop=NULL){
+
+  ## L1
+  if(frontierObject$metric=="L1"){
+    # Causal Effects
+    effectholder <- c()
+    seholder <- c() 
+
+    cat("Calculating estimates along the frontier\n")
+    pb <- txtProgressBar(min=1,max=length(frontierObject$balance),initial = 1, style = 3)
+
+    interval <- length(frontierObject$drops) / 5000
+    for(i in seq(1, length(frontierObject$drops), interval)){
+      setTxtProgressBar(pb, i)
+      if(is.null(estCall)){
+        m1 <- lm(myform, data=dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),], )
+        effectholder <- c(effectholder, summary(m1)$coeff[treatment,1])
+        seholder <- c(seholder, summary(m1)$coeff[treatment,2])
+      }
+      if(!is.null(estCall)){
+        est <- estCall(data=dataset[!(rownames(dataset)  %in% frontierObject$drops[1:i]),], weights=NULL)
+        effectholder <- c(effectholder, est$effect)
+        seholder <- c(seholder, est$se)
+      }     
+    }
+    close(pb)
+
+    q <- data.frame(x = seq(1, length(frontierObject$drops)))
+
+    q$mean <- effectholder
+    q$sd <- seholder
+
+  }
+  return(q)
+}
 
 plotMeans1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
   require(ggplot2)
@@ -207,6 +244,10 @@ plotFrontier1 <- function(frontierObject, dataset, frontierEstObject=NULL,
 # S=1 is fixed ratio matching
 # Label stuff we'll use for each of the frontiers
 nsw <- read.dta('./data/nsw_dw.dta')
+step1m <- makeFrontier(treatment=mytreatment, dataset=nsw, drop=mydrop,
+                       QOI = 'SATT', metric = 'L1', S = 1)
+
+
 psid <- read.dta('./data/psid_controls.dta')
 cps <- read.dta('./data/cps_controls.dta')
 
@@ -229,19 +270,99 @@ myform <- as.formula(re78 ~ treat + age + education + black + married +
 # L1 SATT Frontier
 step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop,
                        QOI = 'SATT', metric = 'L1', S = 1)
+load('./Workspaces/LalondeFrontier.RData')
+
 ## calculate ATE using default lm()
 step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
 
-pdf('LalondeL1SATTFrontier.pdf')
-plotFrontier1(step1m, mydataset, step2m, drop=mydrop)
+## pdf('LalondeL1SATTFrontier.pdf')
+## plotFrontier1(step1m, mydataset, step2m, drop=mydrop)
+## dev.off()
+
+## pdf('LalondeL1SATTEffects.pdf')
+## plotEffects1(step1m, mydataset, step2m, drop=mydrop)
+## dev.off()
+
+## pdf('LalondeL1SATTMeans.pdf')
+## plotMeans1(step1m, mydataset, step2m, drop=mydrop)
+## dev.off()
+
+# Figure out why the results are so different
+range01 <- function(x){
+  if(min(x) == max(x)){
+    x <- rep(0, length(x))
+    return(x)
+  }
+  (x-min(x))/(max(x)-min(x))
+}
+
+### NSW
+nsw <- nsw[order(nsw$treat),]
+nsw$Condition <- nsw$treat
+nsw$treat <- NULL
+nsw$data_id <- NULL
+for(col in colnames(nsw)){
+  nsw[,colnames(nsw) == col] <- range01(nsw[,colnames(nsw) == col])
+}
+
+experiment.controls <- nsw[nsw$treat != 1,]
+all.controls <- mydataset[mydataset$treat != 1,]
+
+nsw$Condition <- c('Control', 'Treated')[nsw$Condition + 1]
+nsw$ID <- 1:nrow(nsw)
+nsw_m <- melt(nsw, id.vars = c('Condition', 'ID'))
+
+ggplot(nsw_m) + 
+  geom_line(aes(x = variable, y = value, group = ID, color = Condition),
+            position=position_jitter(w=.05, h=.05), alpha = .4) +
+  ylab("Standardized Value") +
+  xlab("Variable Name")
+
+# MYDATASET    
+mydataset <- mydataset[order(mydataset$treat),]
+mydataset$Condition <- mydataset$treat
+mydataset$treat <- NULL
+mydataset$data_id <- NULL
+for(col in colnames(mydataset)){
+  mydataset[,colnames(mydataset) == col] <- range01(mydataset[,colnames(mydataset) == col])
+}
+
+mydataset$Condition <- c('Control', 'Treated')[mydataset$Condition + 1]
+mydataset$ID <- 1:nrow(mydataset) 
+
+pdf('parallel_plot_for_everything.pdf')
+mydata_m <- melt(mydataset, id.vars = c('Condition', 'ID'))
+ggplot(mydata_m) + 
+  geom_line(aes(x = variable, y = value, group = ID, color = Condition,
+                order = sample(Condition)),
+            position=position_jitter(w=.05, h=.05), alpha = .15) + 
+  ylab("Standardized Value") +
+  xlab("Variable Name")
 dev.off()
 
-pdf('LalondeL1SATTEffects.pdf')
-plotEffects1(step1m, mydataset, step2m, drop=mydrop)
-dev.off()
+# Balanced dat
+keep <- !(1:nrow(mydataset) %in% step1m$drops)
+balance.dat <- mydataset[keep,]
+balance.dat <- balance.dat[order(balance.dat$treat),]
+balance.dat$Condition <- balance.dat$treat
+balance.dat$treat <- NULL
+balance.dat$data_id <- NULL
+for(col in colnames(balance.dat)){
+  balance.dat[,colnames(balance.dat) == col] <- range01(balance.dat[,colnames(balance.dat) == col])
+}
 
-pdf('LalondeL1SATTMeans.pdf')
-plotMeans1(step1m, mydataset, step2m, drop=mydrop)
+balance.dat$Condition <- c('Control', 'Treated')[balance.dat$Condition + 1]
+balance.dat$ID <- 1:nrow(balance.dat) 
+
+mydata_balanced <- melt(balance.dat, id.vars = c('Condition', 'ID'))
+
+pdf('parallel_plot_for_balanced_dat.pdf')
+ggplot(mydata_balanced) + 
+  geom_line(aes(x = variable, y = value, group = ID, color = Condition,
+                order = sample(Condition)),
+            position=position_jitter(w=.05, h=.05), alpha = .15) + 
+  ylab("Standardized Value") +
+  xlab("Variable Name")
 dev.off()
 
 
@@ -366,10 +487,14 @@ myform <- as.formula(vote02 ~ contact + state + comp_mi + comp_ia + persons + ag
 ## summary(lm(re78~treated,mdat,weights=w))
 mydataset <- na.omit(mydataset)
 # L1 SATT Frontier
-step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop,
-                       QOI = 'SATT', metric = 'L1', S = 1)
+
+load('./Workspaces/GOTV_frontier.RData')
+#step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop,
+#                       QOI = 'SATT', metric = 'L1', S = 1)
+
+
 ## calculate ATE using default lm()
-step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
+step2m <- frontierEstBig(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
 
 pdf('AGGL1SATTFrontier.pdf')
 plotFrontier1(step1m, mydataset, step2m, drop=mydrop)
