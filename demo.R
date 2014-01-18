@@ -1,6 +1,6 @@
 #Using the Lalonde data from the CEM package, the following examples demonstrate how to 
 # generate each of the three frontiers we've implemented. 
-
+library(directlabels)
 library(finalFrontier)
 library(foreign)
 library(sem)
@@ -49,104 +49,11 @@ frontierEstBig <- function(frontierObject, dataset, myform=NULL, treatment=NULL,
   return(q)
 }
 
-plotMeans1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
-  require(ggplot2)
-  require(reshape2)
-  if(frontierObject$metric == 'L1'){   
-    starting.index <- 1
-    ending.index <- length(frontierObject$drops)
-    if(!is.null(zoom)){
-      starting.index <- zoom[1]
-      ending.index <- tail(zoom, 1)
-    }
-    covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
-    
-    for(col in covs){
-      dataset[,colnames(dataset) == col] <- range01(dataset[,colnames(dataset) == col])
-    }
-    
-    covs.mat <- matrix(nrow = 0, ncol = length(covs), byrow = FALSE)
-    colnames(covs.mat) <- covs
-    
-    for(i in 1:length(frontierObject$drops)){
-      iter.dat <- dataset[!(rownames(dataset) %in% frontierObject$drops[1:i]),]
-      new.row <- c()
-      for(c in colnames(covs.mat)){
-        new.row <- c(new.row, mean(iter.dat[,c]))
-      }
-      covs.mat <- rbind(covs.mat, new.row)
-    }
-    rownames(covs.mat) <- seq(nrow(covs.mat))
-    
-    data.long <- melt(covs.mat[starting.index:ending.index,])
-    
-    p3 <- ggplot(data=data.long,
-                 aes(x=Var1, y=value, colour=Var2)) +
-                 geom_line() +
-                 xlab("Number of Observations Pruned") +
-                 ylab("Standardized Mean Value") +
-                 opts(legend.position="bottom") +
-                 theme(legend.title=element_blank())
-  }
-
-  if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
-    
-    starting.index <- 1
-    ending.index <- length(frontierObject$balance)
-    if(!is.null(zoom)){
-      ## I made a warning for zoom
-      if(zoom[1]<0 | tail(zoom, 1) > length(frontierObject$drops)){stop(paste("zoom must be between 0 and ",length(frontierObject$drops)," for this data  set.",sep=""))}
-      ## get the index corresponding with the requested number of obs to remove for the start of the zoom
-      starting.index <- which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-zoom[1]) == min(abs((frontierObject$samplesize[1] -  frontierObject$samplesize)-zoom[1])))[1]
-      ## get the index corresponding with the requested number of obs to remove for the end of the zoom
-      ending.index <- tail( which(abs((frontierObject$samplesize[1] - frontierObject$samplesize)-tail(zoom, 1)) == min(abs((frontierObject$samplesize[1]  - frontierObject$samplesize)-tail(zoom, 1)))), 1)
-    }
-    covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
-    
-    for(col in covs){
-      dataset[,colnames(dataset) == col] <- range01(dataset[,colnames(dataset) == col])
-    }
-    
-    covs.mat <- matrix(nrow = 0, ncol = length(covs), byrow = FALSE)
-    colnames(covs.mat) <- covs
-    
-    for(i in 1:length(frontierObject$balance)){
-      ## how far through drops do we go?
-      dropseq <- (nrow(dataset)-frontierObject$samplesize[1]):(nrow(dataset)-frontierObject$samplesize[i])
-      iter.dat <- dataset[!(rownames(dataset) %in% frontierObject$drops[dropseq]),]
-      new.row <- c()
-      for(c in colnames(covs.mat)){
-        new.row <- c(new.row, mean(iter.dat[,c]))
-      }
-      covs.mat <- rbind(covs.mat, new.row)
-    }
-                                        #rownames(covs.mat) <- seq(nrow(covs.mat))
-    rownames(covs.mat) <- nrow(dataset) - frontierObject$samplesize
-
-    data.long <- melt(covs.mat[starting.index:ending.index,])
-    
-    p3 <- ggplot(data=data.long,
-                 aes(x=Var1, y=value, colour=Var2)) +
-                   geom_line() + 
-                     xlab("Number of Observations Pruned") +
-                       ylab("Standardized Mean Value") +
-                         opts(legend.position="bottom") +
-                           theme(legend.title=element_blank())    
-  }
-  return(p3)
-}
-
 
 plotEffects1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL){
   if(frontierObject$metric == 'L1'){   
-    starting.index <- 1
-    ending.index <- length(frontierObject$drops)
-    if(!is.null(zoom)){
-      starting.index <- zoom[1]
-      ending.index <- tail(zoom, 1)
-    }
     if(!is.null(frontierEstObject)){
-      q <- frontierEstObject[starting.index:ending.index,]
+      q <- frontierEstObject
       eb <- aes(ymax = mean + sd * 1.96, ymin = mean - sd * 1.96)
       
       p2 <- ggplot(data = q, aes(x = x, y = mean)) + 
@@ -154,7 +61,6 @@ plotEffects1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom =
         geom_ribbon(eb, alpha = 0.5) +
         xlab("Number of Observations Pruned") +
         ylab("Effect Size and CIs")
-      p2 <- p2 + geom_hline(aes(yintercept=1676), colour = 'red')
     }
   }
   if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
@@ -197,14 +103,14 @@ plotFrontier1 <- function(frontierObject, dataset, frontierEstObject=NULL,
     }
     
     # Frontier
-    df <- data.frame(x = seq(starting.index, ending.index), y = frontierObject$balance[starting.index:ending.index])
-    
+    df <- data.frame(x = frontierEstObject$x, y = frontierObject$balance[frontierEstObject$x])
+
     p1 <- ggplot(df, aes(x=x, y=y)) +
       geom_line() +
-      geom_line(y = ) +
       xlab("Number of Observations Pruned") +
       ylab("L1") +
       ylim(-.1, 1)
+    p1 <- p1 + + theme(legend.position="right")
   }
 
   if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
@@ -283,9 +189,14 @@ step2m <- frontierEst(step1m,dataset=mydataset, myform=myform, treatment=mytreat
 ## plotEffects1(step1m, mydataset, step2m, drop=mydrop)
 ## dev.off()
 
-## pdf('LalondeL1SATTMeans.pdf')
-## plotMeans1(step1m, mydataset, step2m, drop=mydrop)
-## dev.off()
+colnames(mydataset) <- c('data_id', 'treat', 'Age', 'Education', 'Black', 'Hispanic', 'Married', 'No College Degree', 'Income in 74', 'Income in 75', 're78')
+
+test <- plotMeans1(step1m, mydataset, step2m, drop=mydrop, treatment=mytreatment)
+
+angled.firstpoints <- list("first.bumpup",rot = 0, hjust = .9, vjust = -0.7)
+pdf('LalondeL1SATTMeans.pdf')
+direct.label(test, angled.firstpoints)
+dev.off()
 
 # Figure out why the results are so different
 range01 <- function(x){
@@ -473,6 +384,9 @@ mydataset <- mydataset[,colnames(mydataset) %in% keep]
 iv.2 <- tsls(vote02 ~ contact + state + comp_ia + comp_mi + persons + age + female2 + newreg + vote00 + vote98 + fem_miss, ~ treat_real + state + comp_mi + comp_ia + persons + age + female2 + newreg + vote00 + vote98 + fem_miss, data=mydataset)
 summary(iv.2)
 
+ols.2 <- lm(vote02 ~ contact + state + comp_ia + comp_mi + persons + age + female2 + newreg + vote00 + vote98 + fem_miss, data=mydataset)
+summary(ols.2)
+
 mytreatment <- "contact"
 
 mydrop <- colnames(mydataset)[!(colnames(mydataset) %in% c('state', 'comp_ia', 'comp_mi', 'persons', 'age', 'female2', 'newreg', 'vote00', 'vote98', 'fem_miss'))]
@@ -492,9 +406,10 @@ load('./Workspaces/GOTV_frontier.RData')
 #step1m <- makeFrontier(treatment=mytreatment, dataset=mydataset, drop=mydrop,
 #                       QOI = 'SATT', metric = 'L1', S = 1)
 
+load('./Workspaces/GOTV_estimates.RData')
 
 ## calculate ATE using default lm()
-step2m <- frontierEstBig(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
+#step2m <- frontierEstBig(step1m,dataset=mydataset, myform=myform, treatment=mytreatment, drop=mydrop)
 
 pdf('AGGL1SATTFrontier.pdf')
 plotFrontier1(step1m, mydataset, step2m, drop=mydrop)
@@ -504,6 +419,67 @@ pdf('AGGL1SATTEffects.pdf')
 plotEffects1(step1m, mydataset, step2m, drop=mydrop)
 dev.off()
 
+colnames(mydataset) <- c('Household Size', 'Vote in 00', 'Vote in 98', 'Newly Registered Voter', 'Age',
+                         'Vote in 02', 'Contact', 'Real Treatment', 'State', 'Competitive MI District', 'Competitive IA District',
+                         'Missing Gender', 'Female')
+mydrop <- c('Vote in 02', 'Contact', 'Real Treatment')
+mydataset$State <- mydataset$State == 'Iowa'
+
+
+######
+#####
+####
+###
+##
+#
+
+plotMeans1 <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NULL, drop=NULL, treatment){
+  require(ggplot2)
+  require(reshape2)
+  if(frontierObject$metric == 'L1'){   
+    covs <- colnames(dataset)[!(colnames(dataset) %in% drop)]
+
+    for(col in covs){
+      dataset[,colnames(dataset) == col] <- range01(dataset[,colnames(dataset) == col])
+    }
+    
+    covs.mat <- matrix(nrow = 0, ncol = length(covs), byrow = FALSE)
+    colnames(covs.mat) <- covs
+    
+    for(i in frontierEstObject$x[seq(1, 5000, 10)]){
+      iter.dat <- dataset[!(rownames(dataset) %in% frontierObject$drops[1:i]),]
+      treated.inds <- which(iter.dat[[treatment]] == 1)
+      control.inds <- which(iter.dat[[treatment]] == 0)
+      new.row <- c()
+      print(i/tail(frontierEstObject$x, 1))
+      for(col in colnames(covs.mat)){
+        new.row <- c(new.row, mean(iter.dat[treated.inds,col]) - mean(iter.dat[control.inds,col]))
+      }
+      covs.mat <- rbind(covs.mat, new.row)
+    }
+    rownames(covs.mat) <- seq(nrow(covs.mat))
+    
+    data.long <- melt(covs.mat)
+    data.long$x <- rep(frontierEstObject$x[seq(1, 5000, 10)], nrow(data.long) / length(frontierEstObject$x[seq(1, 5000, 10)]))
+    return(data.long)
+    p3 <- ggplot(data=data.long,
+                 aes(x=x, y=value, colour=Var2)) +
+                 geom_line() +
+                 xlab("Number of Observations Pruned") +
+                 ylab("Ratio of mean values for treated units against controls") +
+                 opts(legend.position="none") +
+                 xlim(-4000, 18000)
+                 theme(legend.title=element_blank())
+  }
+  return(p3)
+}
+
+means.test <- plotMeans1(step1m, mydataset, step2m, drop=mydrop, treatment = 'Contact')
+
+angled.firstpoints <- list("first.bumpup",rot = 0, hjust = 1, vjust = -0.7)
+direct.label(means.test, angled.firstpoints)
+
 pdf('AGGL1SATTMeans.pdf')
-plotMeans1(step1m, mydataset, step2m, drop=mydrop)
+means.test
 dev.off()
+
