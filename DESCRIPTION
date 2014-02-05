@@ -1,0 +1,10 @@
+Package: finalFrontier
+Type: Package
+Title: The Final Frontier
+Version: 1.0
+Date: 2013-12-13
+Author: King, Lucas, and Nielsen
+Maintainer: Christopher Lucas <lucas.christopherd@gmail.com>
+Description: Implements methods from King, Lucas, and Nielsen (working)
+Imports: ggplot2, reshape2
+License: GPL-2
