@@ -7,4 +7,5 @@ Author: King, Lucas, and Nielsen
 Maintainer: Christopher Lucas <lucas.christopherd@gmail.com>
 Description: Implements methods from King, Lucas, and Nielsen (working)
 Imports: ggplot2, reshape2
+LazyData: true
 License: GPL-2
