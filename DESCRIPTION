@@ -1,11 +1,11 @@
-Package: finalFrontier
+Package: MatchingFrontier
+Version: 0.1
+Date: 2014-02-05
 Type: Package
-Title: The Final Frontier
-Version: 1.0
-Date: 2013-12-13
+Title: R Package for Calculating the Balance-Sample Size Frontier
 Author: King, Lucas, and Nielsen
 Maintainer: Christopher Lucas <lucas.christopherd@gmail.com>
 Description: Implements methods from King, Lucas, and Nielsen (working)
 Imports: ggplot2, reshape2
 LazyData: true
-License: GPL-2
+License: GPL (>= 2)
