@@ -5,28 +5,22 @@
 # These are the functions that users are supposed to call. 
 
 # This gets the frontier
-
-makeFrontier <- function(treatment, dataset, drop, mdist = NULL, QOI, metric, S){
+s = 0 means ratio = variable
+makeFrontier <- function(treatment, dataset, drop, mdist = NULL, QOI, metric, ratio){
     if(sum(is.na(dataset)) > 0) stop('ERROR: Dataframe has missing values')
-    if(QOI == 'FSATT' & metric == 'Mahal' & S == 0){
+    if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'variable'){
         return(MahalFrontierFSATT(treatment=treatment, dataset, drop, mdist))
     }
-    if(QOI == 'SATT' & metric == 'Mahal' & S == 0){
-        return(MahalFrontierSATT(treatment=treatment, dataset, drop, mdist))
-    }
-    if(QOI == 'FSATT' & metric == 'L1' & S == 1){
-        return(L1FrontierFSATT(treatment=treatment, dataset, drop))
-    }
-    if(QOI == 'SATT' & metric == 'L1' & S == 1){
+    if(QOI == 'SATT' & metric == 'L1' & ratio == 'fixed'){
         return(L1FrontierSATT(treatment=treatment, dataset, drop))
     }
-    if(QOI == 'FSATT' & metric == 'L1' & S == 0){
+    if(QOI == 'FSATT' & metric == 'L1' & ratio == 'variable'){
         return(L1FrontierCEM(treatment=treatment, dataset, drop))
     }
 }
  
 ## A function to estimate causal effects
-frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, estCall=NULL, drop=NULL){
+frontierEst <- function(frontierObject, dataset, myform=NULL, treatment=NULL, estCall=NULL){
 
   ## Mahal
   if(frontierObject$metric=="Mahal" | frontierObject$metric=="Mahalj2k" | frontierObject$metric=="L1w"){
@@ -502,10 +496,6 @@ MahalFrontierFSATT <- function(treatment, dataset, drop, mdist = NULL){
   return(frontierLoop(dataset, treatment, distvec, minlist, mdist, strataList))
 }
 
-MahalFrontierSATT <- function(treatment, dataset, drop, mdist){
-    print("We presently can't calculate a Mahalanobis SATT frontier.")
-}
-
 ######################
 # END OF STUFF FOR MAHALANOBIS - BEGINNING OF L1
 ######################
@@ -676,99 +666,3 @@ L1FrontierSATT <- function(treatment, dataset, drop, breaks=NULL){
     return(list(balance = L1s[1:length(L1s) - 1], drops = unname(drops)[1:length(drops) - 1],
                 samplesize=samplesize[1:length(samplesize) - 1], metric="L1", breaks=mycut))
 }
-
-# THIS CODE IS FOR L1 SATT AND HAS A BUG!!!
-
-## L1FromVecs <- function(treated.vec, control.vec){
-##     .5 * abs(treated.vec/sum(treated.vec) - control.vec/sum(control.vec))
-## }
-
-## L1FrontierFSATT <- function(treatment, dataset, drop, breaks=NULL){
-##   gs <- getStrata(treatment, dataset, drop, breaks=breaks)
-##   strata <- gs$strata
-##   mycut <- gs$mycut
-##   names(strata) <- dataset[,which(colnames(dataset) == treatment)]
-##   unique.strata <- unique(strata)
-##   strataholder <- list()
-##   for(i in 1:length(unique.strata)){
-##     strataholder[[i]] <- which(strata==unique.strata[i])
-##   }
-##   drops <- c()
-##   samplesize <- c()
-
-##   treated.vec <- c()
-##   control.vec <- c()
-##   for(strat in strataholder){
-##       treated.vec <- c(treated.vec, sum((names(strat) == 1)))
-##       control.vec <- c(control.vec, sum((names(strat) == 0)))
-##   }
-##   FSATT.frontier <- getFrontier(treated.vec, control.vec, .05)
-##   return(FSATT.frontier)
-## }
-
-## # This function just  
-## extendVectors <- function(vector){
-##   new.vector <- c()
-##   for(i in 1:length(vector)){
-##     new.vector <- c(new.vector, rep(i, vector[i]))
-##   }
-##   return(new.vector)
-## }
-    
-## # This function basically calculates one point on the L1 frontier
-## dropN <- function(treatment.vec, control.vec, number.to.drop){
-##   num.treated <- sum(treatment.vec)
-##   num.control <- sum(control.vec)
-
-##   # treatment.denoms and control.denoms are the vectors whose ith elements sum to number.to.drop
-##   treatment.denoms <- seq(num.treated, num.treated - number.to.drop) 
-##   control.denoms <- seq(num.control - number.to.drop, num.control) 
-
-##   # This is our holder for the best L1 in this iteration. Starting at 1.1 because it's nonsensical and impossible to lose to 1.
-##   best.L1 <- 1.1
-  
-##   for(i in 1:(number.to.drop + 1)){    # For each possible denominator pairing
-##     relative.diff <- treatment.vec/treatment.denoms[i] - control.vec/control.denoms[i] #vector of diffs normalized by eventual denominators
-
-##     # Number of treated and control dropped for this iteration
-##     num.treated.drop <- num.treated - treatment.denoms[i]          
-##     num.control.drop <- num.control - control.denoms[i]
-
-##     # This calculates what L1 will be for these denominator values, in the best case. If bad, next. 
-##     L1 <- (sum(abs(relative.diff)) - num.treated.drop/treatment.denoms[i] - num.control.drop/control.denoms[i]) * .5
-
-##     if(L1 > best.L1){next}
-
-##     # These vectors are the number of T and C we can remove and improve L1. They all improve L1 equally. 
-##     t.factored <- floor((relative.diff + .01) / (1/treatment.denoms[i]))
-##     t.factored[t.factored < 0] <- 0
-##     c.factored <- ceiling((relative.diff - .01)/ (1/control.denoms[i]))
-##     c.factored[c.factored > 0] <- 0
-##     c.factored <- abs(c.factored)
-
-##     # If we can't remove enough observations w/out making L1 worse, next. 
-##     if(num.treated.drop > sum(t.factored)){next}
-##     if(num.control.drop > sum(c.factored)){next}
-
-##     # Randomly sample some strata to drop from
-##     treatment.drop <- sample(extendVectors(t.factored), num.treated.drop)
-##     control.drop <- sample(extendVectors(c.factored), num.control.drop)
-
-##     best.L1 <- L1
-##   }  
-##   return(list(treatment.drop = treatment.drop, control.drop = control.drop, L1 = best.L1))
-## }
-
-## # This function gets the rest of the frontier. Epsilon is some small arbitrary value of L1 at which we break from the loop
-## getFrontier <- function(treatment.vec, control.vec, epsilon){
-##   current.L1 <- abs(treatment.vec/sum(treatment.vec) - control.vec/sum(control.vec)) * .5
-##   number.to.drop <- 1
-##   frontierObject <- list() # Holder for results
-##   while(1){
-##     frontierObject[[number.to.drop]] <- dropN(treatment.vec, control.vec, number.to.drop)
-##     if(frontierObject[[number.to.drop]][['L1']] < epsilon){break}
-##     number.to.drop <- number.to.drop + 1
-##   }
-##   return(frontierObject)
-## }
-
