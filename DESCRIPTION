@@ -1,11 +1,11 @@
 Package: MatchingFrontier
 Version: 0.1
-Date: 2014-02-05
+Date: 2014-03-02
 Type: Package
 Title: R Package for Calculating the Balance-Sample Size Frontier
 Author: King, Lucas, and Nielsen
 Maintainer: Christopher Lucas <lucas.christopherd@gmail.com>
-Description: Implements methods from King, Lucas, and Nielsen (working)
-Imports: ggplot2, reshape2
+Description: Implements methods from King, Lucas, and Nielsen
+Imports: ggplot2, reshape2, cem
 LazyData: true
 License: GPL (>= 2)
