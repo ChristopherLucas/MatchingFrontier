@@ -5,7 +5,6 @@
 # These are the functions that users are supposed to call. 
 
 # This gets the frontier
-s = 0 means ratio = variable
 makeFrontier <- function(treatment, dataset, drop, mdist = NULL, QOI, metric, ratio){
     if(sum(is.na(dataset)) > 0) stop('ERROR: Dataframe has missing values')
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'variable'){
