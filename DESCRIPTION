@@ -6,6 +6,5 @@ Title: R Package for Calculating the Balance-Sample Size Frontier
 Author: King, Lucas, and Nielsen
 Maintainer: Christopher Lucas <lucas.christopherd@gmail.com>
 Description: Implements methods from King, Lucas, and Nielsen
-Imports: ggplot2, reshape2, cem
 LazyData: true
 License: GPL (>= 2)
