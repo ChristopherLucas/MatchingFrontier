@@ -66,7 +66,7 @@ weights, grouping = NULL)
         }
     }
     if (!reduced) {
-        tmp <- reduce.data(data, collapse = TRUE, breaks = breaks)
+        tmp <- reduceData(data, collapse = TRUE, breaks = breaks)
         data <- tmp$data
         new.breaks <- tmp$breaks
         collapsed <- TRUE
@@ -155,7 +155,7 @@ imbalance <- function(group, data, drop=NULL, breaks=NULL, weights, grouping = N
  }
 
 
- tmp <- reduce.data(data, breaks=breaks)$data
+ tmp <- reduceData(data, breaks=breaks)$data
  lv <- unique(na.omit(group))
 	
  globalL1 <- L1.meas(group=group, data=data, breaks=breaks, weights=weights)
