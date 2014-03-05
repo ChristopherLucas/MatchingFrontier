@@ -33,7 +33,7 @@ function (treatment=NULL, data, cutpoints = NULL,  drop=NULL,
 	for (i in 1:nv) {	
 	    if(verbose>1)
 		 cat(".")
-		tmp <- reduce.var(data[[i]], cutpoints[[vnames[i]]])
+		tmp <- reduceVar(data[[i]], cutpoints[[vnames[i]]])
 		data[[i]] <- tmp$x
 		mycut[[vnames[i]]] <- tmp$breaks
     }
