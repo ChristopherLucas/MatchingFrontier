@@ -6,7 +6,7 @@ reduceData <- function(data, breaks=NULL, collapse=FALSE){
  new.breaks <- vector(dim(data)[2], mode="list")
  names(new.breaks) <- vnames
  for (i in 1:nv){
-   tmp <- reduce.var(data[[i]], breaks[[vnames[i]]] )
+   tmp <- reduceVar(data[[i]], breaks[[vnames[i]]] )
    new.breaks[[vnames[i]]] <- tmp$breaks
    data[[i]] <- tmp$x
   }
