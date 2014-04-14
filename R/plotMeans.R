@@ -31,7 +31,7 @@ plotMeans <- function(frontierObject, dataset, frontierEstObject=NULL, zoom = NU
                  aes(x=Var1, y=value, colour=Var2)) +
                  geom_line() +
                  xlab("Number of Observations Pruned") +
-                 ylab("Standardized Mean Value") +
+                 ylab("Rescaled Mean Value") +
                  opts(legend.position="bottom") +
                  theme(legend.title=element_blank())
   }
