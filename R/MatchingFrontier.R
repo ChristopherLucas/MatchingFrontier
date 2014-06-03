@@ -8,7 +8,7 @@
     cite.msg <- "To cite:\nKing, Gary, Christopher Lucas, and Richard Nielsen. 2014. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper."
     
     msg <- paste(version.msg, cite.msg, sep = '\n\n')
-    packageStartupMessage(msg)
+    packageStartupMessage(paste(strwrap(msg), collapse = "\n"))
 }
 
 makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio){
