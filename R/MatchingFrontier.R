@@ -3,10 +3,8 @@
 #################################
 
 .onAttach <- function(lib, pkg) {
-    dcf <- read.dcf(file.path(lib, pkg, "DESCRIPTION"))
-    msg <- gettextf("%s (%s %s)", dcf[, "Title"],
-                    as.character(dcf[, "Version"]), dcf[, "Date"])
-    packageStartupMessage(paste(strwrap(msg, width = 1.2 * getOption("width")), collapse = "\n"))
+    msg <- paste("Loading MatchingFrontier Version", dcf[, "Title"], sep = ' ') 
+    packageStartupMessage(msg)
 }
 
 makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio){
