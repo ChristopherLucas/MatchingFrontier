@@ -56,7 +56,7 @@ checkDat <- function(dataset, treatment, outcome, match.on){
         customStop("The treatment is in 'match.on'. Don't match on the treatment, it's bad.", 'makeFrontier()')
     }
     if(outcome %in% match.on){
-        customStop("The outcome is in 'match.on'. Don't match on the outcome, 's bad.", 'makeFrontier()')
+        customStop("The outcome is in 'match.on'. Don't match on the outcome, it's bad.", 'makeFrontier()')
     }
     
     # Trim the dataset to the stuff we need
@@ -87,6 +87,5 @@ checkArgs <- function(QOI, metric, ratio){
 
 customStop <- function(msg, func){
     custom.msg <- paste('In ', func, ', ', msg, sep = '')
-    print(custom.msg)
     stop(custom.msg, call. = FALSE)
 }
