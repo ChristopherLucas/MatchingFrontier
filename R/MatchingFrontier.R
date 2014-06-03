@@ -7,10 +7,12 @@
     version.msg <- paste('\n', 'Loading MatchingFrontier Version ', dcf[, 'Version'], sep = '')
     cite.msg <- "King, Gary, Christopher Lucas, and Richard Nielsen. 2014. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper."
     cite.msg <- paste(strwrap(cite.msg), collapse = "\n")
-
-    cite.msg <- paste('## Citation ##\n', cite.msg, '\n', '##############', sep = '')
+    bib.msg <- "@article{king2014,\n\ttitle={Optimizing Balance and Sample Size in Matching Methods for Causal Inference},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\tjournal={Unpublished manuscript}\n
+}"
     
-    msg <- paste(version.msg, cite.msg, sep = '\n\n')
+    cite.msg <- paste('## Citation ##\n', cite.msg, sep = '')
+    
+    msg <- paste(version.msg, cite.msg, bib.msg, sep = '\n\n')
     packageStartupMessage(msg)
 }
 
