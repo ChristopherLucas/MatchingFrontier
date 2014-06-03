@@ -6,7 +6,7 @@
     dcf <- read.dcf(file.path(lib, pkg, "DESCRIPTION"))
     msg <- gettextf("%s (%s %s)", dcf[, "Title"],
                     as.character(dcf[, "Version"]), dcf[, "Date"])
-    packageStartupMessage(paste(strwrap(msg, width = 1), collapse = "\n"))
+    packageStartupMessage(paste(strwrap(msg, width = getOption("width")), collapse = "\n"))
 }
 
 makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio){
