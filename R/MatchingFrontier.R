@@ -2,7 +2,8 @@
 # Version 1 of MatchingFrontier #
 #################################
 
-.onAttach <- function(lib, pkg) {
+.onAttach <- function(lib, pkg){
+    dcf <- read.dcf(file.path(lib, pkg, "DESCRIPTION"))
     msg <- paste("Loading MatchingFrontier Version", dcf[, "Title"], sep = ' ') 
     packageStartupMessage(msg)
 }
