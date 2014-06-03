@@ -4,10 +4,10 @@
 
 .onAttach <- function(lib, pkg){
     dcf <- read.dcf(file.path(lib, pkg, "DESCRIPTION"))
-    version.msg <- paste('\n\n', 'Loading MatchingFrontier Version ', dcf[, 'Version'], sep = '')
-    cite.msg <- "To cite:\nKing, Gary, Christopher Lucas, and Richard Nielsen. 2014. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper."
+    version.msg <- paste('\n', 'Loading MatchingFrontier Version ', dcf[, 'Version'], sep = '')
+    cite.msg <- "King, Gary, Christopher Lucas, and Richard Nielsen. 2014. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper."
     
-    msg <- paste(version.msg, paste(strwrap(cite.msg), collapse = "\n"), sep = '\n\n')
+    msg <- paste(version.msg, paste('To cite:', paste(strwrap(cite.msg), collapse = "\n")), sep = '\n\n')
     packageStartupMessage(msg)
 }
 
