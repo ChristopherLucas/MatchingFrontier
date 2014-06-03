@@ -4,7 +4,7 @@
 
 .onAttach <- function(lib, pkg){
     dcf <- read.dcf(file.path(lib, pkg, "DESCRIPTION"))
-    msg <- paste("\n Loading MatchingFrontier Version", dcf[, "Version"], sep = ' ') 
+    msg <- paste("\nLoading MatchingFrontier Version", dcf[, "Version"], sep = ' ') 
     packageStartupMessage(msg)
 }
 
