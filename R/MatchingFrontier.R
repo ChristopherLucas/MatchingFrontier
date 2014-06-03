@@ -7,8 +7,8 @@
     version.msg <- paste('\n\n', 'Loading MatchingFrontier Version ', dcf[, 'Version'], sep = '')
     cite.msg <- "To cite:\nKing, Gary, Christopher Lucas, and Richard Nielsen. 2014. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper."
     
-    msg <- paste(version.msg, cite.msg, sep = '\n\n')
-    packageStartupMessage(paste(strwrap(msg), collapse = "\n"))
+    msg <- paste(version.msg, paste(strwrap(cite.msg), collapse = "\n"), sep = '\n\n')
+    packageStartupMessage(msg)
 }
 
 makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio){
