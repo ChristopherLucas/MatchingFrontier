@@ -7,7 +7,7 @@
     version.msg <- paste('\n', 'Loading MatchingFrontier Version ', dcf[, 'Version'], sep = '')
     cite.msg <- "To cite:\n\nKing, Gary, Christopher Lucas, and Richard Nielsen. 2014. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper."
     
-    msg <- version.msg, cite.msg, collapse = '\n')
+    msg <- paste(version.msg, cite.msg, collapse = '\n')
     packageStartupMessage(msg)
 }
 
