@@ -48,15 +48,15 @@ checkDat <- function(dataset, treatment, outcome, match.on){
                            paste(missing.cols, collapse = ', '),
                            '.', sep = ''
                            )
-        stop(error.msg, call. = FALSE)
+        customStop(error.msg, 'makeFrontier()')
     }
     
     # Make sure user isn't trying to match on the treatment or the outcome
     if(treatment %in% match.on){
-        stop("The treatment is in 'match.on'. Don't match on the treatment, it's bad.", call. = FALSE)
+        customStop("The treatment is in 'match.on'. Don't match on the treatment, it's bad.", 'makeFrontier()')
     }
     if(outcome %in% match.on){
-        stop("The outcome is in 'match.on'. Don't match on the outcome, 's bad.", call. = FALSE)
+        customStop("The outcome is in 'match.on'. Don't match on the outcome, 's bad.", 'makeFrontier()')
     }
     
     # Trim the dataset to the stuff we need
@@ -64,7 +64,7 @@ checkDat <- function(dataset, treatment, outcome, match.on){
 
     # Check for missing values
     if(sum(is.na(dataset)) != 0){
-        stop("Missing values in the data; remove them (or impute) and try again.", call. = FALSE)
+        customStop("Missing values in the data; remove them (or impute) and try again.", 'makeFrontier()')
     }
 
     return(dataset)
@@ -73,14 +73,19 @@ checkDat <- function(dataset, treatment, outcome, match.on){
 
 checkArgs <- function(QOI, metric, ratio){
     if(!(QOI %in% c('FSATT', 'SATT'))){
-        stop("QOI must be either 'FSATT' or 'SATT'.", call. = FALSE)
+        customStop("QOI must be either 'FSATT' or 'SATT'.", 'makeFrontier()')
     }
 
     if(!(metric %in% c('L1', 'Mahal'))){
-        stop("metric must be either 'L1' or 'Mahal'.", call. = FALSE)
+        customStop("metric must be either 'L1' or 'Mahal'.", 'makeFrontier()')
     }
 
     if(!(ratio %in% c('fixed', 'variable'))){
-        stop("ratio must be either 'fixed' or 'variable'.", call. = FALSE)
+        customStop("ratio must be either 'fixed' or 'variable'.", 'makeFrontier()')
     }
+}
+
+customStop <- function(msg, func){
+    custom.msg <- paste('In ', func, ': ', msg, sep = '')
+    stop(custom.msg)
 }
