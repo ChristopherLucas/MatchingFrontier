@@ -1,4 +1,3 @@
 importFrom("ggplot2",ggplot,aes,geom_line,xlab,ylab,ggtitle,geom_point,geom_ribbon,opts,theme,element_blank)
 importFrom("reshape2",melt)
-export("makeFrontier",
-       ".onAttach")
+export("makeFrontier")
