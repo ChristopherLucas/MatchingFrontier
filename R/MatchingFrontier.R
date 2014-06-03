@@ -86,6 +86,7 @@ checkArgs <- function(QOI, metric, ratio){
 }
 
 customStop <- function(msg, func){
-    custom.msg <- paste('In ', func, ': ', msg, sep = '')
+    custom.msg <- paste('In ', func, ', ', msg, sep = '')
+    print(custom.msg)
     stop(custom.msg, call. = FALSE)
 }
