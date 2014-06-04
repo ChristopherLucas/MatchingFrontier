@@ -38,9 +38,8 @@ makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, rat
     }
     else{
         msg <- paste('The', ratio, 'ratio', metric, 'theoretical frontier is not calculable.', sep = ' ')
-
-
         customStop(msg, 'makeFrontier()')
+    }
 }
 
 checkDat <- function(dataset, treatment, outcome, match.on){
