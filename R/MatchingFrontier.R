@@ -103,5 +103,5 @@ customStop <- function(msg, func){
 ######################
 
 MahalFrontierFSATT <- function(treatment, outcome, dataset){
-    control.dat <- dat[, dataset[,treatment] == 1
+    control.dat <- dat[, dataset[,treatment] == 0]
 }
