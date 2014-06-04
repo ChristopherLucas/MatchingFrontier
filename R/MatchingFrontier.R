@@ -44,19 +44,18 @@ checkDat <- function(dataset, treatment, outcome, match.on){
     # Check if all the variables are in the data
     if(sum(!(keep.columns %in% colnames(dataset))) > 0){ 
         missing.cols <- keep.columns[!(keep.columns %in% colnames(dataset))]
-        error.msg <- paste('The following columns are not in the data: ',
-                           paste(missing.cols, collapse = ', '),
-                           '.', sep = ''
+        error.msg <- paste('the following columns are not in the data: ',
+                           paste(missing.cols, collapse = '\n'), sep = '\n'
                            )
         customStop(error.msg, 'makeFrontier()')
     }
     
     # Make sure user isn't trying to match on the treatment or the outcome
     if(treatment %in% match.on){
-        customStop("The treatment is in 'match.on'. Don't match on the treatment, it's bad.", 'makeFrontier()')
+        customStop("the treatment is in 'match.on'. Don't match on the treatment, it's bad.", 'makeFrontier()')
     }
     if(outcome %in% match.on){
-        customStop("The outcome is in 'match.on'. Don't match on the outcome, it's bad.", 'makeFrontier()')
+        customStop("the outcome is in 'match.on'. Don't match on the outcome, it's bad.", 'makeFrontier()')
     }
     
     # Trim the dataset to the stuff we need
@@ -64,7 +63,7 @@ checkDat <- function(dataset, treatment, outcome, match.on){
 
     # Check for missing values
     if(sum(is.na(dataset)) != 0){
-        customStop("Missing values in the data; remove them (or impute) and try again.", 'makeFrontier()')
+        customStop("missing values in the data; remove them (or impute) and try again.", 'makeFrontier()')
     }
 
     return(dataset)
