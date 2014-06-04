@@ -1,6 +1,6 @@
-#################################
-# Version 1 of MatchingFrontier #
-#################################
+##################
+# USER FUNCTIONS #
+##################
 
 .onAttach <- function(lib, pkg){
     dcf <- read.dcf(file.path(lib, pkg, "DESCRIPTION"))
@@ -21,23 +21,23 @@
 
 makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio){
 
-    # Check data and trim to suff we need
-    dataset <- checkDat(dataset, treatment, outcome, match.on)
-
     # Check the frontier arguments 
     checkArgs(QOI, metric, ratio)
     
+    # Check data and trim to suff we need
+    dataset <- checkDat(dataset, treatment, outcome, match.on)
+    
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'variable'){
-        return(MahalFrontierFSATT(treatment=treatment, dataset, drop, mdist))
+        return(MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset))
     }
     if(QOI == 'SATT' & metric == 'L1' & ratio == 'fixed'){
-        return(L1FrontierSATT(treatment=treatment, dataset, drop))
+        return(L1FrontierSATT(treatment = treatment, outcome = outcome, dataset = dataset))
     }
     if(QOI == 'FSATT' & metric == 'L1' & ratio == 'variable'){
-        return(L1FrontierCEM(treatment=treatment, dataset, drop))
+        return(L1FrontierCEM(treatment = treatment, outcome = outcome, dataset = dataset))
     }
     else{
-        msg <- paste('the ', ratio, '-ratio ', metric, ' theoretical frontier is not calculable.', sep = '')
+        msg <- paste('the ', ratio, '-ratio ', metric, ' theoretical frontier is not presently calculable.', sep = '')
         customStop(msg, 'makeFrontier()')
     }
 }
@@ -70,6 +70,11 @@ checkDat <- function(dataset, treatment, outcome, match.on){
         customStop("missing values in the data; remove them (or impute) and try again.", 'makeFrontier()')
     }
 
+    # Check treatment
+    if(sum(!(dataset[,treatment] %in% c(0,1))) != 0){
+        customStop("the treatment must be either 0/1 (integers) or TRUE/FALSE (logical).", 'makeFrontier()')
+    }
+    
     return(dataset)
 
 }
@@ -91,4 +96,12 @@ checkArgs <- function(QOI, metric, ratio){
 customStop <- function(msg, func){
     custom.msg <- paste('In ', func, ', ', msg, sep = '')
     stop(custom.msg, call. = FALSE)
+}
+
+######################
+# FRONTIER FUNCTIONS #
+######################
+
+MahalFrontierFSATT <- function(treatment, outcome, dataset){
+    control.dat <- dat[, dataset[,treatment] == 1
 }
