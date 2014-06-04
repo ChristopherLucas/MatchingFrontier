@@ -112,6 +112,6 @@ MahalFrontierFSATT <- function(treatment, outcome, dataset){
 }
 
 
-makeFrontier(dataset = LL, treatment = 'treated', outcome = 're78', match.on = c('age', 'black',
-                                                                        'married', 'nodegree'),
-             QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+## makeFrontier(dataset = LL, treatment = 'treated', outcome = 're78', match.on = c('age', 'black',
+##                                                                         'married', 'nodegree'),
+##              QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
