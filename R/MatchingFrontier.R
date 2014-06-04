@@ -37,7 +37,7 @@ makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, rat
         return(L1FrontierCEM(treatment=treatment, dataset, drop))
     }
     else{
-        msg <- paste('The', ratio, 'ratio', metric, 'theoretical frontier is not calculable.', sep = ' ')
+        msg <- paste('the ', ratio, '-ratio ', metric, ' theoretical frontier is not calculable.', sep = '')
         customStop(msg, 'makeFrontier()')
     }
 }
