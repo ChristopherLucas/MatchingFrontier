@@ -102,6 +102,16 @@ customStop <- function(msg, func){
 # FRONTIER FUNCTIONS #
 ######################
 
+
+
 MahalFrontierFSATT <- function(treatment, outcome, dataset){
-    control.dat <- dat[, dataset[,treatment] == 0]
+    control.dat <- dataset[, dataset[,treatment] == 0]
+    treated.dat <- dataset[, dataset[,treatment] == 1]    
+    distance.mat <- as.matrix(dist(x = control.dat, y = treated.dat, method = 'Mahalanobis'))
+    
 }
+
+
+makeFrontier(dataset = LL, treatment = 'treated', outcome = 're78', match.on = c('age', 'black',
+                                                                        'married', 'nodegree'),
+             QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
