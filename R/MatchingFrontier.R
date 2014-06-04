@@ -10,7 +10,7 @@
     cite.msg <- "King, Gary, Christopher Lucas, and Richard Nielsen. 2014. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper."
     cite.msg <- paste(strwrap(cite.msg), collapse = "\n")
 
-    bib.msg <- "@article{King14,\n\ttitle={Optimizing Balance and Sample Size in Matching Methods for Causal Inference},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\tjournal={Working Paper},\n\tyear={2014}\n}"
+    bib.msg <- "@article{King14,\n\ttitle={Optimizing Balance and Sample Size in Matching Methods for Causal Inference},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\tjournal={Working Paper},\n\tyear={2014}\n}\n"
         
     cite.msg <- paste('## Citation ##\n', cite.msg, sep = '')
 
@@ -36,6 +36,11 @@ makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, rat
     if(QOI == 'FSATT' & metric == 'L1' & ratio == 'variable'){
         return(L1FrontierCEM(treatment=treatment, dataset, drop))
     }
+    else{
+        msg <- paste('The', ratio, 'ratio', metric, 'theoretical frontier is not calculable.', sep = ' ')
+
+
+        customStop(msg, 'makeFrontier()')
 }
 
 checkDat <- function(dataset, treatment, outcome, match.on){
