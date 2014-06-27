@@ -109,8 +109,6 @@ MahalFrontierFSATT <- function(treatment, outcome, dataset){
     return(distance.mat)    
 }
 
-test <- MahalFrontierFSATT(treatment = 'treated', outcome = 're78', dataset = LL)
-
 mahalDist <- function(Tnms, Cnms, inv.cov, dataset) {
     stopifnot(!is.null(dimnames(inv.cov)[[1]]), dim(inv.cov)[1] >
               1, all.equal(dimnames(inv.cov)[[1]], dimnames(inv.cov)[[2]]),
