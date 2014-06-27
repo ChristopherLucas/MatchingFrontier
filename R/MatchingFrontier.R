@@ -61,6 +61,11 @@ checkDat <- function(dataset, treatment, outcome, match.on){
     if(outcome %in% match.on){
         customStop("the outcome is in 'match.on'. Don't match on the outcome, it's bad.", 'makeFrontier()')
     }
+
+    # Check treatment
+    if(sum(!(dataset[,treatment] %in% c(0,1))) != 0){
+        customStop("the treatment must be either 0/1 (integers) or TRUE/FALSE (logical).", 'makeFrontier()')
+    }
     
     # Trim the dataset to the stuff we need
     dataset <- dataset[c(treatment, outcome, match.on)]
@@ -68,11 +73,6 @@ checkDat <- function(dataset, treatment, outcome, match.on){
     # Check for missing values
     if(sum(is.na(dataset)) != 0){
         customStop("missing values in the data; remove them (or impute) and try again.", 'makeFrontier()')
-    }
-
-    # Check treatment
-    if(sum(!(dataset[,treatment] %in% c(0,1))) != 0){
-        customStop("the treatment must be either 0/1 (integers) or TRUE/FALSE (logical).", 'makeFrontier()')
     }
     
     return(dataset)
@@ -102,16 +102,34 @@ customStop <- function(msg, func){
 # FRONTIER FUNCTIONS #
 ######################
 
-
-
 MahalFrontierFSATT <- function(treatment, outcome, dataset){
-    control.dat <- dataset[, dataset[,treatment] == 0]
-    treated.dat <- dataset[, dataset[,treatment] == 1]    
-    distance.mat <- as.matrix(dist(x = control.dat, y = treated.dat, method = 'Mahalanobis'))
-    
+
+    match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
+    distance.mat <- calculateMdist(dataset, treatment, match.on)
+    return(distance.mat)    
 }
 
+test <- MahalFrontierFSATT(treatment = 'treated', outcome = 're78', dataset = LL)
 
-## makeFrontier(dataset = LL, treatment = 'treated', outcome = 're78', match.on = c('age', 'black',
-##                                                                         'married', 'nodegree'),
-##              QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+mahalDist <- function(Tnms, Cnms, inv.cov, dataset) {
+    stopifnot(!is.null(dimnames(inv.cov)[[1]]), dim(inv.cov)[1] >
+              1, all.equal(dimnames(inv.cov)[[1]], dimnames(inv.cov)[[2]]),
+              all(dimnames(inv.cov)[[1]] %in% names(dataset)))
+    covars <- dimnames(inv.cov)[[1]]
+    xdiffs <- as.matrix(dataset[Tnms, covars])
+    xdiffs <- xdiffs - as.matrix(dataset[Cnms, covars])
+    rowSums((xdiffs %*% inv.cov) * xdiffs)
+}
+
+calculateMdist <- function(dataset, treatment, matchVars){
+    ## calculate the inverse covariance matrix
+    icv <- solve(cov(dataset[, matchVars]))
+    ## get the names of the treated
+    trtnms <- row.names(dataset)[as.logical(dataset[[treatment]])]
+    ## and the names of the control units
+    ctlnms <- row.names(dataset)[!as.logical(dataset[[treatment]])]
+    ## calculate the mahalanobis distances if not specified
+    mdist <- outer(trtnms, ctlnms, FUN = mahalDist, inv.cov = icv, data = dataset)
+    dimnames(mdist) <- list(trtnms, ctlnms)
+    return(mdist)
+}
