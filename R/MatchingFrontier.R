@@ -102,9 +102,11 @@ customStop <- function(msg, func){
 # FRONTIER FUNCTIONS #
 ######################
 
+
 MahalFrontierFSATT <- function(treatment, outcome, dataset){
 
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
+    print(match.on)
     distance.mat <- calculateMdist(dataset, treatment, match.on)
     return(distance.mat)    
 }
@@ -131,3 +133,9 @@ calculateMdist <- function(dataset, treatment, matchVars){
     dimnames(mdist) <- list(trtnms, ctlnms)
     return(mdist)
 }
+
+
+
+load('../data/lalonde.RData')
+lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
+ll.frontier.out <- MahalFrontierFSATT('treat','re78',lalonde)
