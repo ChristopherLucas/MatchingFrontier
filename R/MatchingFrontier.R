@@ -120,7 +120,7 @@ print.L1SATTClass <- function(x){
 L1FrontierSATT <- function(treatment, outcome, dataset){    
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
     binnings <- getBins(dataset, treatment, match.on)
-
+    
 
 
     out <- list(
@@ -132,54 +132,13 @@ L1FrontierSATT <- function(treatment, outcome, dataset){
         ratio = 'fixed',
         dataset = dataset
         )
-    class(out) <- 'MahalFSATTClass'
+    class(out) <- 'L1SATTClass'
     return(out)
 }
 
-calculateMdist <- function(dataset, treatment, matchVars){
-    cat("Calculating Mahalanobis distances...\n")
-    ## calculate the inverse covariance matrix
-    icv <- solve(cov(dataset[, matchVars]))
-    ## get the names of the treated
-    trtnms <- row.names(dataset)[as.logical(dataset[[treatment]])]
-    ## and the names of the control units
-    ctlnms <- row.names(dataset)[!as.logical(dataset[[treatment]])]
-    ## calculate the mahalanobis distances if not specified
-    mdist <- outer(trtnms, ctlnms, FUN = mahalDist, inv.cov = icv, data = dataset)
-    dimnames(mdist) <- list(trtnms, ctlnms)
-    return(mdist)
+getBins <- function(dataset, treatment, match.on){
+    
 }
-
-mahalDist <- function(Tnms, Cnms, inv.cov, dataset) {
-    stopifnot(!is.null(dimnames(inv.cov)[[1]]), dim(inv.cov)[1] >
-              1, all.equal(dimnames(inv.cov)[[1]], dimnames(inv.cov)[[2]]),
-              all(dimnames(inv.cov)[[1]] %in% names(dataset)))
-    covars <- dimnames(inv.cov)[[1]]
-    xdiffs <- as.matrix(dataset[Tnms, covars])
-    xdiffs <- xdiffs - as.matrix(dataset[Cnms, covars])
-    rowSums((xdiffs %*% inv.cov) * xdiffs)
-}
-
-distToFrontier <- function(distance.mat){
-    cat("Calculating theoretical frontier...\n")
-    row.mins <- apply(distance.mat, 1, function(x) min(x))
-    col.mins <- apply(distance.mat, 2, function(x) min(x))
-    minimums <- c(row.mins, col.mins)
-    sorted.minimums <- sort(unique(c(row.mins, col.mins)), decreasing = TRUE)
-    drop.order <- lapply(sorted.minimums, function(x) as.integer(names(minimums[minimums == x])))
-    return(drop.order)
-}
-
-
-
-load('../data/lalonde.RData')
-lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
-
-match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
-my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
-                            QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
-
-
 
 
 
@@ -212,7 +171,7 @@ my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 'r
 #################################
 
 print.MahalFSATTClass <- function(x){
-    msg <- paste('An imbalance frontier with', as.character(length(x$frontier)), 'points.\n', sep = ' ')
+    msg <- paste('An imbalance frontier with', as.character(length(x$frontier$Xs)), 'points.\n', sep = ' ')
     cat(msg)
 }
 
@@ -264,15 +223,21 @@ distToFrontier <- function(distance.mat){
     minimums <- c(row.mins, col.mins)
     sorted.minimums <- sort(unique(c(row.mins, col.mins)), decreasing = TRUE)
     drop.order <- lapply(sorted.minimums, function(x) as.integer(names(minimums[minimums == x])))
-    return(drop.order)
+    cat("Calculating information for plotting the frontier...\n")
+    weighted.vals <- unlist(lapply(drop.order, function(x) length(x))) * sorted.minimums
+    Xs <- rev(cumsum(rev(lapply(drop.order, function(x) length(x)))))
+    Ys <- rev(cumsum(rev(weighted.vals))) / Xs
+    return(list(drop.order = drop.order, Xs = Xs, Ys = Ys))
 }
 
+## load('../data/lalonde.RData')
+## lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
 
+## match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
 
-load('../data/lalonde.RData')
-lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
+## front <- MahalFrontierFSATT('treat', 're78', lalonde)
 
-match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
-my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
-                            QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+## my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
+##                             QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+
 
