@@ -56,10 +56,10 @@ checkDat <- function(dataset, treatment, outcome, match.on){
     
     # Make sure user isn't trying to match on the treatment or the outcome
     if(treatment %in% match.on){
-        customStop("the treatment is in 'match.on'. Don't match on the treatment, it's bad.", 'makeFrontier()')
+        customStop("the treatment is in 'match.on'. You shouldn't match on the treatment, that's bad.", 'makeFrontier()')
     }
     if(outcome %in% match.on){
-        customStop("the outcome is in 'match.on'. Don't match on the outcome, it's bad.", 'makeFrontier()')
+        customStop("the outcome is in 'match.on'. You shouldn't match on the treatment, that's bad.", 'makeFrontier()')
     }
 
     # Check treatment
@@ -75,6 +75,7 @@ checkDat <- function(dataset, treatment, outcome, match.on){
         customStop("missing values in the data; remove them (or impute) and try again.", 'makeFrontier()')
     }
     
+    rownames(dataset) <- 1:nrow(dataset)
     return(dataset)
 
 }
@@ -102,26 +103,41 @@ customStop <- function(msg, func){
 # FRONTIER FUNCTIONS #
 ######################
 
-
-MahalFrontierFSATT <- function(treatment, outcome, dataset){
-
-    match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
-    print(match.on)
-    distance.mat <- calculateMdist(dataset, treatment, match.on)
-    return(distance.mat)    
+#################################
+#################################
+#################################
+#################################
+# L1 SATT
+#################################
+#################################
+#################################
+#################################
+print.L1SATTClass <- function(x){
+    msg <- paste('An imbalance frontier with', as.character(length(x$frontier)), 'points.\n', sep = ' ')
+    cat(msg)
 }
 
-mahalDist <- function(Tnms, Cnms, inv.cov, dataset) {
-    stopifnot(!is.null(dimnames(inv.cov)[[1]]), dim(inv.cov)[1] >
-              1, all.equal(dimnames(inv.cov)[[1]], dimnames(inv.cov)[[2]]),
-              all(dimnames(inv.cov)[[1]] %in% names(dataset)))
-    covars <- dimnames(inv.cov)[[1]]
-    xdiffs <- as.matrix(dataset[Tnms, covars])
-    xdiffs <- xdiffs - as.matrix(dataset[Cnms, covars])
-    rowSums((xdiffs %*% inv.cov) * xdiffs)
+L1FrontierSATT <- function(treatment, outcome, dataset){    
+    match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
+    binnings <- getBins(dataset, treatment, match.on)
+
+
+
+    out <- list(
+        frontier = frontier,
+        treatment = treatment,
+        outcome = outcome,
+        QOI = 'SATT',
+        metric = 'L1',
+        ratio = 'fixed',
+        dataset = dataset
+        )
+    class(out) <- 'MahalFSATTClass'
+    return(out)
 }
 
 calculateMdist <- function(dataset, treatment, matchVars){
+    cat("Calculating Mahalanobis distances...\n")
     ## calculate the inverse covariance matrix
     icv <- solve(cov(dataset[, matchVars]))
     ## get the names of the treated
@@ -134,8 +150,129 @@ calculateMdist <- function(dataset, treatment, matchVars){
     return(mdist)
 }
 
+mahalDist <- function(Tnms, Cnms, inv.cov, dataset) {
+    stopifnot(!is.null(dimnames(inv.cov)[[1]]), dim(inv.cov)[1] >
+              1, all.equal(dimnames(inv.cov)[[1]], dimnames(inv.cov)[[2]]),
+              all(dimnames(inv.cov)[[1]] %in% names(dataset)))
+    covars <- dimnames(inv.cov)[[1]]
+    xdiffs <- as.matrix(dataset[Tnms, covars])
+    xdiffs <- xdiffs - as.matrix(dataset[Cnms, covars])
+    rowSums((xdiffs %*% inv.cov) * xdiffs)
+}
+
+distToFrontier <- function(distance.mat){
+    cat("Calculating theoretical frontier...\n")
+    row.mins <- apply(distance.mat, 1, function(x) min(x))
+    col.mins <- apply(distance.mat, 2, function(x) min(x))
+    minimums <- c(row.mins, col.mins)
+    sorted.minimums <- sort(unique(c(row.mins, col.mins)), decreasing = TRUE)
+    drop.order <- lapply(sorted.minimums, function(x) as.integer(names(minimums[minimums == x])))
+    return(drop.order)
+}
+
 
 
 load('../data/lalonde.RData')
 lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
-ll.frontier.out <- MahalFrontierFSATT('treat','re78',lalonde)
+
+match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
+my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
+                            QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################
+#################################
+#################################
+#################################
+# MAHAL FSATT
+#################################
+#################################
+#################################
+#################################
+
+print.MahalFSATTClass <- function(x){
+    msg <- paste('An imbalance frontier with', as.character(length(x$frontier)), 'points.\n', sep = ' ')
+    cat(msg)
+}
+
+MahalFrontierFSATT <- function(treatment, outcome, dataset){    
+    match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
+    distance.mat <- calculateMdist(dataset, treatment, match.on)
+    frontier <- distToFrontier(distance.mat)
+    out <- list(
+        frontier = frontier,
+        treatment = treatment,
+        outcome = outcome,
+        QOI = 'FSATT',
+        metric = 'Mahal',
+        ratio = 'variable',
+        dataset = dataset
+        )
+    class(out) <- 'MahalFSATTClass'
+    return(out)
+}
+
+calculateMdist <- function(dataset, treatment, matchVars){
+    cat("Calculating Mahalanobis distances...\n")
+    ## calculate the inverse covariance matrix
+    icv <- solve(cov(dataset[, matchVars]))
+    ## get the names of the treated
+    trtnms <- row.names(dataset)[as.logical(dataset[[treatment]])]
+    ## and the names of the control units
+    ctlnms <- row.names(dataset)[!as.logical(dataset[[treatment]])]
+    ## calculate the mahalanobis distances if not specified
+    mdist <- outer(trtnms, ctlnms, FUN = mahalDist, inv.cov = icv, data = dataset)
+    dimnames(mdist) <- list(trtnms, ctlnms)
+    return(mdist)
+}
+
+mahalDist <- function(Tnms, Cnms, inv.cov, dataset) {
+    stopifnot(!is.null(dimnames(inv.cov)[[1]]), dim(inv.cov)[1] >
+              1, all.equal(dimnames(inv.cov)[[1]], dimnames(inv.cov)[[2]]),
+              all(dimnames(inv.cov)[[1]] %in% names(dataset)))
+    covars <- dimnames(inv.cov)[[1]]
+    xdiffs <- as.matrix(dataset[Tnms, covars])
+    xdiffs <- xdiffs - as.matrix(dataset[Cnms, covars])
+    rowSums((xdiffs %*% inv.cov) * xdiffs)
+}
+
+distToFrontier <- function(distance.mat){
+    cat("Calculating theoretical frontier...\n")
+    row.mins <- apply(distance.mat, 1, function(x) min(x))
+    col.mins <- apply(distance.mat, 2, function(x) min(x))
+    minimums <- c(row.mins, col.mins)
+    sorted.minimums <- sort(unique(c(row.mins, col.mins)), decreasing = TRUE)
+    drop.order <- lapply(sorted.minimums, function(x) as.integer(names(minimums[minimums == x])))
+    return(drop.order)
+}
+
+
+
+load('../data/lalonde.RData')
+lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
+
+match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
+my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
+                            QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+
