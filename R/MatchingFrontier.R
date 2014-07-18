@@ -19,7 +19,7 @@
     packageStartupMessage(msg)
 }
 
-makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio){
+makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio, breaks = NULL){
 
     # Check the frontier arguments 
     checkArgs(QOI, metric, ratio)
@@ -31,7 +31,7 @@ makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, rat
         return(MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset))
     }
     if(QOI == 'SATT' & metric == 'L1' & ratio == 'fixed'){
-        return(L1FrontierSATT(treatment = treatment, outcome = outcome, dataset = dataset))
+        return(L1FrontierSATT(treatment = treatment, outcome = outcome, dataset = dataset, breaks = breaks))
     }
     if(QOI == 'FSATT' & metric == 'L1' & ratio == 'variable'){
         return(L1FrontierCEM(treatment = treatment, outcome = outcome, dataset = dataset))
@@ -112,15 +112,16 @@ customStop <- function(msg, func){
 #################################
 #################################
 #################################
+
 print.L1SATTClass <- function(x){
     msg <- paste('An imbalance frontier with', as.character(length(x$frontier)), 'points.\n', sep = ' ')
     cat(msg)
 }
 
-L1FrontierSATT <- function(treatment, outcome, dataset){    
+L1FrontierSATT <- function(treatment, outcome, dataset, breaks){    
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
-    binnings <- getBins(dataset, treatment, match.on)
-    
+    binnings <- getBins(dataset, treatment, match.on, breaks)
+    return(binnings)}
 
 
     out <- list(
@@ -136,10 +137,82 @@ L1FrontierSATT <- function(treatment, outcome, dataset){
     return(out)
 }
 
-getBins <- function(dataset, treatment, match.on){
-    
+getBins <- function(dataset, treatment, match.on, breaks){
+    gs <- getStrata(treatment, dataset, drop, breaks=breaks)
+    strata <- gs$strata
+    mycut <- gs$mycut
+    names(strata) <- dataset[,which(colnames(dataset) == treatment)]
+    unique.strata <- unique(strata)
+    strataholder <- list()
+    for(i in 1:length(unique.strata)){
+        strataholder[[i]] <- which(strata==unique.strata[i])
+    }
+    return(strataholder)
 }
 
+getStrata <- function(treatment, dataset, match.on, breaks){
+    
+    # Remove dropped covs
+    dataset <- dataset[,match.on]
+  
+    ## stuff borrowed from cem.main to add user defined breaks
+    vnames <- colnames(dataset)
+    nv <- dim(dataset)[2]
+    mycut <- vector(nv, mode="list")
+    names(mycut) <- vnames
+    for (i in 1:nv) {	
+        tmp <- reduceVar(dataset[[i]], breaks[[vnames[i]]])
+        dataset[[i]] <- tmp$x
+        mycut[[vnames[i]]] <- tmp$breaks
+    }
+    
+    # Calculate strata
+    strata <- stratify(dataset)
+    return(list(strata=strata, mycut=mycut))
+}
+
+reduceVar <- function(x, breaks=NULL){
+    if(is.numeric(x) | is.integer(x)){
+        if(is.null(breaks)){
+            breaks <- "sturges"
+        }
+        if(is.character(breaks)){
+            breaks <- match.arg(tolower(breaks), c("sturges",
+                                                   "fd", "scott", "ss"))
+            breaks <- switch(breaks, sturges = nclass.Sturges(x),
+                             fd = nclass.FD(x),
+                             scott = nclass.scott(x),
+                             ss = nclass.ss(x),
+                             stop("unknown 'breaks' algorithm"))
+        }
+        if(length(breaks) > 0){
+            if(length(breaks)==1){
+                rg <- range(x, na.rm=TRUE)
+                breaks <- seq(rg[1],rg[2], length = breaks)
+            }
+            breaks <- unique(breaks)
+            if(length(breaks)>1)
+                x <- cut(x, breaks=breaks, include.lowest = TRUE, labels = FALSE)
+            else
+                x <- as.numeric(x)
+        }
+    } else {
+        x <- as.numeric(x)
+    }
+    return(list(x=x, breaks=breaks))
+}
+
+
+
+# Takes a dataframe and returns a vector of length nrow(data), where
+# element i is strata for observation i.
+stratify <- function (dataset){
+    xx <- apply(dataset, 1, function(x) paste(x, collapse = "\r"))
+    tab <- table(xx)
+    st <- names(tab)
+    strata <- match(xx,st)
+    return(strata)
+}
 
 
 
@@ -230,14 +303,16 @@ distToFrontier <- function(distance.mat){
     return(list(drop.order = drop.order, Xs = Xs, Ys = Ys))
 }
 
-## load('../data/lalonde.RData')
-## lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
+load('../data/lalonde.RData')
+lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
 
-## match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
+match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
 
-## front <- MahalFrontierFSATT('treat', 're78', lalonde)
+system.time(
+front <- MahalFrontierFSATT('treat', 're78', lalonde)
+)
 
-## my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
-##                             QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
+                            QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
 
 
