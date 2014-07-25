@@ -121,11 +121,10 @@ print.L1SATTClass <- function(x){
 L1FrontierSATT <- function(treatment, outcome, dataset, breaks){    
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
     binnings <- getBins(dataset, treatment, match.on, breaks)
-    return(binnings)}
-
-
+    frontier <- binsToFrontier(binnings$strataholder)
     out <- list(
         frontier = frontier,
+        cuts = binnings$cuts,
         treatment = treatment,
         outcome = outcome,
         QOI = 'SATT',
@@ -137,24 +136,29 @@ L1FrontierSATT <- function(treatment, outcome, dataset, breaks){
     return(out)
 }
 
+binsToFrontier <- function(strataholder){
+    lapply(strataholder, )
+    return(list(drop.order = drop.order, Xs = Xs, Ys = Ys))
+}
+    
 getBins <- function(dataset, treatment, match.on, breaks){
-    gs <- getStrata(treatment, dataset, drop, breaks=breaks)
+    gs <- getStrata(treatment, dataset, match.on, breaks=breaks)
     strata <- gs$strata
     mycut <- gs$mycut
     names(strata) <- dataset[,which(colnames(dataset) == treatment)]
     unique.strata <- unique(strata)
     strataholder <- list()
     for(i in 1:length(unique.strata)){
-        strataholder[[i]] <- which(strata==unique.strata[i])
+        strataholder[[i]] <- which(strata==unique.strata[i]) 
     }
     return(strataholder)
 }
 
 getStrata <- function(treatment, dataset, match.on, breaks){
-    
     # Remove dropped covs
+    print(match.on)
     dataset <- dataset[,match.on]
-  
+
     ## stuff borrowed from cem.main to add user defined breaks
     vnames <- colnames(dataset)
     nv <- dim(dataset)[2]
@@ -173,7 +177,7 @@ getStrata <- function(treatment, dataset, match.on, breaks){
 
 reduceVar <- function(x, breaks=NULL){
     if(is.numeric(x) | is.integer(x)){
-        if(is.null(breaks)){
+        if(is.null(breaks)){x
             breaks <- "sturges"
         }
         if(is.character(breaks)){
@@ -213,6 +217,16 @@ stratify <- function (dataset){
     strata <- match(xx,st)
     return(strata)
 }
+
+
+
+load('../data/lalonde.RData')
+lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
+
+match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
+
+my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
+                            QOI = 'SATT', metric = 'L1', ratio = 'fixed')
 
 
 
