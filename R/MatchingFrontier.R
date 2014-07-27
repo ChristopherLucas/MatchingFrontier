@@ -121,7 +121,7 @@ print.L1SATTClass <- function(x){
 L1FrontierSATT <- function(treatment, outcome, dataset, breaks){    
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
     binnings <- getBins(dataset, treatment, match.on, breaks)
-    frontier <- binsToFrontier(binnings$strataholder)
+    frontier <- binsToFrontier(binnings)
     out <- list(
         frontier = frontier,
         cuts = binnings$cuts,
@@ -137,7 +137,37 @@ L1FrontierSATT <- function(treatment, outcome, dataset, breaks){
 }
 
 binsToFrontier <- function(strataholder){
-    lapply(strataholder, )
+    Ys <- c()
+    drop.order <- c()
+    num.treated <- sum(unlist(lapply(strataholder, function(x) sum(names(x) == 1))))
+    num.control <- sum(unlist(lapply(strataholder, function(x) sum(names(x) == 0))))
+
+    Ys <- c(Ys, .5 * sum(unlist(lapply(strataholder, function(x)
+                                       abs(sum(names(x) == 0) / num.control - sum(names(x) == 1) / num.treated)))))
+
+    while(1){
+        diffs <- unlist(lapply(strataholder, function(x)
+                               sum(names(x) == 0) / num.control - sum(names(x) == 1) / num.treated))
+        drop.from <- which(diffs == max(diffs))[1]
+        dropped.element.ind <- which(names(strataholder[[drop.from]]) == 0)[1]
+        
+        drop <- strataholder[drop.from][dropped.element.ind]
+
+        strataholder[[drop.from]] <- strataholder[[drop.from]][-dropped.element.ind]
+        new.L1 <- .5 * sum(unlist(lapply(strataholder, function(x)
+                                         abs(sum(names(x) == 0) / num.control - sum(names(x) == 1) / num.treated)
+                                         )
+                                  )
+                           )
+        
+        if(new.L1 > tail(Ys, 1)){
+            break
+        }
+        Ys <- c(Ys, new.L1)
+        drop.order <- c(drop.order, drop)
+        num.control <- num.control - 1        
+    }
+    Xs <- 1:length(Ys)
     return(list(drop.order = drop.order, Xs = Xs, Ys = Ys))
 }
     
@@ -205,8 +235,6 @@ reduceVar <- function(x, breaks=NULL){
     }
     return(list(x=x, breaks=breaks))
 }
-
-
 
 # Takes a dataframe and returns a vector of length nrow(data), where
 # element i is strata for observation i.
