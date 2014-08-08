@@ -20,7 +20,8 @@
   King, Lucas, and Nielsen (n.d.) for optimizing both balance and 
   sample size. \pkg{MatchingFrontier} supports the computation
   of frontiers for both continuous and discrete metrics, and
-  also provides functions for visualizing the frontier.}
+  also provides functions for visualizing the frontier. Additional
+  functionality to be added in the coming months.}
 
 \Keywords{\proglang{R}, matching, frontier, Mahalanobis, L1}
 \Plainkeywords{R, matching, frontier, Mahalanobis, L1} %% without formatting
@@ -63,7 +64,128 @@
 %% include your article here, just as usual
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
 
-\section[About Java]{About \proglang{Java}}
-%% Note: If there is markup in \(sub)section, then it has to be escape as above.
+\section[Introduction]{About \pkg{MatchingFrontier}}
+
+\section[Usage]{Installation}
+
+You can install the latest stable version of \pkg{MatchingFrontier}
+with \code{install.packages(`MatchingFrontier', repos =
+  `http://cran.us.r-project.org')}.  If you'd prefer to use the
+development version, you may do so by installing the package from the
+public-facing Github repository. We recommend using the \pkg{devtools}
+package to do so, as follows.
+
+\begin{Code}
+  library(devtools)
+  install_github('MatchingFrontier')
+\end{Code} 
+
+\section[Usage]{Using \pkg{MatchingFrontier}}
+
+At present, the \pkg{MatchingFrontier} namespace includes just a few
+functions (feedback on additional functionality is greatly
+appreciated).  Those functions support the computation of the
+frontier, the estimation of effects along it, plotting functions, and
+support for exporting optimal data sets on the balance - sample size
+frontier. We will illustrate the use of \pkg{MatchingFrontier} 
+with the commonly used Lalonde data, which is included in the package.
+
+The user must first create the frontier. To do so, use the \code{makeFrontier()}
+function, as follows. 
+
+\begin{CodeChunk}
+\begin{CodeInput}
+  data('lalonde')
+  match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
+  my.frontier <- makeFrontier(dataset = lalonde, 
+                              treatment = 'treat', 
+                              outcome = 're78', 
+                              match.on = match.on)
+\end{CodeInput}
+\end{CodeChunk}
+
+\code{match.on} is a character vector holding the variable names that
+the user wishes to match on. In the Lalonde data, \code{re78} is the
+outcome and \code{treat} is the treatment, so we exclude those
+variable names from the character vector.
+
+By default, \code{makeFrontier()} calculates the frontier for the
+Average Mahalanobis Distance metric, primarily because this is the
+fastest at present. The quantity of interest is the \emph{feasible
+  sample average treatment effect on the treated} or FSATT. Weights
+are later computed in the estimation stage. The full function is as
+follows.  For complete information, see the help file in the package
+with \code{?makeFrontier}.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+  makeFrontier(dataset, 
+              treatment, 
+              outcome, 
+              match.on, QOI = 'FSATT',
+              metric = 'Mahal', 
+              ratio = 'variable', 
+              breaks = NULL)
+\end{CodeInput}
+\end{CodeChunk}
+
+Continuing with the Lalonde example, next we'll estimate the effects
+along the frontier with the \code{estimateEffects()} function, which
+takes the output from \code{makeFrontier} to estimate the effect of
+the treatment along all values of the frontier. This can be quite slow
+for the obvious reason that if there exist thousands or tens of
+thousands of points on the frontier, the code can be no faster than
+the time it takes to estimate a single effect times the total number
+of points (which quickly becomes quite long). Very soon, we will 
+support estimating a random sample of points along the frontier to 
+reduce computation time.
+
+With the Lalonde example, the code is as follows. 
+
+\begin{CodeChunk}
+\begin{CodeInput}
+my.estimates <- estimateEffects(my.frontier, 
+                             're78 ~ treat')
+\end{CodeInput}
+\end{CodeChunk}
+
+The first argument is the output from \code{makeFrontier} and the
+second is the formula passed to the \code{lm()}
+function. \code{estimateEffects} stores the estimates and the 95\%
+confidence interval for each point it estimates.
+
+Next, we can plot the frontier and the estimates with the plotting
+functions, as follows. 
+
+\begin{CodeChunk}
+\begin{CodeInput}
+# Plot frontier
+plotFrontier(my.frontier)
+
+# Plot estimates
+plotEstimates(my.frontier, my.estimates)
+\end{CodeInput}
+\end{CodeChunk}
+
+Both plotting functions use the ellipses feature to pass arguments to
+the base \code{plot} function, so any argument that one can use with
+\code{plot()} can also be used with \code{plotFrontier()} and
+\code{plotEstimates()}, such as `main' for the title, `xlab' and
+`ylab' for the axis labels, etc. 
+
+Lastly, users may wish to export a data set on the frontier for 
+additional analysis. To do so, use the \code{generateDataset()} 
+function, as follows. 
+
+\begin{CodeChunk}
+\begin{CodeInput}
+n = 1000 # Identify the point from which to select the data
+generateDataset(my.frontier, N = n)
+\end{CodeInput}
+\end{CodeChunk}
+
+If the estimand is variable ratio, as it is by default, the
+exported data set will include the appropriate weights necessary
+for estimating the FSATT.
 
 \end{document}
