@@ -19,7 +19,8 @@
     packageStartupMessage(msg)
 }
 
-makeFrontier <- function(dataset, treatment, outcome, match.on, QOI, metric, ratio, breaks = NULL){
+makeFrontier <- function(dataset, treatment, outcome, match.on, QOI = 'FSATT', metric = 'Mahal',
+                         ratio = 'variable', breaks = NULL){
 
     # Check the frontier arguments 
     checkArgs(QOI, metric, ratio)
@@ -114,7 +115,7 @@ customStop <- function(msg, func){
 #################################
 
 print.L1SATTClass <- function(x){
-    msg <- paste('An imbalance frontier with', as.character(length(x$frontier)), 'points.\n', sep = ' ')
+    msg <- paste('An imbalance frontier with', as.character(length(x$frontier$Xs)), 'points.\n', sep = ' ')
     cat(msg)
 }
 
@@ -138,7 +139,7 @@ L1FrontierSATT <- function(treatment, outcome, dataset, breaks){
 
 binsToFrontier <- function(strataholder){
     Ys <- c()
-    drop.order <- c()
+    drop.order <- list()
     num.treated <- sum(unlist(lapply(strataholder, function(x) sum(names(x) == 1))))
     num.control <- sum(unlist(lapply(strataholder, function(x) sum(names(x) == 0))))
 
@@ -164,7 +165,7 @@ binsToFrontier <- function(strataholder){
             break
         }
         Ys <- c(Ys, new.L1)
-        drop.order <- c(drop.order, drop)
+        drop.order[[length(drop.order) + 1]] <- drop
         num.control <- num.control - 1        
     }
     Xs <- 1:length(Ys)
@@ -186,7 +187,6 @@ getBins <- function(dataset, treatment, match.on, breaks){
 
 getStrata <- function(treatment, dataset, match.on, breaks){
     # Remove dropped covs
-    print(match.on)
     dataset <- dataset[,match.on]
 
     ## stuff borrowed from cem.main to add user defined breaks
@@ -246,8 +246,6 @@ stratify <- function (dataset){
     return(strata)
 }
 
-
-
 load('../data/lalonde.RData')
 lalonde <- lalonde[, !(colnames(lalonde) %in% c('data_id'))]
 
@@ -255,25 +253,6 @@ match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
 
 my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
                             QOI = 'SATT', metric = 'L1', ratio = 'fixed')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #################################
 #################################
@@ -294,6 +273,8 @@ MahalFrontierFSATT <- function(treatment, outcome, dataset){
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
     distance.mat <- calculateMdist(dataset, treatment, match.on)
     frontier <- distToFrontier(distance.mat)
+    dataset$matched.to <- frontier$matched.to
+    frontier$matched.to <- NULL
     out <- list(
         frontier = frontier,
         treatment = treatment,
@@ -335,6 +316,9 @@ distToFrontier <- function(distance.mat){
     cat("Calculating theoretical frontier...\n")
     row.mins <- apply(distance.mat, 1, function(x) min(x))
     col.mins <- apply(distance.mat, 2, function(x) min(x))
+    row.mins.inds <- apply(distance.mat, 1, function(x) as.integer(names(which.min(x))))
+    col.mins.inds <- apply(distance.mat, 2, function(x) as.integer(names(which.min(x))))
+    matched.to <- c(row.mins.inds, col.mins.inds)[order(as.integer(names(c(row.mins.inds, col.mins.inds))))]
     minimums <- c(row.mins, col.mins)
     sorted.minimums <- sort(unique(c(row.mins, col.mins)), decreasing = TRUE)
     drop.order <- lapply(sorted.minimums, function(x) as.integer(names(minimums[minimums == x])))
@@ -342,7 +326,7 @@ distToFrontier <- function(distance.mat){
     weighted.vals <- unlist(lapply(drop.order, function(x) length(x))) * sorted.minimums
     Xs <- rev(cumsum(rev(lapply(drop.order, function(x) length(x)))))
     Ys <- rev(cumsum(rev(weighted.vals))) / Xs
-    return(list(drop.order = drop.order, Xs = Xs, Ys = Ys))
+    return(list(drop.order = drop.order, Xs = Xs, Ys = Ys, matched.to = matched.to))
 }
 
 load('../data/lalonde.RData')
@@ -356,5 +340,99 @@ front <- MahalFrontierFSATT('treat', 're78', lalonde)
 
 my.frontier <- makeFrontier(dataset = lalonde, treatment = 'treat', outcome = 're78', match.on = match.on,
                             QOI = 'FSATT', metric = 'Mahal', ratio = 'variable')
+
+#################################
+#################################
+#################################
+#################################
+# ESTIMATION
+#################################
+#################################
+#################################
+#################################
+
+library(igraph)
+
+
+getStrata <- function(col1, col2){
+    col1 <- as.integer(col1)
+    col2 <- as.integer(col2)
+    dat <- data.frame(col1, col2)
+    
+    rownames(dat) <- 1:nrow(dat)
+    g <- graph.data.frame(dat)
+    links <- data.frame(col1=V(g)$name,group=clusters(g)$membership)
+    return(merge(dat,links,by="col1",all.x=TRUE,sort=FALSE)$group)
+}
+
+makeWeights <- function(dataset, treatment){
+    strata <- getStrata(rownames(dataset), dataset$matched.to)
+    w <- rep(NA, nrow(dataset))
+    w[dataset[[treatment]] == 1] <- 1
+    for(s in unique(strata)){
+        num.treated <- sum(strata == s & dataset[[treatment]] == 1)
+        num.control <- sum(strata == s & dataset[[treatment]] == 0)
+        w[strata == s & dataset[[treatment]] == 0] <- num.treated / num.control
+    }
+    return(w)
+}
+
+estimateEffects <- function(frontier, formula){
+    coefs <- vector(mode="list", length=length(frontier$frontier$drop.order))
+    CIs <- vector(mode="list", length=length(frontier$frontier$drop.order))
+
+    treatment <- frontier$treatment
+
+    pb <- txtProgressBar(min = 0, max = length(frontier$frontier$drop.order), style = 3)
+    for(i in 1:length(frontier$frontier$drop.order)){        
+        this.dat.inds <- unlist(frontier$frontier$drop.order[i:length(frontier$frontier$drop.order)])
+        dataset <- frontier$dataset[this.dat.inds,]
+
+        if(frontier$ratio == 'variable'){
+            w <- makeWeights(dataset, treatment)
+        } else {
+            w = NULL
+        }
+
+        dataset$w <- w
+        results <- lm(formula, dataset, weights = w)
+        coefs[i] <- coef(results)[frontier$treatment]
+        CIs[[i]] <- confint(results)[frontier$treatment,]
+        setTxtProgressBar(pb, i)
+    }
+    close(pb)
+    return(list(coefs = coefs, CIs = CIs))
+}
+
+system.time(
+    test <- estimateEffects(my.frontier, 're78 ~ treat')
+)
+
+#################################
+#################################
+#################################
+#################################
+# PLOTTING
+#################################
+#################################
+#################################
+#################################
+
+plotFrontier <- function(frontier.object, ...){
+    
+}
+
+plotEstimates <- function(estimates.object, ...){
+    
+}
+
+
+
+
+
+
+
+
+
 
 
