@@ -404,10 +404,6 @@ estimateEffects <- function(frontier, formula){
     return(list(coefs = coefs, CIs = CIs))
 }
 
-system.time(
-    test <- estimateEffects(my.frontier, 're78 ~ treat')
-)
-
 #################################
 #################################
 #################################
@@ -418,14 +414,43 @@ system.time(
 #################################
 #################################
 
-plotFrontier <- function(frontier.object, ...){
-    
+plotFrontier <- function(frontier.object,
+                         xlab = 'Number of Observations Pruned',
+                         ylab = 'AMD',
+                         main = 'Frontier Plot',
+                         ...){
+
+    plot(nrow(frontier.object$dataset) - frontier.object$frontier$Xs, frontier.object$frontier$Ys,
+         xlab = xlab,
+         ylab = ylab,
+         ...)
 }
 
-plotEstimates <- function(estimates.object, ...){
-    
+plotEstimates <- function(frontier.object,
+                          estimates.object,
+                          xlab = 'Number of Observations Pruned',
+                          ylab = 'Estimate',
+                          main = 'Effects Plot',
+                          ...){
+    X <- nrow(frontier.object$dataset) - frontier.object$frontier$Xs
+    plot(X, estimates.object$coefs, xlab = xlab, ylab = ylab, main = main, ...)
+    arrows(X, unlist(lapply(estimates.object$CIs, function(x) x[1])),
+           X, unlist(lapply(estimates.object$CIs, function(x) x[2])),
+           col = 'gray75')
+    points(X, estimates.object$coefs, ...)
 }
 
+generateDataset <- function(frontier.object, number.to.prune){
+    X <- nrow(frontier.object$dataset) - frontier.object$frontier$Xs
+    ind <- which(abs(X - number.to.prune) == min(abs(X - number.to.prune)))
+    this.dat.inds <- unlist(frontier.object$frontier$drop.order[ind:length(frontier.object$frontier$drop.order)])
+    dataset <- frontier.object$dataset[this.dat.inds,]
+
+    # Add weights
+    w <- makeWeights(dataset, frontier.object$treatment)
+    dataset$weights <- w
+    return(dataset)
+}
 
 
 

@@ -96,7 +96,7 @@ function, as follows.
 \begin{CodeChunk}
 \begin{CodeInput}
   data('lalonde')
-  match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
+  match.on <- colnames(lalonde)[!(colnames(lalonde) %in% c('re78', 'treat'))]
   my.frontier <- makeFrontier(dataset = lalonde, 
                               treatment = 'treat', 
                               outcome = 're78', 
