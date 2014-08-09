@@ -1,10 +1,14 @@
 Package: MatchingFrontier
-Version: 1.0
-Date: 2014-05-28
+Version: 0.1
+Date: 2014-08-08
 Type: Package
 Title: R Package for Calculating the Balance-Sample Size Frontier
-Author: King, Lucas, and Nielsen
-Maintainer: Christopher Lucas <lucas.christopherd@gmail.com>
+Author: Gary King, Christopher Lucas, and Richard Nielsen
+Maintainer: Christopher Lucas <clucas@fas.harvard.edu>
 Description: Implements methods from King, Lucas, and Nielsen
+Imports: igraph
 LazyData: true
-License: GPL (>= 2)
+License: GPL-3
+
+
+

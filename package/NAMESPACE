@@ -1,0 +1,6 @@
+importFrom("igraph",graph.data.frame,V,clusters)
+export("plotFrontier",
+       "generateDataset",
+       "makeFrontier",
+       "plotEstimates",
+       "estimateEffects")
