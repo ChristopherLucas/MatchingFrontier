@@ -142,7 +142,7 @@ of bias and variance. Rather, they improve one dimension of the
 optimization and leave the second to the user. Such an approach is
 time consuming and rarely yields the optimal solution.
 
-\citet{iacusND} proposes a solution to this joint optimization, which
+\citet{kingND} proposes a solution to this joint optimization, which
 is implemented in \pkg{MatchingFrontier}. Discrete and continuous
 metrics are defined and algorithms are provided for both continuous
 and discrete metrics, thus rendering the method agnostic to the
@@ -521,22 +521,107 @@ plotEstimates(mahal.frontier,
 
 \subsection{Inspect a Single Point on the Frontier}
 
-Lastly, users may wish to export a data set on the frontier for 
-additional analysis. To do so, use the \code{generateDataset()} 
-function, as follows. 
+Lastly, users may wish to export a data set on the frontier for
+additional analysis. To do so, users are likely to rely on
+\code{parallelPlot()} and \code{generateDataset()}. Parellel plot
+allows the user to visually inspect multiple dimensions of a data set
+and requires only the output of \code{makeFrontier()}. For
+illustration, we will create a parallel plot that displays 
+the treated and control values on 'age', 're74', 're75', and
+'black' for the point on the frontier where 13,000 observations
+have been dropped. We will color treated units \textcolor{gray}{gray}
+and control units \textcolor{blue}{blue}.
+
+\begin{minipage}{0.45\textwidth}
+\begin{CodeChunk}
+\begin{CodeInput}
+# Make parallel plot
+parallelPlot(mahal.frontier, 
+             number.to.prune = 13000, 
+             variables = c('age', 
+                           're74', 
+                           're75', 
+                           'black'),  
+             treated.col = 'grey', 
+             control.col = 'blue'
+             )             
+\end{CodeInput}
+\end{CodeChunk}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{figure}[H]
+\includegraphics{mahal_parplot.pdf}
+\caption{\label{fig:mahal_parplot} Parallel plot for pruning 13,000 observations.}
+\end{figure}
+\end{minipage} \hfill
+\newline
+\newline
+\vspace
+
+Figure \ref{fig:mahal_parplot} makes obvious the fact that there are many more control than 
+treated units and that the sample still contains a large number of controls that are
+not good matches for treated units, at least on these dimensions. Though this implies that
+perhaps we might move even further down the frontier, for illustration, let's now export
+this data set, using \code{generateDataset()} as follows.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-n = 1000 # Identify the point from which to select the data
-matched.data <- generateDataset(my.frontier, N = n)
+n = 13000 # Identify the point from which to select the data
+matched.data <- generateDataset(mahal.frontier, N = n)
 \end{CodeInput}
 \end{CodeChunk}
 
-If the estimand is variable ratio, as it is by default, the
-exported data set will include the appropriate weights necessary
-for estimating the FSATT.
+If the estimand is variable ratio, as it is by default, the exported
+data set will include the appropriate weights necessary for estimating
+the FSATT. We can now run a few simple regressions, controlling for
+the variables we matched on, using the matched data.
+
+
+\begin{table}[H] \centering 
+  \caption{} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lcc} 
+\\[-1.8ex]\hline \\[-1.8ex] 
+\\[-1.8ex] & \multicolumn{2}{c}{re78} \\ 
+\\[-1.8ex] & (1) & (2)\\ 
+\hline \\[-1.8ex] 
+ treat & 1,173.718$^{***}$ & 1,529.322$^{***}$ \\ 
+  & (239.164) & (233.791) \\ 
+  age &  & $-$9.336 \\ 
+  &  & (16.027) \\ 
+  education &  & 470.740$^{***}$ \\ 
+  &  & (81.595) \\ 
+  black &  & $-$952.468$^{**}$ \\ 
+  &  & (393.756) \\ 
+  hispanic &  & $-$153.839 \\ 
+  &  & (606.819) \\ 
+  married &  & 365.978 \\ 
+  &  & (324.197) \\ 
+  nodegree &  & 233.513 \\ 
+  &  & (365.707) \\ 
+  re74 &  & $-$0.030 \\ 
+  &  & (0.041) \\ 
+  re75 &  & 0.506$^{***}$ \\ 
+  &  & (0.055) \\ 
+  Constant & 5,045.315$^{***}$ & 41.577 \\ 
+  & (169.115) & (1,237.995) \\ 
+ N & 3,437 & 3,437 \\ 
+R$^{2}$ & 0.007 & 0.069 \\ 
+Adjusted R$^{2}$ & 0.007 & 0.067 \\ 
+Residual Std. Error & 2,268.912 (df = 3435) & 2,199.123 (df = 3427) \\ 
+F Statistic & 24.084$^{***}$ (df = 1; 3435) & 28.346$^{***}$ (df = 9; 3427) \\ 
+\hline \\[-1.8ex] 
+\multicolumn{3}{l}{$^{*}$p $<$ .1; $^{**}$p $<$ .05; $^{***}$p $<$ .01} \\ 
+\end{tabular} 
+\end{table} 
+
 
 \section[Conclusion]{Conclusion}
+
+We demonstrated how to use the new \proglang{R} software package
+\pkg{MatchingFrontier} for causal inference with observational data. With the
+LaLonde data, users were shown how to compute the balance-sample size frontier,
+calculate estimates along it, and visualize and inspect the results. 
 
 \bibliography{bibliography}
 \end{document}
