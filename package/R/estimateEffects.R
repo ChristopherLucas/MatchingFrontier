@@ -12,12 +12,12 @@ function(frontier.object, formula){
 
         if(frontier.object$ratio == 'variable'){
             w <- makeWeights(dataset, treatment)
+            dataset$w <- w            
+            results <- lm(formula, dataset, weights = w)
         } else {
-            w = NULL
+            results <- lm(formula, dataset)
         }
 
-        dataset$w <- w
-        results <- lm(formula, dataset, weights = w)
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]
         setTxtProgressBar(pb, i)

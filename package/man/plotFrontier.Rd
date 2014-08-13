@@ -5,7 +5,7 @@
   Plot the balance - sample size frontier.
 }
 \description{
-    \code{plotEstimates()} plots the balance - sample size frontier. 
+    \code{plotFrontier()} plots the balance - sample size frontier. 
 }
 \usage{
 plotFrontier(frontier.object, xlab = "Number of Observations Pruned", ylab = "AMD", main = "Frontier Plot", ...)

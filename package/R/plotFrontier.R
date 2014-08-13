@@ -1,7 +1,7 @@
 plotFrontier <-
 function(frontier.object,
                          xlab = 'Number of Observations Pruned',
-                         ylab = 'AMD',
+                         ylab = 'AMI',
                          main = 'Frontier Plot',
                          ...){
 
