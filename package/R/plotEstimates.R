@@ -5,7 +5,7 @@ function(frontier.object,
                           ylab = 'Estimate',
                           main = 'Effects Plot',
                           ...){
-    X <- nrow(frontier.object$dataset) - frontier.object$frontier$Xs
+    X <- frontier.object$frontier$Xs
     plot(X, estimates.object$coefs, xlab = xlab, ylab = ylab, main = main, ...)
     arrows(X, unlist(lapply(estimates.object$CIs, function(x) x[1])),
            X, unlist(lapply(estimates.object$CIs, function(x) x[2])),
