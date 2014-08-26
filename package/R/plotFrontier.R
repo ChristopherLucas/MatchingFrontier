@@ -1,11 +1,11 @@
 plotFrontier <-
 function(frontier.object,
                          xlab = 'Number of Observations Pruned',
-                         ylab = 'AMI',
+                         ylab = frontier.object$metric,
                          main = 'Frontier Plot',
                          ...){
 
-    plot(nrow(frontier.object$dataset) - frontier.object$frontier$Xs, frontier.object$frontier$Ys,
+    plot(frontier.object$frontier$Xs, frontier.object$frontier$Ys,
          xlab = xlab,
          ylab = ylab,
          ...)
