@@ -8,5 +8,6 @@ function(frontier.object,
     plot(frontier.object$frontier$Xs, frontier.object$frontier$Ys,
          xlab = xlab,
          ylab = ylab,
+         main = main,
          ...)
 }
