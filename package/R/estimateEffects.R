@@ -1,12 +1,16 @@
 estimateEffects <-
-function(frontier.object, formula){
-    coefs <- vector(mode="list", length=length(frontier.object$frontier$drop.order))
-    CIs <- vector(mode="list", length=length(frontier.object$frontier$drop.order))
+function(frontier.object, formula, prop.estimated = 1){
+
+    point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
+                              round(length(frontier.object$frontier$Xs) * prop.estimated)))
+    
+    coefs <- vector(mode="list", length = length(point.inds))
+    CIs <- vector(mode="list", length= length(point.inds))
 
     treatment <- frontier.object$treatment
 
-    pb <- txtProgressBar(min = 0, max = length(frontier.object$frontier$drop.order), style = 3)
-    for(i in 1:length(frontier.object$frontier$drop.order)){        
+    pb <- txtProgressBar(min = 0, max = length(point.inds), style = 3)
+    for(i in point.inds){        
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[i:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
 
@@ -23,5 +27,5 @@ function(frontier.object, formula){
         setTxtProgressBar(pb, i)
     }
     close(pb)
-    return(list(coefs = coefs, CIs = CIs))
+    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs))
 }
