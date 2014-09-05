@@ -9,7 +9,9 @@ function(dataset, treatment, outcome, match.on, QOI = 'FSATT', metric = 'Mahal',
     dataset <- checkDat(dataset, treatment, outcome, match.on)
     
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'variable'){
-        return(MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio))
+        frontier <- MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio)
+        class(frontier) <- "MahalFSATTClass"
+        return(frontier)        
     }
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'fixed'){
         frontier <- MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio)
