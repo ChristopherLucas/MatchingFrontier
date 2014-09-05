@@ -14,6 +14,5 @@ function(treatment, outcome, dataset, ratio){
         ratio = ratio,
         dataset = dataset
         )
-    class(out) <- 'MahalFSATTClass'
     return(out)
 }

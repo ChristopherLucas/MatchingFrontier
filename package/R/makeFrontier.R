@@ -12,10 +12,14 @@ function(dataset, treatment, outcome, match.on, QOI = 'FSATT', metric = 'Mahal',
         return(MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio))
     }
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'fixed'){
-        return(MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio))
+        frontier <- MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio)
+        class(frontier) <- "MahalFSATTClass"
+        return(frontier)
     }
     if(QOI == 'SATT' & metric == 'L1' & ratio == 'fixed'){
-        return(L1FrontierSATT(treatment = treatment, outcome = outcome, dataset = dataset, breaks = breaks))
+        frontier <- L1FrontierSATT(treatment = treatment, outcome = outcome, dataset = dataset, breaks = breaks)
+        class(frontier) <- "L1SATTClass"
+        return(frontier)
     }
     if(QOI == 'FSATT' & metric == 'L1' & ratio == 'variable'){
         print("See the 'cem' package")

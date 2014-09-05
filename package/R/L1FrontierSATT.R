@@ -15,6 +15,5 @@ function(treatment, outcome, dataset, breaks){
         ratio = 'fixed',
         dataset = dataset
         )
-    class(out) <- 'L1SATTClass'
     return(out)
 }
