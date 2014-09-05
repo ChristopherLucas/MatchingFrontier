@@ -5,5 +5,5 @@ export("plotFrontier",
        "plotEstimates",
        "estimateEffects",
        'print.MahalFSATTClass',
-       'print.L1SATTClass.R'
+       'print.L1SATTClass'
        )
