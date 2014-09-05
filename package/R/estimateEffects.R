@@ -25,6 +25,7 @@ function(frontier.object, formula, prop.estimated = 1){
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]
         setTxtProgressBar(pb, i)
+        print(i)
     }
     close(pb)
     return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs))
