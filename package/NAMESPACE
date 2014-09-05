@@ -3,5 +3,7 @@ export("plotFrontier",
        "generateDataset",
        "makeFrontier",
        "plotEstimates",
-       "estimateEffects"
+       "estimateEffects",
+       'print.MahalFSATTClass',
+       'print.L1SATTClass.R'
        )
