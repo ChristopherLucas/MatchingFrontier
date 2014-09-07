@@ -9,9 +9,9 @@ function(frontier.object, formula, prop.estimated = 1){
 
     treatment <- frontier.object$treatment
 
-    pb <- txtProgressBar(min = 0, max = length(point.inds), style = 3)
-    for(i in point.inds){        
-        this.dat.inds <- unlist(frontier.object$frontier$drop.order[i:length(frontier.object$frontier$drop.order)])
+    pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
+    for(i in 1:length(point.inds)){        
+        this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
 
         if(frontier.object$ratio == 'variable'){
@@ -25,8 +25,8 @@ function(frontier.object, formula, prop.estimated = 1){
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]
         setTxtProgressBar(pb, i)
-        print(i)
     }
     close(pb)
     return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs))
 }
+
