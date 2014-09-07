@@ -30,7 +30,7 @@ function(frontier.object, formula, prop.estimated = 1, PoSI = TRUE){
             print(CIs[[i]])
             new.error <- (abs(coefs[[i]] - CIs[[i]][1])) * multiplier
             print(new.error)
-            CIs[[i]] <- c(coefs[[i]] - new.error, coefs[i] + new.error)
+            CIs[[i]] <- c(coefs[[i]] - new.error, coefs[[i]] + new.error)
             print(CIs[[i]])
         }
         setTxtProgressBar(pb, i)
