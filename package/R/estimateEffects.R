@@ -26,6 +26,7 @@ function(frontier.object, formula, prop.estimated = 1, PoSI = TRUE){
         CIs[[i]] <- confint(results)[frontier.object$treatment,]
         if(PoSI == TRUE){
             multiplier <- PoSIMultiplier(frontier.object$dataset[, frontier.object$match.on])
+            print(multiplier)
             new.error <- (abs(coefs[[i]] - CIs[[i]][1])) * multiplier
             CIs[[i]] <- c(coefs[[i]] - new.error, coefs[[i]] + new.error)
         }
