@@ -1,5 +1,5 @@
 L1FrontierSATT <-
-function(treatment, outcome, dataset, breaks){
+function(treatment, outcome, dataset, breaks, match.on){
     cat("Calculating L1 binnings...\n")
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
     binnings <- getBins(dataset, treatment, match.on, breaks)
@@ -13,7 +13,8 @@ function(treatment, outcome, dataset, breaks){
         QOI = 'SATT',
         metric = 'L1',
         ratio = 'fixed',
-        dataset = dataset
+        dataset = dataset,
+        match.on = match.on
         )
     return(out)
 }

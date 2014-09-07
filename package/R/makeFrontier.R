@@ -9,17 +9,17 @@ function(dataset, treatment, outcome, match.on, QOI = 'FSATT', metric = 'Mahal',
     dataset <- checkDat(dataset, treatment, outcome, match.on)
     
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'variable'){
-        frontier <- MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio)
+        frontier <- MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio, match.on = match.on)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'fixed'){
-        frontier <- MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio)
+        frontier <- MahalFrontierFSATT(treatment = treatment, outcome = outcome, dataset = dataset, ratio = ratio, match.on = match.on)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)
     }
     if(QOI == 'SATT' & metric == 'L1' & ratio == 'fixed'){
-        frontier <- L1FrontierSATT(treatment = treatment, outcome = outcome, dataset = dataset, breaks = breaks)
+        frontier <- L1FrontierSATT(treatment = treatment, outcome = outcome, dataset = dataset, breaks = breaks, match.on = match.on)
         class(frontier) <- "L1SATTClass"
         return(frontier)
     }

@@ -1,5 +1,5 @@
 MahalFrontierFSATT <-
-function(treatment, outcome, dataset, ratio){    
+function(treatment, outcome, dataset, ratio, match.on){    
     match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
     distance.mat <- calculateMdist(dataset, treatment, match.on)
     frontier <- distToFrontier(distance.mat)
@@ -12,7 +12,8 @@ function(treatment, outcome, dataset, ratio){
         QOI = 'FSATT',
         metric = 'Mahal',
         ratio = ratio,
-        dataset = dataset
+        dataset = dataset,
+        match.on = match.on
         )
     return(out)
 }
