@@ -1,6 +1,6 @@
 # Computations of inner products of random unit vectors (U)
 # with 'linear contrasts', that is, adjusted predictor vectors (L):
-PoSI <- function(X, Nsim=1000, bundleSZ=100000, modelsSZ=1:ncol(X),
+PoSI <- function(X, Nsim=10000, bundleSZ=100000, modelsSZ=1:ncol(X),
                  eps=1E-8, center=T, scale=T, verbose=1)
 {
     if(verbose>=1) { proc.time.init <- proc.time() }
