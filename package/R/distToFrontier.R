@@ -1,5 +1,6 @@
 distToFrontier <-
 function(distance.mat){
+    N <- sum(dim(distance.mat))
     cat("Calculating theoretical frontier...\n")
     row.mins <- apply(distance.mat, 1, function(x) min(x))
     col.mins <- apply(distance.mat, 2, function(x) min(x))
@@ -11,9 +12,7 @@ function(distance.mat){
     drop.order <- lapply(sorted.minimums, function(x) as.integer(names(minimums[minimums == x])))
     cat("Calculating information for plotting the frontier...\n")
     weighted.vals <- unlist(lapply(drop.order, function(x) length(x))) * sorted.minimums
-    return(list(drop.order = drop.order, weighted.vals = weighted.vals))
-    Xs <- cumsum(rev(lapply(drop.order, function(x) length(x))))    
-    Ys <- cumsum(rev(weighted.vals)) / Xs
-    
+    Xs <- cumsum(lapply(drop.order, function(x) length(x)))
+    Ys <- rev(cumsum(rev(weighted.vals))) / (N - Xs)    
     return(list(drop.order = drop.order, Xs = Xs, Ys = Ys, matched.to = matched.to))
 }
