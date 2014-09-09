@@ -1,7 +1,7 @@
 generateDataset <-
-function(frontier.object, number.to.prune){
+function(frontier.object, N){
     X <- nrow(frontier.object$dataset) - frontier.object$frontier$Xs
-    ind <- which(abs(X - number.to.prune) == min(abs(X - number.to.prune)))
+    ind <- which(abs(X - N) == min(abs(X - N)))
     this.dat.inds <- unlist(frontier.object$frontier$drop.order[ind:length(frontier.object$frontier$drop.order)])
     dataset <- frontier.object$dataset[this.dat.inds,]
 
