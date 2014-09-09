@@ -11,7 +11,9 @@ function(distance.mat){
     drop.order <- lapply(sorted.minimums, function(x) as.integer(names(minimums[minimums == x])))
     cat("Calculating information for plotting the frontier...\n")
     weighted.vals <- unlist(lapply(drop.order, function(x) length(x))) * sorted.minimums
-    Xs <- cumsum(rev(lapply(drop.order, function(x) length(x))))
+    return(list(drop.order = drop.order, weighted.vals = weighted.vals))
+    Xs <- cumsum(rev(lapply(drop.order, function(x) length(x))))    
     Ys <- cumsum(rev(weighted.vals)) / Xs
+    
     return(list(drop.order = drop.order, Xs = Xs, Ys = Ys, matched.to = matched.to))
 }
