@@ -3,10 +3,10 @@
 
     version.msg <- paste('\n', 'Loading MatchingFrontier Version ', dcf[, 'Version'], sep = '')
 
-    cite.msg <- "King, Gary, Christopher Lucas, and Richard Nielsen. \"Optimizing Balance and Sample Size in Matching Methods for Causal Inference.\" Working paper (n.d.)."
+    cite.msg <- paste("King, Gary, Christopher Lucas, and Richard Nielsen. \"MatchingFrontier: R Package for Computing the Matching Frontier.\" R package version ", dcf[, 'Version'], '.', sep = '')
     cite.msg <- paste(strwrap(cite.msg), collapse = "\n")
 
-    bib.msg <- "@article{King14,\n\ttitle={Optimizing Balance and Sample Size in Matching Methods for Causal Inference},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\tjournal={Working Paper},\n\tyear={n.d.}\n}\n"
+    bib.msg <- "@article{King14,\n\ttitle={MatchingFrontier: R Package for Computing the Matching Frontier},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\year={2014},\n\tnote={R package version 0.3.12}\n}\n"
         
     cite.msg <- paste('## Citation ##\n', cite.msg, sep = '')
 

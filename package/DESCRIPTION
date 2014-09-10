@@ -1,8 +1,8 @@
 Package: MatchingFrontier
-Version: 0.3.12
+Version: 0.3.13
 Date: 2014-09-05
 Type: Package
-Title: R Package for Calculating the Balance-Sample Size Frontier
+Title: R Package for Computing the Matching Frontier
 Author: Gary King, Christopher Lucas, and Richard Nielsen
 Maintainer: Christopher Lucas <clucas@fas.harvard.edu>
 Description: Implements methods from King, Lucas, and Nielsen
