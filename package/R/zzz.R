@@ -6,7 +6,7 @@
     cite.msg <- paste("King, Gary, Christopher Lucas, and Richard Nielsen. \"MatchingFrontier: R Package for Computing the Matching Frontier.\" R package version ", dcf[, 'Version'], '.', sep = '')
     cite.msg <- paste(strwrap(cite.msg), collapse = "\n")
 
-    bib.msg <- "@article{King14,\n\ttitle={MatchingFrontier: R Package for Computing the Matching Frontier},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\year={2014},\n\tnote={R package version 0.3.12}\n}\n"
+    bib.msg <- "@article{King14,\n\ttitle={MatchingFrontier: R Package for Computing the Matching Frontier},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\tyear={2014},\n\tnote={R package version 0.3.12}\n}\n"
         
     cite.msg <- paste('## Citation ##\n', cite.msg, sep = '')
 
