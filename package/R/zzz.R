@@ -8,7 +8,7 @@
 
     version.ref <- paste('R package version', dcf[, 'Version'])
     
-    bib.msg <- paste("@article{King14,\n\ttitle={MatchingFrontier: R Package for Computing the Matching Frontier},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\tyear={2014},\n\tnote={", version.ref, "}\n}\n")
+    bib.msg <- paste("@article{King14,\n\ttitle={MatchingFrontier: R Package for Computing the Matching Frontier},\n\tauthor={King, Gary and Lucas, Christopher and Nielsen, Richard},\n\tyear={2014},\n\tnote={", version.ref, "}\n}\n", sep = '')
         
     cite.msg <- paste('## Citation ##\n', cite.msg, sep = '')
 
