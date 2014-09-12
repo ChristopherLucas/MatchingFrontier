@@ -5,7 +5,7 @@ export("plotFrontier",
        "makeFrontier",
        "plotEstimates",
        "parallelPlot",
-       "estimateEffects",
-       "print.L1SATTClass",
-       "print.MahalFSATTClass"
+       "estimateEffects"
        )
+s3method("print","L1SATTClass")
+s3method("print","MahalFSATTClass")
