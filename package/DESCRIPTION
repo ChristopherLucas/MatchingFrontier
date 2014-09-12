@@ -6,7 +6,7 @@ Title: R Package for Computing the Matching Frontier
 Author: Gary King, Christopher Lucas, and Richard Nielsen
 Maintainer: Christopher Lucas <clucas@fas.harvard.edu>
 Description: Implements methods from King, Lucas, and Nielsen
-Imports: igraph
+Imports: igraph, MASS
 LazyData: true
 License: GPL-3
 

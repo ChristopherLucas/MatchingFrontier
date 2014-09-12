@@ -8,7 +8,7 @@
     \code{plotFrontier()} plots the balance - sample size frontier. 
 }
 \usage{
-plotFrontier(frontier.object, xlab = "Number of Observations Pruned", ylab = "AMD", main = "Frontier Plot", ...)
+plotFrontier(frontier.object, xlab = "Number of Observations Pruned", ylab = frontier.object$metric, main = "Frontier Plot", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,7 +19,7 @@ plotFrontier(frontier.object, xlab = "Number of Observations Pruned", ylab = "AM
     The label for the x-axis. Defaults to 'Number of Observations Pruned'.
   }
   \item{ylab}{
-    The label for the y-axis. Defaults to Estimate'.
+    The label for the y-axis. Defaults to the selected metric.
   }
   \item{main}{
     The main label. Defaults to 'Effects Plot'.

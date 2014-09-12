@@ -9,7 +9,7 @@
     treatment along the entire frontier. 
 }
 \usage{
-estimateEffects(frontier.object, formula)
+estimateEffects(frontier.object, formula, prop.estimated = 1)
 }
 \arguments{
   \item{frontier.object}{
@@ -19,6 +19,13 @@ estimateEffects(frontier.object, formula)
     An object of class formula (or one that can be
     coerced to that class). This will be passed to
     \code{lm()}.
+  }
+  \item{prop.estimated}{
+    The proportion of points on the frontier to estimate.
+    By default, 100\% of the points on the frontier are
+    estimated. To estimate less than 100\% of the points,
+    pass the proportion to be estimated to prop.estimated
+    (for example, .6 to estimate 60\% of the points).
   }
 }
 \examples{

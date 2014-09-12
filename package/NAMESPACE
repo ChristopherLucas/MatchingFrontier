@@ -1,10 +1,9 @@
 importFrom("igraph",graph.data.frame,V,clusters)
+importFrom("MASS",parcoord)
 export("plotFrontier",
        "generateDataset",
        "makeFrontier",
        "plotEstimates",
        "parallelPlot",
-       "estimateEffects",
-       'print.MahalFSATTClass',
-       'print.L1SATTClass'
+       "estimateEffects"
        )

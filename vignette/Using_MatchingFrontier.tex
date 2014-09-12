@@ -364,6 +364,8 @@ L1.frontier <- makeFrontier(dataset = lalonde,
                             QOI = 'SATT',
                             metric = 'L1',
                             ratio = 'fixed')
+Calculating L1 binnings...
+Calculating L1 frontier... This may take a few minutes...
 > L1.frontier
 An imbalance frontier with 16170 points.
 \end{CodeInput}
@@ -448,7 +450,6 @@ plotFrontier(mahal.frontier)
 \end{minipage} \hfill
 \newline
 \newline
-\vspace
 
 However, Figure~\ref{fig:mahal_frontier_plain} is not especially
 attractive.  The font is too small and the dots constituting the
@@ -482,7 +483,6 @@ plotFrontier(mahal.frontier,
 \end{minipage} \hfill
 \newline
 \newline
-\vspace
 
 \subsection{Plotting Estimates}
 
@@ -496,8 +496,7 @@ results.
 \begin{CodeChunk}
 \begin{CodeInput}
 # Plot estimates
-plotEstimates(mahal.frontier, 
-              mahal.estimates,
+plotEstimates(mahal.estimates, 
               cex.lab = 1.4,
               cex.axis = 1.4,
               type = 'l',
@@ -505,6 +504,7 @@ plotEstimates(mahal.frontier,
                  grid(NULL,
                       NULL,
                       lwd = 2,
+                      )
               )
 \end{CodeInput}
 \end{CodeChunk}
@@ -517,7 +517,6 @@ plotEstimates(mahal.frontier,
 \end{minipage} \hfill
 \newline
 \newline
-\vspace
 
 \subsection{Inspect a Single Point on the Frontier}
 
@@ -556,7 +555,6 @@ parallelPlot(mahal.frontier,
 \end{minipage} \hfill
 \newline
 \newline
-\vspace
 
 Figure \ref{fig:mahal_parplot} makes obvious the fact that there are many more control than 
 treated units and that the sample still contains a large number of controls that are
