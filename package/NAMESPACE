@@ -1,11 +1,11 @@
-importFrom("igraph",graph.data.frame,V,clusters)
-importFrom("MASS",parcoord)
-export("plotFrontier",
-       "generateDataset",
-       "makeFrontier",
-       "plotEstimates",
-       "parallelPlot",
-       "estimateEffects"
+importFrom(igraph,graph.data.frame,V,clusters)
+importFrom(MASS,parcoord)
+export(plotFrontier,
+       generateDataset,
+       makeFrontier,
+       plotEstimates,
+       parallelPlot,
+       estimateEffects
        )
-s3method("print","L1SATTClass")
-s3method("print","MahalFSATTClass")
+S3method(print,L1SATTClass)
+S3method(print,MahalFSATTClass)
