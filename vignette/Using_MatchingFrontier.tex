@@ -535,15 +535,15 @@ and control units \textcolor{blue}{blue}.
 \begin{CodeChunk}
 \begin{CodeInput}
 # Make parallel plot
-parallelPlot(mahal.frontier, 
-             number.to.prune = 13000, 
-             variables = c('age', 
-                           're74', 
-                           're75', 
-                           'black'),  
-             treated.col = 'grey', 
+parallelPlot(mahal.frontier,
+             N = 13000,
+             variables = c('age',
+             're74',
+             're75',
+             'black'),
+             treated.col = 'grey',
              control.col = 'blue'
-             )             
+             )
 \end{CodeInput}
 \end{CodeChunk}
 \end{minipage}
@@ -564,7 +564,7 @@ this data set, using \code{generateDataset()} as follows.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-n = 13000 # Identify the point from which to select the data
+n <- 13000 # Identify the point from which to select the data
 matched.data <- generateDataset(mahal.frontier, N = n)
 \end{CodeInput}
 \end{CodeChunk}
