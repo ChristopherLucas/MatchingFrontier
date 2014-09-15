@@ -9,7 +9,7 @@
     on the frontier. Wraps \code{parcoord()} from \pkg{MASS}.
 }
 \usage{
-parallelPlot(frontier.object, number.to.prune, variables, treated.col = 'grey', control.col = 'black')
+parallelPlot(frontier.object, N, variables, treated.col = 'grey', control.col = 'black')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

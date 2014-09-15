@@ -536,7 +536,7 @@ and control units \textcolor{blue}{blue}.
 \begin{CodeInput}
 # Make parallel plot
 parallelPlot(mahal.frontier,
-             N = 13000,
+             N = 3500,
              variables = c('age',
              're74',
              're75',
@@ -564,7 +564,7 @@ this data set, using \code{generateDataset()} as follows.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-n <- 13000 # Identify the point from which to select the data
+n <- 3500 # Identify the point from which to select the data
 matched.data <- generateDataset(mahal.frontier, N = n)
 \end{CodeInput}
 \end{CodeChunk}
@@ -574,46 +574,59 @@ data set will include the appropriate weights necessary for estimating
 the FSATT. We can now run a few simple regressions, controlling for
 the variables we matched on, using the matched data.
 
-
-\begin{table}[H] \centering 
+\begin{table}[!h] \centering 
   \caption{} 
   \label{} 
 \begin{tabular}{@{\extracolsep{5pt}}lcc} 
-\\[-1.8ex]\hline \\[-1.8ex] 
-\\[-1.8ex] & \multicolumn{2}{c}{re78} \\ 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{2}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-3} 
+\\[-1.8ex] & re78 & re78 \textasciitilde treat + \\ 
 \\[-1.8ex] & (1) & (2)\\ 
 \hline \\[-1.8ex] 
- treat & 1,173.718$^{***}$ & 1,529.322$^{***}$ \\ 
-  & (239.164) & (233.791) \\ 
-  age &  & $-$9.336 \\ 
-  &  & (16.027) \\ 
-  education &  & 470.740$^{***}$ \\ 
-  &  & (81.595) \\ 
-  black &  & $-$952.468$^{**}$ \\ 
-  &  & (393.756) \\ 
-  hispanic &  & $-$153.839 \\ 
-  &  & (606.819) \\ 
-  married &  & 365.978 \\ 
-  &  & (324.197) \\ 
-  nodegree &  & 233.513 \\ 
-  &  & (365.707) \\ 
-  re74 &  & $-$0.030 \\ 
-  &  & (0.041) \\ 
-  re75 &  & 0.506$^{***}$ \\ 
-  &  & (0.055) \\ 
-  Constant & 5,045.315$^{***}$ & 41.577 \\ 
-  & (169.115) & (1,237.995) \\ 
- N & 3,437 & 3,437 \\ 
-R$^{2}$ & 0.007 & 0.069 \\ 
-Adjusted R$^{2}$ & 0.007 & 0.067 \\ 
-Residual Std. Error & 2,268.912 (df = 3435) & 2,199.123 (df = 3427) \\ 
-F Statistic & 24.084$^{***}$ (df = 1; 3435) & 28.346$^{***}$ (df = 9; 3427) \\ 
+ treat & $-$1,001.174$^{*}$ & 1,297.218$^{**}$ \\ 
+  & (537.992) & (519.482) \\ 
+  & & \\ 
+ age &  & $-$123.699$^{***}$ \\ 
+  &  & (18.953) \\ 
+  & & \\ 
+ education &  & 448.347$^{***}$ \\ 
+  &  & (106.199) \\ 
+  & & \\ 
+ black &  & $-$942.548$^{***}$ \\ 
+  &  & (291.577) \\ 
+  & & \\ 
+ hispanic &  & 235.015 \\ 
+  &  & (538.746) \\ 
+  & & \\ 
+ married &  & $-$758.393$^{**}$ \\ 
+  &  & (314.376) \\ 
+  & & \\ 
+ nodegree &  & 1,099.816$^{***}$ \\ 
+  &  & (381.455) \\ 
+  & & \\ 
+ re74 &  & 0.225$^{***}$ \\ 
+  &  & (0.043) \\ 
+  & & \\ 
+ re75 &  & 0.536$^{***}$ \\ 
+  &  & (0.044) \\ 
+  & & \\ 
+ Constant & 7,220.206$^{***}$ & 2,540.624$^{*}$ \\ 
+  & (121.988) & (1,443.937) \\ 
+  & & \\ 
 \hline \\[-1.8ex] 
-\multicolumn{3}{l}{$^{*}$p $<$ .1; $^{**}$p $<$ .05; $^{***}$p $<$ .01} \\ 
+Observations & 3,501 & 3,501 \\ 
+R$^{2}$ & 0.001 & 0.191 \\ 
+Adjusted R$^{2}$ & 0.001 & 0.188 \\ 
+Residual Std. Error & 7,029.927 (df = 3499) & 6,335.203 (df = 3491) \\ 
+F Statistic & 3.463$^{*}$ (df = 1; 3499) & 91.305$^{***}$ (df = 9; 3491) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
 \end{tabular} 
 \end{table} 
-
-
+\pagebreak
 \section[Conclusion]{Conclusion}
 
 We demonstrated how to use the new \proglang{R} software package
