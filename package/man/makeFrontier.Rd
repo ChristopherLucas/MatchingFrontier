@@ -45,6 +45,12 @@ makeFrontier(dataset, treatment, outcome, match.on, QOI = "FSATT",
 }
 \examples{
 data(lalonde)
+
+# set seed for sampling a small data set for this example
+set.seed(02139) 
+lalonde <- lalonde[c(which(lalonde$treat == 1),
+                     sample(which(lalonde$treat == 0), 500)), ]
+
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
