@@ -23,13 +23,12 @@ generateDataset(frontier.object, N)
   }
 }
 \examples{
-\dontrun{
 data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
-my.dataset <- generateDataset(my.frontier, 1000)
-}
+n <- 3500 # Identify the point from which to select the data
+matched.data <- generateDataset(mahal.frontier, N = n)
 }

@@ -38,7 +38,6 @@ parallelPlot(frontier.object, N, variables, treated.col = 'grey', control.col = 
   Venables, William N., and Brian D. Ripley. Modern applied statistics with S. Springer, 2002.
 }
 \examples{
-\dontrun{
 data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 mahal.frontier <- makeFrontier(dataset = lalonde,
@@ -46,7 +45,7 @@ mahal.frontier <- makeFrontier(dataset = lalonde,
                             outcome = 're78',
                             match.on = match.on)
 parallelPlot(mahal.frontier,
-             N = 13000,
+             N = 3500,
              variables = c('age',
              're74',
              're75',
@@ -54,5 +53,4 @@ parallelPlot(mahal.frontier,
              treated.col = 'grey',
              control.col = 'blue'
              )
-}
 }

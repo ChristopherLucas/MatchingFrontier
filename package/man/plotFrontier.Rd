@@ -8,7 +8,8 @@
     \code{plotFrontier()} plots the balance - sample size frontier. 
 }
 \usage{
-plotFrontier(frontier.object, xlab = "Number of Observations Pruned", ylab = frontier.object$metric, main = "Frontier Plot", ...)
+plotFrontier(frontier.object, xlab = "Number of Observations Pruned",
+             ylab = frontier.object$metric, main = "Frontier Plot", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,7 +35,6 @@ plotFrontier(frontier.object, xlab = "Number of Observations Pruned", ylab = fro
   like color, axis range, etc. 
 }
 \examples{
-\dontrun{
 data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
@@ -43,5 +43,4 @@ my.frontier <- makeFrontier(dataset = lalonde,
                             match.on = match.on)
 my.estimates <- estimateEffects(my.frontier, 're78 ~ treat')
 plotFrontier(my.frontier)
-}
 }

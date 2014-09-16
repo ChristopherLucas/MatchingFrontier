@@ -8,7 +8,8 @@
   \code{plotEstimates()} plots estimates along the frontier. 
 }
 \usage{
-plotEstimates(estimates.object, xlab = "Number of Observations Pruned", ylab = "Estimate", main = "Effects Plot", ...)
+plotEstimates(estimates.object, xlab = "Number of Observations Pruned",
+              ylab = "Estimate", main = "Effects Plot", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,14 +35,13 @@ plotEstimates(estimates.object, xlab = "Number of Observations Pruned", ylab = "
   like color, axis range, etc. 
 }
 \examples{
-\dontrun{
 data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
-my.estimates <- estimateEffects(my.frontier, 're78 ~ treat')
+my.estimates <- estimateEffects(my.frontier, 're78 ~ treat',
+                                prop.estimated = .05)
 plotEstimates(my.frontier, my.estimates)
-}
 }

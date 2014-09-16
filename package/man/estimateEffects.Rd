@@ -29,13 +29,12 @@ estimateEffects(frontier.object, formula, prop.estimated = 1)
   }
 }
 \examples{
-\dontrun{
 data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
-my.estimates <- estimateEffects(my.frontier, 're78 ~ treat')
-}
+my.estimates <- estimateEffects(my.frontier, 're78 ~ treat',
+                                prop.estimated = .05)
 }

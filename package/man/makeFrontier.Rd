@@ -10,7 +10,8 @@
     effects along the balance - sample size frontier.
 }
 \usage{
-makeFrontier(dataset, treatment, outcome, match.on, QOI = "FSATT", metric = "Mahal", ratio = "variable", breaks = NULL)
+makeFrontier(dataset, treatment, outcome, match.on, QOI = "FSATT",
+             metric = "Mahal", ratio = "variable", breaks = NULL)
 }
 \arguments{
   \item{dataset}{
@@ -43,12 +44,10 @@ makeFrontier(dataset, treatment, outcome, match.on, QOI = "FSATT", metric = "Mah
   }
 }
 \examples{
-\dontrun{
 data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
-}
 }
