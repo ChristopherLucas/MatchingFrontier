@@ -41,6 +41,5 @@ my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
-my.estimates <- estimateEffects(my.frontier, 're78 ~ treat')
 plotFrontier(my.frontier)
 }
