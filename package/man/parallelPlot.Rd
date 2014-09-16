@@ -51,7 +51,7 @@ mahal.frontier <- makeFrontier(dataset = lalonde,
                             outcome = 're78',
                             match.on = match.on)
 parallelPlot(mahal.frontier,
-             N = 200,
+             N = 300,
              variables = c('age',
              're74',
              're75',

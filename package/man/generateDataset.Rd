@@ -35,6 +35,6 @@ my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
-n <- 3500 # Identify the point from which to select the data
+n <- 300 # Identify the point from which to select the data
 matched.data <- generateDataset(my.frontier, N = n)
 }
