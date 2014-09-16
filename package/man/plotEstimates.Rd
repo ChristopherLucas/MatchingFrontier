@@ -43,5 +43,5 @@ my.frontier <- makeFrontier(dataset = lalonde,
                             match.on = match.on)
 my.estimates <- estimateEffects(my.frontier, 're78 ~ treat',
                                 prop.estimated = .05)
-plotEstimates(my.frontier, my.estimates)
+plotEstimates(my.estimates)
 }
