@@ -1,5 +1,5 @@
 estimateEffects <-
-function(frontier.object, formula, prop.estimated = 1, model.dependence.points = 4){
+function(frontier.object, formula, prop.estimated = 1, model.dependence.points = 4, model.dependence.ests = 100){
 
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
@@ -45,18 +45,20 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
         dataset <- frontier.object$dataset[this.dat.inds,]
 
         coef.dist <- c()
-        for(k in 1:1000){
+        for(k in 1:model.dependence.ests){
             # Select model
             covs <- sample(frontier.object$match.on, sample(1:length(frontier.object$match.on), 1))
-            higher.ord <- sample(1:3, length(covs))
             
             # Make mod formula
             cov.polys <- c()
             for(cov in covs){
-                cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ')'))                
+                if(length(unique(dataset[[cov]])) <= 2){
+                    cov.polys <- c(cov.polys, cov)
+                    next
+                }
+                cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ')', sep = ''))
             }
-            formula <- paste(cov.polys, collapse = ' + ')
-
+            formula <- paste(frontier.object$outcome, '~',  paste(frontier.object$treatment, '+'), paste(paste(cov.polys, collapse = ' + ')))
             # run model
             if(frontier.object$ratio == 'variable'){
                 w <- makeWeights(dataset, treatment)
@@ -67,7 +69,7 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
             }
             coef.dist <- c(coef.dist, coef(results)[frontier.object$treatment])
         }
-        mod.dependence[[depend.point.inds[i]]] <- coef.dist
+        mod.dependence[[as.character(depend.point.inds[i])]] <- coef.dist
     }
     
     return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs, mod.dependence = mod.dependence))
