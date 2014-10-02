@@ -1,5 +1,5 @@
 estimateEffects <-
-function(frontier.object, formula, prop.estimated = 1){
+function(frontier.object, formula, prop.estimated = 1, model.dependence.points = 4){
 
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
@@ -9,6 +9,10 @@ function(frontier.object, formula, prop.estimated = 1){
 
     treatment <- frontier.object$treatment
 
+    ################################
+    cat('Estimating effects...\n') #
+    ################################
+    
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
     for(i in 1:length(point.inds)){        
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
@@ -27,6 +31,45 @@ function(frontier.object, formula, prop.estimated = 1){
         setTxtProgressBar(pb, i)
     }
     close(pb)
-    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs))
+
+    #########################################
+    cat('Estimating model dependence...\n') #
+    #########################################
+    
+    # Get points to estimate
+    depend.point.inds <- c(point.inds[1], point.inds[round((2:(model.dependence.points - 1) * length(point.inds) * (1 / model.dependence.points)))], point.inds[length(point.inds)])
+
+    mod.dependence <- list()
+    for(i in 1:length(depend.point.inds)){
+        this.dat.inds <- unlist(frontier.object$frontier$drop.order[depend.point.inds[i]:length(frontier.object$frontier$drop.order)])
+        dataset <- frontier.object$dataset[this.dat.inds,]
+
+        coef.dist <- c()
+        for(k in 1:1000){
+            # Select model
+            covs <- sample(frontier.object$match.on, sample(1:length(frontier.object$match.on), 1))
+            higher.ord <- sample(1:3, length(covs))
+            
+            # Make mod formula
+            cov.polys <- c()
+            for(cov in covs){
+                cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ')'))                
+            }
+            formula <- paste(cov.polys, collapse = ' + ')
+
+            # run model
+            if(frontier.object$ratio == 'variable'){
+                w <- makeWeights(dataset, treatment)
+                dataset$w <- w            
+                results <- lm(formula, dataset, weights = w)
+            } else {
+                results <- lm(formula, dataset)
+            }
+            coef.dist <- c(coef.dist, coef(results)[frontier.object$treatment])
+        }
+        mod.dependence[[depend.point.inds[i]]] <- coef.dist
+    }
+    
+    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs, mod.dependence = mod.dependence))
 }
 
