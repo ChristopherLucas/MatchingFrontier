@@ -69,7 +69,7 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
             }
             coef.dist <- c(coef.dist, coef(results)[frontier.object$treatment])
         }
-        mod.dependence[[as.character(depend.point.inds[i])]] <- coef.dist
+        mod.dependence[[as.character(frontier.object$frontier$Xs[depend.point.inds[i]])]] <- coef.dist
     }
     
     return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs, mod.dependence = mod.dependence))
