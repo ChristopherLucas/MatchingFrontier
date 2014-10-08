@@ -1,6 +1,7 @@
 importFrom(igraph,graph.data.frame,V,clusters)
 importFrom(MASS,parcoord)
 export(plotFrontier,
+       plotMeans,
        generateDataset,
        makeFrontier,
        plotEstimates,
