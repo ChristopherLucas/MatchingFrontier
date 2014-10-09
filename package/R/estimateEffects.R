@@ -52,7 +52,7 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
             # Make mod formula
             cov.polys <- c()
             for(cov in covs){
-                if(length(unique(dataset[[cov]])) <= 2){
+                if(length(unique(dataset[[cov]])) <= 3){
                     cov.polys <- c(cov.polys, cov)
                     next
                 }
