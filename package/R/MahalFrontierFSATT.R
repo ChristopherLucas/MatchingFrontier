@@ -1,6 +1,5 @@
 MahalFrontierFSATT <-
 function(treatment, outcome, dataset, ratio, match.on){    
-    match.on <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome))]
     distance.mat <- calculateMdist(dataset, treatment, match.on)
     frontier <- distToFrontier(distance.mat)
     dataset$matched.to <- frontier$matched.to
