@@ -59,6 +59,10 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
                 cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ')', sep = ''))
             }
             formula <- paste(frontier.object$outcome, '~',  paste(frontier.object$treatment, '+'), paste(paste(cov.polys, collapse = ' + ')))
+            if(k == 1){
+                formula <- paste(frontier.object$outcome, '~',  frontier.object$treatment)
+            }
+            print(formula)
             # run model
             if(frontier.object$ratio == 'variable'){
                 w <- makeWeights(dataset, treatment)
