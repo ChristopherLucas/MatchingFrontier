@@ -13,6 +13,3 @@ Description: MatchingFrontier returns the subset of the data with the minimum im
 Imports: igraph, MASS
 LazyData: true
 License: GPL-3
-
-
-
