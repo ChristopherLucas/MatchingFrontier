@@ -61,11 +61,11 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
 
             # Double interactions
             if(length(covs) > 1){
-                possible.interactions <- combn(covs, 2)
-                cov.cols <- sample(1:ncol(possible.interactions), sample(1:ncol(possible.interactions), 1))
+                possible.interactions <- combn(covs, 2, simplify = FALSE)
+                cov.cols <- sample(1:length(possible.interactions), sample(1:length(possible.interactions), 1))
                 cov.interactions <- c()
                 for(i in 1:length(cov.cols)){
-                    this.interaction <- paste(possible.interactions[,i], collapse = ':')
+                    this.interaction <- paste(possible.interactions[[i]], collapse = ':')
                     cov.interactions <- c(cov.interactions, this.interaction)
                 }
             
