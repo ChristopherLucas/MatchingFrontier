@@ -56,7 +56,7 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
                     cov.polys <- c(cov.polys, cov)
                     next
                 }
-                cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ')', sep = ''))
+                cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ', raw = TRUE)', sep = ''))
             }
 
             # Double interactions
@@ -64,11 +64,11 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
                 possible.interactions <- combn(covs, 2, simplify = FALSE)
                 cov.cols <- sample(1:length(possible.interactions), sample(1:length(possible.interactions), 1))
                 cov.interactions <- c()
-                for(i in 1:length(cov.cols)){
-                    this.interaction <- paste(possible.interactions[[i]], collapse = ':')
+                for(cov.ind in 1:length(cov.cols)){
+                    this.interaction <- paste(possible.interactions[[cov.ind]], collapse = ':')
                     cov.interactions <- c(cov.interactions, this.interaction)
                 }
-            
+                
                 formula <- paste(frontier.object$outcome,
                                  '~',
                                  paste(frontier.object$treatment, '+'),
@@ -76,17 +76,18 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
                                  '+',
                                  paste(paste(cov.interactions, collapse = ' + '))
                                  )
-            }else{formula <- paste(frontier.object$outcome,
-                                   '~',
-                                   paste(frontier.object$treatment, '+'),
-                                   paste(paste(cov.polys, collapse = ' + '))
-                                   )
-              }
-            
+            }else{
+                formula <- paste(frontier.object$outcome,
+                                 '~',
+                                 paste(frontier.object$treatment, '+'),
+                                 paste(paste(cov.polys, collapse = ' + '))
+                                 )
+            }
             if(k == 1){
                 formula <- paste(frontier.object$outcome, '~',  frontier.object$treatment)
             }
-            print(formula)
+        
+            print(k)
             # run model
             if(frontier.object$ratio == 'variable'){
                 w <- makeWeights(dataset, treatment)
@@ -95,6 +96,8 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
             } else {
                 results <- lm(formula, dataset)
             }
+            print(results)
+            print(coef(results)[frontier.object$treatment])
             coef.dist <- c(coef.dist, coef(results)[frontier.object$treatment])
         }
         mod.dependence[[as.character(frontier.object$frontier$Xs[depend.point.inds[i]])]] <- coef.dist
