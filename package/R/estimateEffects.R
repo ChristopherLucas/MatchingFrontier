@@ -58,7 +58,23 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
                 }
                 cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ')', sep = ''))
             }
-            formula <- paste(frontier.object$outcome, '~',  paste(frontier.object$treatment, '+'), paste(paste(cov.polys, collapse = ' + ')))
+
+            # Double interactions
+            possible.interactions <- combn(covs, 2)
+            cov.cols <- sample(1:ncol(possible.interactions), sample(1:ncol(possible.interactions), 1))
+            cov.interactions <- c()
+            for(i in 1:length(cov.cols)){
+                this.interaction <- paste(possible.interactions[,i], collapse = ':')
+                cov.interactions <- c(cov.interactions, this.interaction)
+            }
+                        
+            formula <- paste(frontier.object$outcome, '~',
+                             paste(frontier.object$treatment, '+'),
+                             paste(paste(cov.polys, collapse = ' + ')),
+                             '+',
+                             paste(paste(cov.interactions, collapse = ' + '))
+                             )
+            
             if(k == 1){
                 formula <- paste(frontier.object$outcome, '~',  frontier.object$treatment)
             }
