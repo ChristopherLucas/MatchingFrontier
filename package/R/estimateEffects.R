@@ -40,6 +40,8 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
     depend.point.inds <- c(point.inds[1], point.inds[round((2:(model.dependence.points - 1) * length(point.inds) * (1 / model.dependence.points)))], point.inds[length(point.inds)])
 
     mod.dependence <- list()
+
+    pb <- txtProgressBar(min = 1, max = length(depend.point.inds), style = 3)
     for(i in 1:length(depend.point.inds)){
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[depend.point.inds[i]:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
@@ -87,7 +89,6 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
                 formula <- paste(frontier.object$outcome, '~',  frontier.object$treatment)
             }
         
-            print(k)
             # run model
             if(frontier.object$ratio == 'variable'){
                 w <- makeWeights(dataset, treatment)
@@ -96,12 +97,12 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
             } else {
                 results <- lm(formula, dataset)
             }
-            print(results)
-            print(coef(results)[frontier.object$treatment])
             coef.dist <- c(coef.dist, coef(results)[frontier.object$treatment])
         }
         mod.dependence[[as.character(frontier.object$frontier$Xs[depend.point.inds[i]])]] <- coef.dist
+        setTxtProgressBar(pb, i)
     }
+    close(pb)
     
     return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs, mod.dependence = mod.dependence))
 }
