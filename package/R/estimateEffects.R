@@ -4,12 +4,12 @@ function(frontier.object, formula, prop.estimated = 1, model.dependence.points =
     # These are the points that we'll estimate
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
-    
+
     coefs <- vector(mode="list", length = length(point.inds))
     CIs <- vector(mode="list", length= length(point.inds))
 
     treatment <- frontier.object$treatment
-
+    
     ################################
     cat('Estimating effects...\n') #
     ################################
