@@ -35,6 +35,6 @@ function(distance.mat){
     if(any(diff(Ys) > 0 )){
         stop('Something is very wrong. Email clucas@fas.harvard.edu.')
     }
-    return(list(drop.order = drop.order, Xs = Xs, Ys = Ys, matched.to = matched.to))
+    return(list(drop.order = drop.order, Xs = Xs, Ys = Ys, matched.to = matched.to, distance.mat = distance.mat))
 }
 
