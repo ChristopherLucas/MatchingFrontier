@@ -16,7 +16,6 @@ function(distance.mat){
     col.mins.inds <- apply(distance.mat, 2, function(x) as.integer(names(which.min(x))))
     
     matched.to <- c(row.mins.inds, col.mins.inds)[order(as.integer(names(c(row.mins.inds, col.mins.inds))))]
-    print(matched.to)
     
     minimums <- c(row.mins, col.mins)
     
