@@ -1,7 +1,6 @@
 makeWeights <-
 function(dataset, treatment){
     strata <- getMahalStrata(rownames(dataset), dataset$matched.to)
-    print(strata)
     w <- rep(NA, nrow(dataset))
     w[dataset[[treatment]] == 1] <- 1
     for(s in unique(strata)){
