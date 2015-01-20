@@ -6,7 +6,10 @@ function(frontier.object, N){
     dataset <- frontier.object$dataset[this.dat.inds,]
 
     # Add weights
-    w <- makeWeights(dataset, frontier.object$treatment)
-    dataset$weights <- w
+    if(frontier.object$ratio == 'variable'){    
+        w <- makeWeights(dataset, frontier.object$treatment)
+        dataset$weights <- w
+    }
+    
     return(dataset)
 }

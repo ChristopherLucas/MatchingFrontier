@@ -1,6 +1,10 @@
 estimateEffects <-
-function(frontier.object, formula, prop.estimated = 1, model.dependence.points = 4, model.dependence.ests = 100){
+function(frontier.object, formula, prop.estimated = 1,
+         model.dependence.points = 4, model.dependence.ests = 100,
+         seed = 1){
 
+    set.seed(seed)
+    
     # These are the points that we'll estimate
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
