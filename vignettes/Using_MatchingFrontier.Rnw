@@ -195,7 +195,7 @@ release of \pkg{MatchingFrontier} with the \pkg{devtools} package
 
 <<eval=FALSE, echo=TRUE>>=
 library(devtools) 
-install_github('ChristopherLucas/MatchingFrontier/package')
+install_github('ChristopherLucas/MatchingFrontier')
 @
 
 Alternatively, you can install the development version of
