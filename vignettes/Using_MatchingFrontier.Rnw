@@ -43,21 +43,21 @@
 \author{Gary King\\Harvard University \And 
         Christopher Lucas\\Harvard University \And 
         Richard Nielsen\\MIT}
-\title{\pkg{MatchingFrontier}: \proglang{R} Package for Computing the Matching Frontier\thanks{The current release of \pkg{MatchingFrontier} is in active development and will continue to grow over the coming months. Comments and suggestions are greatly appreciated.}}
+\title{\pkg{MatchingFrontier}: Automated Matching for Causal Inference\thanks{The current release of \pkg{MatchingFrontier} is in active development and will continue to grow over the coming months. Comments and suggestions are greatly appreciated.}}
 
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Gary King, Christopher Lucas, Richard Nielsen} %% comma-separated
-\Plaintitle{MatchingFrontier: R Package for Computing the Matching Frontier} %% without formatting
+\Plaintitle{MatchingFrontier: Automated Matching for Causal Inference} %% without formatting
 \Shorttitle{\pkg{MatchingFrontier}} %%  short title (if necessary)
 
 %% an abstract and keywords
 \Abstract{ \pkg{MatchingFrontier} is an \proglang{R} package that
-  implements the methods described in \citet{kingND} for optimizing
-  both balance and sample size in matching methods for causal
-  inference. \pkg{MatchingFrontier} supports the computation of
-  frontiers for both continuous and discrete metrics and also provides
-  functions for visualizing the frontier and exporting matched data
-  sets for further analysis.}
+  implements the methods described in \citet{kingND} for
+  simultaneously optimizing both balance and sample size in matching
+  methods for causal inference. \pkg{MatchingFrontier} supports the
+  computation of frontiers for both continuous and discrete metrics
+  and also provides functions for visualizing the frontier and
+  exporting matched data sets for further analysis.}
 
 \Keywords{\proglang{R}, matching, frontier, Mahalanobis, L1}
 \Plainkeywords{R, matching, frontier, Mahalanobis, L1} %% without formatting
