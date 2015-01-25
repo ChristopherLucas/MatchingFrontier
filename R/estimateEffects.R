@@ -1,7 +1,6 @@
 estimateEffects <-
 function(frontier.object, formula, prop.estimated = 1,
-         model.dependence.points = 4, model.dependence.ests = 100,
-         seed = 1){
+         model.dependence.points = 4, model.dependence.ests = 100, seed = 1){
 
     set.seed(seed)
     
@@ -54,7 +53,7 @@ function(frontier.object, formula, prop.estimated = 1,
         coef.dist <- c()
         for(k in 1:model.dependence.ests){
             # Select model
-            covs <- sample(frontier.object$match.on, sample(1:length(frontier.object$match.on), 1))
+            covs <- sample(frontier.object$mod.dependence.vars, sample(1:length(frontier.object$mod.dependence.vars), 1))
             
             # Make mod formula
             cov.polys <- c()
@@ -102,6 +101,7 @@ function(frontier.object, formula, prop.estimated = 1,
             } else {
                 results <- lm(formula, dataset)
             }
+            
             coef.dist <- c(coef.dist, coef(results)[frontier.object$treatment])
         }
         mod.dependence[[as.character(frontier.object$frontier$Xs[depend.point.inds[i]])]] <- coef.dist
