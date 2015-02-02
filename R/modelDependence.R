@@ -1,0 +1,55 @@
+modelDependence <-
+function(dataset, treatment, base.form, seed = 1){
+    set.seed(1)
+    
+    base.form <- as.formula(base.form)
+    
+    covs <- strsplit(as.character(base.form[3]), '\\+')
+    covs <- unlist(lapply(covs, trim))
+
+    base.theta <- lm(base.form, data = dataset)$coefficients[[treatment]]
+    cat(paste('Estimate from base model:', round(base.theta, 2), '\n'))
+
+    N <- nrow(dataset)
+    # estimate theta_p
+
+    theta.Ps <- c()
+    for(cov in covs){
+        print(cov)
+        if(cov == treatment){next}
+
+        # Formula for this iteration
+        this.form <- paste(as.character(base.form[2]),
+                           as.character(base.form[1]),
+                           paste(covs[!(covs %in% cov)], collapse = ' + '))
+
+        # Split data
+        if(length(unique(dataset[[cov]])) == 2){
+            split.inds <- dataset[[cov]] == unique(dataset[[cov]])[1]            
+            dat1 <- dataset[split.inds,]
+            dat2 <- dataset[!split.inds,]
+        }else{
+            cutpoint <- rpart(paste(as.character(base.form[2]),
+                                    as.character(base.form[1]),
+                                    cov), dataset)$splits[1,4]
+            split.inds <- dataset[[cov]] < cutpoint
+            dat1 <- dataset[split.inds,]
+            dat2 <- dataset[!split.inds,]
+        }
+
+        
+        # Get theta_ps
+        dat1.est <- lm(this.form, data = dat1)$coefficients[[treatment]]
+        print(dat1.est); print(nrow(dat1))
+        dat2.est <- lm(this.form, data = dat2)$coefficients[[treatment]]
+        print(dat2.est); print(nrow(dat2))
+        
+        this.theta.p <- dat1.est * (nrow(dat1) / N) + dat2.est * (nrow(dat2) / N)        
+        cat(paste('Estimate from', cov, 'partition:', round(this.theta.p, 2), '\n'))
+        theta.Ps <- c(theta.Ps, this.theta.p)      
+    }
+
+    sigma.hat.theta <- sqrt(sum((theta.Ps - base.theta) ^ 2) / length(theta.Ps))
+
+    return(list(sigma.hat.theta = sigma.hat.theta))
+}

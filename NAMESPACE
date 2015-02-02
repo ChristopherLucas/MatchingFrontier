@@ -1,12 +1,14 @@
 importFrom(igraph,graph.data.frame,V,clusters)
 importFrom(MASS,parcoord)
+importFrom(rpart,rpart)
 export(plotFrontier,
        plotMeans,
        generateDataset,
        makeFrontier,
        plotEstimates,
        parallelPlot,
-       estimateEffects
+       estimateEffects,
+       modelDependence
        )
 S3method(print,L1SATTClass)
 S3method(print,MahalFSATTClass)

@@ -1,6 +1,5 @@
 estimateEffects <-
-function(frontier.object, formula, prop.estimated = 1,
-         model.dependence.points = 4, model.dependence.ests = 100, seed = 1){
+function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, seed = 1){
 
     set.seed(seed)
     
@@ -12,11 +11,7 @@ function(frontier.object, formula, prop.estimated = 1,
     CIs <- vector(mode="list", length= length(point.inds))
 
     treatment <- frontier.object$treatment
-    
-    ################################
-    cat('Estimating effects...\n') #
-    ################################
-    
+       
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
     for(i in 1:length(point.inds)){        
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
@@ -32,79 +27,7 @@ function(frontier.object, formula, prop.estimated = 1,
 
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]
-        setTxtProgressBar(pb, i)
-    }
-    close(pb)
-
-    #########################################
-    cat('Estimating model dependence...\n') #
-    #########################################
-    
-    # Get points to estimate
-    depend.point.inds <- c(point.inds[1], point.inds[round((2:(model.dependence.points - 1) * length(point.inds) * (1 / model.dependence.points)))], point.inds[length(point.inds)])
-
-    mod.dependence <- list()
-
-    pb <- txtProgressBar(min = 1, max = length(depend.point.inds), style = 3)
-    for(i in 1:length(depend.point.inds)){
-        this.dat.inds <- unlist(frontier.object$frontier$drop.order[depend.point.inds[i]:length(frontier.object$frontier$drop.order)])
-        dataset <- frontier.object$dataset[this.dat.inds,]
-
-        coef.dist <- c()
-        for(k in 1:model.dependence.ests){
-            # Select model
-            covs <- sample(frontier.object$mod.dependence.vars, sample(1:length(frontier.object$mod.dependence.vars), 1))
-            
-            # Make mod formula
-            cov.polys <- c()
-            for(cov in covs){
-                if(length(unique(dataset[[cov]])) <= 3){
-                    cov.polys <- c(cov.polys, cov)
-                    next
-                }
-                cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ', raw = TRUE)', sep = ''))
-            }
-
-            # Double interactions
-            if(length(covs) > 1){
-                possible.interactions <- combn(covs, 2, simplify = FALSE)
-                cov.cols <- sample(1:length(possible.interactions), sample(1:length(possible.interactions), 1))
-                cov.interactions <- c()
-                for(cov.ind in 1:length(cov.cols)){
-                    this.interaction <- paste(possible.interactions[[cov.ind]], collapse = ':')
-                    cov.interactions <- c(cov.interactions, this.interaction)
-                }
-                
-                formula <- paste(frontier.object$outcome,
-                                 '~',
-                                 paste(frontier.object$treatment, '+'),
-                                 paste(paste(cov.polys, collapse = ' + ')),
-                                 '+',
-                                 paste(paste(cov.interactions, collapse = ' + '))
-                                 )
-            }else{
-                formula <- paste(frontier.object$outcome,
-                                 '~',
-                                 paste(frontier.object$treatment, '+'),
-                                 paste(paste(cov.polys, collapse = ' + '))
-                                 )
-            }
-            if(k == 1){
-                formula <- paste(frontier.object$outcome, '~',  frontier.object$treatment)
-            }
-        
-            # run model
-            if(frontier.object$ratio == 'variable'){
-                w <- makeWeights(dataset, treatment)
-                dataset$w <- w            
-                results <- lm(formula, dataset, weights = w)
-            } else {
-                results <- lm(formula, dataset)
-            }
-            
-            coef.dist <- c(coef.dist, coef(results)[frontier.object$treatment])
-        }
-        mod.dependence[[as.character(frontier.object$frontier$Xs[depend.point.inds[i]])]] <- coef.dist
+        mod.dependence <- modelDependence(dataset, treatment, mod.dependence.formula)$sigma.hat.theta
         setTxtProgressBar(pb, i)
     }
     close(pb)
