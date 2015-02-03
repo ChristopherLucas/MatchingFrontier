@@ -10,6 +10,8 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
     coefs <- vector(mode="list", length = length(point.inds))
     CIs <- vector(mode="list", length= length(point.inds))
     mod.dependence <- vector(mode="list", length= length(point.inds))
+
+    treatment <- frontier.object$treatment
     
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
     for(i in 1:length(point.inds)){        
