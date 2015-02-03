@@ -25,5 +25,5 @@ function(estimates.object,
          col.ticks = 'red',
          col.lab = "red",
          col.axis = "red")
-    mtext(expression(paste("Model Dependence ", hat(sigma)[theta])), side=4, line = 3, col="red")
+    mtext(expression(paste("Model Dependence (", hat(sigma)[theta], ")")), side=4, line = 3, col="red")
 }
