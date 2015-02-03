@@ -27,7 +27,10 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
 
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]
-        mod.dependence <- modelDependence(dataset, treatment, mod.dependence.formula, verbose = FALSE)$sigma.hat.theta
+
+        
+        tryCatch(this.sig.hat <- modelDependence(dataset, treatment, mod.dependence.formula, verbose = FALSE)$sigma.hat.theta,
+                 error = function(e) this.sig.hat <- NA)
         setTxtProgressBar(pb, i)
     }
     close(pb)
