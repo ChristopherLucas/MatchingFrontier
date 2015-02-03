@@ -3,8 +3,9 @@ function(estimates.object,
          xlab = 'Number of Observations Pruned',
          ylab = 'Estimate',
          main = 'Effects Plot',
-         mod.dependence.col = 'azure2',
-         mod.dependence.border.col = 'azure4',
+         mod.dependence.col = rgb(0,1,0,.5),
+         mod.dependence.border.col = rgb(0,1,0,.8),
+         line.col = rgb(0,1,0,1),
          ...){
 
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
