@@ -17,5 +17,5 @@ function(estimates.object,
               rev(estimates.object$coefs + estimates.object$mod.dependence)),
             col = mod.dependence.col,
             border = mod.dependence.border.col)
-    lines(estimates.object$Xs, estimates.object$coefs, type = 'l')
+    lines(estimates.object$Xs, estimates.object$coefs, type = 'l', col = line.col)
 }
