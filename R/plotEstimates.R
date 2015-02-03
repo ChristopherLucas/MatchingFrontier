@@ -3,9 +3,9 @@ function(estimates.object,
          xlab = 'Number of Observations Pruned',
          ylab = 'Estimate',
          main = 'Effects Plot',
-         mod.dependence.col = rgb(255,0,0,127),
-         mod.dependence.border.col = rgb(255,0,0,200),
-         line.col = rgb(255,0,0,255),
+         mod.dependence.col = rgb(255,0,0,127, maxColorValue=255),
+         mod.dependence.border.col = rgb(255,0,0,200, maxColorValue=255),
+         line.col = rgb(255,0,0,255, maxColorValue=255),
          ...){
 
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
