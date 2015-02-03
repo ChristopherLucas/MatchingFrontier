@@ -9,9 +9,8 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
 
     coefs <- vector(mode="list", length = length(point.inds))
     CIs <- vector(mode="list", length= length(point.inds))
-
-    treatment <- frontier.object$treatment
-       
+    mod.dependence <- vector(mode="list", length= length(point.inds))
+    
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
     for(i in 1:length(point.inds)){        
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
@@ -24,13 +23,13 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
         } else {
             results <- lm(formula, dataset)
         }
-
-        coefs[i] <- coef(results)[frontier.object$treatment]
-        CIs[[i]] <- confint(results)[frontier.object$treatment,]
-
-        
         tryCatch(this.sig.hat <- modelDependence(dataset, treatment, mod.dependence.formula, verbose = FALSE)$sigma.hat.theta,
                  error = function(e) this.sig.hat <- NA)
+
+        coefs[i] <- coef(results)[frontier.object$treatment]
+        CIs[[i]] <- confint(results)[frontier.object$treatment,]       
+        mod.dependence[i] <- this.sig.hat
+        
         setTxtProgressBar(pb, i)
     }
     close(pb)
