@@ -3,12 +3,18 @@ function(estimates.object,
          xlab = 'Number of Observations Pruned',
          ylab = 'Estimate',
          main = 'Effects Plot',
+         mod.dependence.col = 'cornflowerblue',
          ...){
 
-    par(mar=c(5,4,4,5)+.1)
-    plot(estimates.object$Xs, estimates.object$coefs, xlab = xlab, ylab = ylab, main = main, ...)
+    plot(1, type="n", main, xlab=xlab, ylab=ylab,
+         xlim = c(0, max(estimates.object$Xs)),
+         ylim = c(0, max(estimates.object$coefs + estimates.object$mod.dependence)))
     polygon(c(estimates.object$Xs, rev(estimates.object$Xs)),
-            c(estimates.object$coefs - estimates.object$mod.dependence, rev(estimates.object$coefs + estimates.object$mod.dependence)), col="thistle",border=NA)
+            c(estimates.object$coefs - estimates.object$mod.dependence,
+              rev(estimates.object$coefs + estimates.object$mod.dependence)),
+            col=mod.dependence.col,border=NA)
+    lines(estimates.object$Xs, estimates.object$coefs, type = 'l')
+
         
     # Plot model dependence
     par(new = TRUE)
