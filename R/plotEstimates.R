@@ -19,6 +19,10 @@ function(estimates.object,
          xlab = "",
          ylab = "",
          col = 'red')
-    axis(side=4, at = pretty(range(estimates.object$mod.dependence, na.rm = TRUE)), col = 'red', col.ticks = 'red', col.lab="red")
-    mtext("Model Dependence", side=4, line=3, col = 'red')
+    axis(side=4, at = pretty(range(estimates.object$mod.dependence, na.rm = TRUE)),
+         col = 'red',
+         col.ticks = 'red',
+         col.lab = "red",
+         col.axis = "red",
+         label = "Model Dependence")
 }
