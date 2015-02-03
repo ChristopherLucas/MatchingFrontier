@@ -5,7 +5,7 @@ function(estimates.object,
          main = 'Effects Plot',
          mod.dependence.col = rgb(255,0,0,127, maxColorValue=255),
          mod.dependence.border.col = rgb(255,0,0,200, maxColorValue=255),
-         line.col = rgb(255,0,0,255, maxColorValue=255),
+         line.col = rgb(102,0,0,255, maxColorValue=255),
          ...){
 
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
