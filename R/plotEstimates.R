@@ -7,9 +7,9 @@ function(estimates.object,
 
     par(mar=c(5,4,4,5)+.1)
     plot(estimates.object$Xs, estimates.object$coefs, xlab = xlab, ylab = ylab, main = main, ...)
-    points(estimates.object$Xs, unlist(lapply(estimates.object$CIs, function(x) x[1])), type = 'l')
-    points(estimates.object$Xs, unlist(lapply(estimates.object$CIs, function(x) x[2])), type = 'l')    
-    
+    polygon(c(estimates.object$Xs, rev(estimates.object$Xs)),
+            c(estimates.object$coefs - estimates.object$mod.dependence, rev(estimates.object$coefs + estimates.object$mod.dependence)), col="thistle",border=NA)
+        
     # Plot model dependence
     par(new = TRUE)
     plot(estimates.object$Xs,
