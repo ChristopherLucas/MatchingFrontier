@@ -10,8 +10,8 @@ function(estimates.object,
 
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
          xlim = c(0, max(estimates.object$Xs)),
-         ylim = c(min(estimates.object$coefs - estimates.object$mod.dependence),
-             max(estimates.object$coefs + estimates.object$mod.dependence)))
+         ylim = c(min(estimates.object$coefs - estimates.object$mod.dependence, na.rm = TRUE),
+             max(estimates.object$coefs + estimates.object$mod.dependence, na.rm = TRUE)))
     polygon(c(estimates.object$Xs, rev(estimates.object$Xs)),
             c(estimates.object$coefs - estimates.object$mod.dependence,
               rev(estimates.object$coefs + estimates.object$mod.dependence)),
