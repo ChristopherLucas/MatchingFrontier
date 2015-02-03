@@ -36,6 +36,6 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
     }
     close(pb)
     
-    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = coefs, CIs = CIs, mod.dependence = mod.dependence))
+    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = unlist(mod.dependence)))
 }
 
