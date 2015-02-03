@@ -5,6 +5,7 @@ function(estimates.object,
          main = 'Effects Plot',
          ...){
 
+    par(mar=c(5,4,4,5)+.1)
     plot(estimates.object$Xs, estimates.object$coefs, xlab = xlab, ylab = ylab, main = main, ...)
     points(estimates.object$Xs, unlist(lapply(estimates.object$CIs, function(x) x[1])), type = 'l')
     points(estimates.object$Xs, unlist(lapply(estimates.object$CIs, function(x) x[2])), type = 'l')    
@@ -23,6 +24,6 @@ function(estimates.object,
          col = 'red',
          col.ticks = 'red',
          col.lab = "red",
-         col.axis = "red",
-         label = "Model Dependence")
+         col.axis = "red")
+    mtext("Model Dependence", side=4, line = 3, col="red")
 }
