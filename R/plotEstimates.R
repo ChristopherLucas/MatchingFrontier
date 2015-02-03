@@ -11,7 +11,14 @@ function(estimates.object,
     
     # Plot model dependence
     par(new = TRUE)
-    plot(estimates.object$Xs, estimates.object$modelDependence, type = "l", axes = FALSE, bty = "n", xlab = "", ylab = "")
-    axis(side=4, at = pretty(range(estimates.object$modelDependence)))
+    plot(estimates.object$Xs,
+         estimates.object$model.dependence,
+         type = "l",
+         axes = FALSE,
+         bty = "n",
+         xlab = "",
+         ylab = "",
+         col = 'grey')
+    axis(side=4, at = pretty(range(estimates.object$model.dependence, na.rm = TRUE)), col = 'grey', col.ticks = 'grey')
     mtext("Model Dependence (expression(hat(sigma)[theta]))", side=4, line=3)
 }
