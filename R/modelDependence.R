@@ -1,21 +1,23 @@
 modelDependence <-
-function(dataset, treatment, base.form, seed = 1){
+function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
     set.seed(1)
     
     base.form <- as.formula(base.form)
     
     covs <- strsplit(as.character(base.form[3]), '\\+')
     covs <- unlist(lapply(covs, trim))
-
+    
     base.theta <- lm(base.form, data = dataset)$coefficients[[treatment]]
-    cat(paste('Estimate from base model:', round(base.theta, 2), '\n'))
 
+    if(verbose){
+        cat(paste('Estimate from base model:', round(base.theta, 2), '\n'))
+    }
+    
     N <- nrow(dataset)
     # estimate theta_p
 
     theta.Ps <- c()
     for(cov in covs){
-        print(cov)
         if(cov == treatment){next}
 
         # Formula for this iteration
@@ -40,12 +42,14 @@ function(dataset, treatment, base.form, seed = 1){
         
         # Get theta_ps
         dat1.est <- lm(this.form, data = dat1)$coefficients[[treatment]]
-        print(dat1.est); print(nrow(dat1))
         dat2.est <- lm(this.form, data = dat2)$coefficients[[treatment]]
-        print(dat2.est); print(nrow(dat2))
         
         this.theta.p <- dat1.est * (nrow(dat1) / N) + dat2.est * (nrow(dat2) / N)        
-        cat(paste('Estimate from', cov, 'partition:', round(this.theta.p, 2), '\n'))
+
+        if(verbose){
+            cat(paste('Estimate from', cov, 'partition:', round(this.theta.p, 2), '\n'))
+        }
+        
         theta.Ps <- c(theta.Ps, this.theta.p)      
     }
 
