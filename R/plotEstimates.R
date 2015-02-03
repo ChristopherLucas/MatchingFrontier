@@ -18,7 +18,7 @@ function(estimates.object,
          bty = "n",
          xlab = "",
          ylab = "",
-         col = 'grey')
-    axis(side=4, at = pretty(range(estimates.object$mod.dependence, na.rm = TRUE)), col = 'grey', col.ticks = 'grey')
+         col = 'red')
+    axis(side=4, at = pretty(range(estimates.object$mod.dependence, na.rm = TRUE)), col = 'red', col.ticks = 'red')
     mtext("Model Dependence (expression(hat(sigma)[theta]))", side=4, line=3)
 }
