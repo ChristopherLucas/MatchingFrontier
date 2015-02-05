@@ -33,7 +33,7 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
         }else{
             cutpoint <- rpart(paste(as.character(base.form[2]),
                                     as.character(base.form[1]),
-                                    cov), dataset)$splits[1,4]
+                                    cov), dataset, method = 'class')$splits[1,4]
             split.inds <- dataset[[cov]] < cutpoint
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
