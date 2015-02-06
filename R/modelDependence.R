@@ -31,9 +31,10 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
         }else{
-            cutpoint <- median(rpart(paste(as.character(base.form[2]),
-                                         as.character(base.form[1]),
-                                         cov), dataset, method = 'anova')$splits[,4])
+#            cutpoint <- median(rpart(paste(as.character(base.form[2]),
+#                                         as.character(base.form[1]),
+#                                         cov), dataset, method = 'anova')$splits[,4])
+            cutpoint <- median(dataset[[cov]])
             split.inds <- dataset[[cov]] < cutpoint
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
