@@ -21,17 +21,10 @@ function(estimates.object,
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
          xlim = xlim,
          ylim = ylim)
-    segments(estimates.object$Xs,
-             estimates.object$coefs - estimates.object$mod.dependence,
-             estimates.object$Xs,
-             estimates.object$coefs + estimates.object$mod.dependence,
-             col = mod.dependence.col
-             )
-    
-    ## polygon(c(estimates.object$Xs, rev(estimates.object$Xs)),
-    ##         c(estimates.object$coefs - estimates.object$mod.dependence,
-    ##           rev(estimates.object$coefs + estimates.object$mod.dependence)),
-    ##         col = mod.dependence.col,
-    ##         border = mod.dependence.border.col)
+    polygon(c(estimates.object$Xs, rev(estimates.object$Xs)),
+            c(estimates.object$coefs - estimates.object$mod.dependence,
+              rev(estimates.object$coefs + estimates.object$mod.dependence)),
+            col = mod.dependence.col,
+            border = mod.dependence.border.col)
     lines(estimates.object$Xs, estimates.object$coefs, type = 'l', col = line.col)
 }
