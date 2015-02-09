@@ -31,11 +31,14 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
         }else{
-            parts <- rpart(paste(as.character(base.form[2]),
-                                 as.character(base.form[1]),
-                                 cov), dataset, method = 'anova')$splits[,4]
-            cutpoint <- mean(parts)
-            print(cov); print(parts); print(cutpoint)
+            mod.form <- paste(as.character(base.form[2]),
+                              as.character(base.form[1]),
+                              cov)
+            mod <- lm(mod.form, data = dataset)
+            seg.Z <- paste('~', cov, sep = '')
+            seg.reg <- segmented(mod, seg.Z=seg.Z, psi = median(dat[[cov]]))
+            cutpoint <- seg.reg$psi[2]
+            print(cov); print(cutpoint)
             split.inds <- dataset[[cov]] < cutpoint
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]

@@ -1,6 +1,6 @@
 importFrom(igraph,graph.data.frame,V,clusters)
 importFrom(MASS,parcoord)
-importFrom(rpart,rpart)
+importFrom(segmented,segmented)
 export(plotFrontier,
        plotMeans,
        generateDataset,
