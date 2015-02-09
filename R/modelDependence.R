@@ -36,7 +36,7 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
                               cov)
             mod <- lm(mod.form, data = dataset)
             seg.Z <- paste('~', cov, sep = '')
-            seg.reg <- segmented(mod, seg.Z=seg.Z, psi = median(dat[[cov]]))
+            seg.reg <- segmented(mod, seg.Z=seg.Z, psi = median(dataset[[cov]]))
             cutpoint <- seg.reg$psi[2]
             print(cov); print(cutpoint)
             split.inds <- dataset[[cov]] < cutpoint
