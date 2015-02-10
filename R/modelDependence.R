@@ -1,4 +1,4 @@
-modelDependence <-
+ modelDependence <-
 function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
     set.seed(1)
     
@@ -31,14 +31,12 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
         }else{
-            mod.form <- paste(as.character(base.form[2]),
-                              as.character(base.form[1]),
-                              cov)
+            mod.form <- as.formula(paste(as.character(base.form[2]),
+                                         as.character(base.form[1]),
+                                         cov))
             mod <- lm(mod.form, data = dataset)
-            seg.Z <- paste('~', cov, sep = '')
-            seg.reg <- segmented(mod, seg.Z=seg.Z, psi = median(dataset[[cov]]))
+            seg.reg <- segmented(mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]))
             cutpoint <- seg.reg$psi[2]
-            print(cov); print(cutpoint)
             split.inds <- dataset[[cov]] < cutpoint
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
