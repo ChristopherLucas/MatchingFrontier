@@ -14,7 +14,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
     treatment <- frontier.object$treatment
     
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
-    for(i in 1:length(point.inds)){        
+    for(i in 1:length(point.inds)){
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
 

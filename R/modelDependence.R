@@ -1,4 +1,4 @@
- modelDependence <-
+modelDependence <-
 function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
     set.seed(1)
     
@@ -25,6 +25,8 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
                            as.character(base.form[1]),
                            paste(covs[!(covs %in% cov)], collapse = ' + '))
 
+        base.mod <- lm(base.form, data = dataset)
+
         # Split data
         if(length(unique(dataset[[cov]])) == 2){
             split.inds <- dataset[[cov]] == unique(dataset[[cov]])[1]            
@@ -34,14 +36,12 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
             mod.form <- as.formula(paste(as.character(base.form[2]),
                                          as.character(base.form[1]),
                                          cov))
-            mod <- lm(mod.form, data = dataset)
-            seg.reg <- segmented(mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]))
+            seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]))
             cutpoint <- seg.reg$psi[2]
             split.inds <- dataset[[cov]] < cutpoint
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
         }
-
         
         # Get theta_ps
         dat1.est <- lm(this.form, data = dat1)$coefficients[[treatment]]
@@ -52,7 +52,6 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
         if(verbose){
             cat(paste('Estimate from', cov, 'partition:', round(this.theta.p, 2), '\n'))
         }
-        
         theta.Ps <- c(theta.Ps, this.theta.p)      
     }
 

@@ -21,9 +21,12 @@ function(estimates.object,
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
          xlim = xlim,
          ylim = ylim)
-    polygon(c(estimates.object$Xs, rev(estimates.object$Xs)),
-            c(estimates.object$coefs - estimates.object$mod.dependence,
-              rev(estimates.object$coefs + estimates.object$mod.dependence)),
+    x0 <- estimates.object$Xs   
+    x1 <- rev(estimates.object$Xs)
+    y0 <- estimates.object$coefs - estimates.object$mod.dependence    
+    y1 <- rev(estimates.object$coefs + estimates.object$mod.dependence)
+    polygon(c(x0, x1),
+            c(y0, y1),
             col = mod.dependence.col,
             border = mod.dependence.border.col)
     lines(estimates.object$Xs, estimates.object$coefs, type = 'l', col = line.col)
