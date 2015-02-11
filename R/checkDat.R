@@ -1,6 +1,6 @@
 checkDat <-
 function(dataset, treatment, outcome, match.on, keep.vars){
-    keep.columns <- unique(c(treatment, outcome, match.on, mod.dependence.vars, keep.vars))
+    keep.columns <- unique(c(treatment, outcome, match.on, keep.vars))
    
     # Check if all the variables are in the data
     if(sum(!(keep.columns %in% colnames(dataset))) > 0){ 
