@@ -1,5 +1,5 @@
 checkDat <-
-function(dataset, treatment, outcome, match.on, mod.dependence.vars, keep.vars){
+function(dataset, treatment, outcome, match.on, keep.vars){
     keep.columns <- unique(c(treatment, outcome, match.on, mod.dependence.vars, keep.vars))
    
     # Check if all the variables are in the data
