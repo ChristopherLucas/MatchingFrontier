@@ -1,5 +1,5 @@
 makeFrontier <-
-function(dataset, treatment, outcome, match.on, mod.dependence.vars = NULL,
+function(dataset, treatment, outcome, match.on, 
          keep.vars = NULL, QOI = 'FSATT', metric = 'Mahal',
          ratio = 'variable', breaks = NULL){
 
@@ -7,11 +7,7 @@ function(dataset, treatment, outcome, match.on, mod.dependence.vars = NULL,
     checkArgs(QOI, metric, ratio)
     
     # Check data and trim to suff we need
-    dataset <- checkDat(dataset, treatment, outcome, match.on, mod.dependence.vars, keep.vars)
-
-    if(is.null(mod.dependence.vars)){
-        mod.dependence.vars <- match.on
-    }
+    dataset <- checkDat(dataset, treatment, outcome, match.on, keep.vars)
     
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'variable'){
         frontier <- MahalFrontierFSATT(treatment = treatment,
@@ -19,7 +15,6 @@ function(dataset, treatment, outcome, match.on, mod.dependence.vars = NULL,
                                        dataset = dataset,
                                        ratio = ratio,
                                        match.on = match.on)
-        frontier[['mod.dependence.vars']] = mod.dependence.vars
         class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
@@ -29,7 +24,6 @@ function(dataset, treatment, outcome, match.on, mod.dependence.vars = NULL,
                                        dataset = dataset,
                                        ratio = ratio,
                                        match.on = match.on)
-        frontier[['mod.dependence.vars']] = mod.dependence.vars
         class(frontier) <- "MahalFSATTClass"
         return(frontier)
     }
@@ -39,7 +33,6 @@ function(dataset, treatment, outcome, match.on, mod.dependence.vars = NULL,
                                    dataset = dataset,
                                    breaks = breaks,
                                    match.on = match.on)
-        frontier[['mod.dependence.vars']] = mod.dependence.vars
         class(frontier) <- "L1SATTClass"
         return(frontier)
     }
