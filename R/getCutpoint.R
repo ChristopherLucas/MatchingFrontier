@@ -4,7 +4,11 @@ function(dataset, base.form, cov){
     mod.form <- as.formula(paste(as.character(base.form[2]),
                                  as.character(base.form[1]),
                                  cov))
-    seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]))            
+    print(cov)
+    print(mean(dataset[[cov]]))
+    print(base.mod)
+    seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = mean(dataset[[cov]]))
+    print(seg.reg)
     cutpoint <- seg.reg$psi[2]
     return(cutpoint)
 }
