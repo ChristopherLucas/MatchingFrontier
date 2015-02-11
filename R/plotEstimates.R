@@ -17,14 +17,27 @@ function(estimates.object,
         ylim <- c(min(estimates.object$coefs - estimates.object$mod.dependence, na.rm = TRUE),
                   max(estimates.object$coefs + estimates.object$mod.dependence, na.rm = TRUE))
     }
+
+    # remove NAs
+
+    
     
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
          xlim = xlim,
          ylim = ylim)
-    x0 <- estimates.object$Xs   
-    x1 <- rev(estimates.object$Xs)
-    y0 <- estimates.object$coefs - estimates.object$mod.dependence    
-    y1 <- rev(estimates.object$coefs + estimates.object$mod.dependence)
+    
+    keep <- which(!is.na(estimates.object$mod.dependence))
+    estimates.object$Xs <- estimates.object$Xs[keep]
+    estimates.object$coefs <- estimates.object$coefs[keep]
+    estimates.object$mod.dependence <- estimates.object$mod.dependence[keep]
+    
+    x0 <- rev(estimates.object$Xs)
+    x1 <- estimates.object$Xs
+    y0 <- rev(estimates.object$coefs + estimates.object$mod.dependence)
+    y1 <- estimates.object$coefs - estimates.object$mod.dependence
+
+    remove <- (is.na(x0) | is.na(x1) | is.na(y0) | is.na(y1))
+    print(remove)
     polygon(c(x0, x1),
             c(y0, y1),
             col = mod.dependence.col,

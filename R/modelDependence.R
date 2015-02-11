@@ -1,5 +1,5 @@
 modelDependence <-
-function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
+function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA){
     set.seed(1)
     
     base.form <- as.formula(base.form)
@@ -33,11 +33,11 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1){
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
         }else{
-            mod.form <- as.formula(paste(as.character(base.form[2]),
-                                         as.character(base.form[1]),
-                                         cov))
-            seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]))
-            cutpoint <- seg.reg$psi[2]
+            if(cov %in% names(cutpoints)){
+                cutpoint <- cutpoints[names(cutpoints) == cov]
+            }else{
+                cutpoint <- getCutpoint(dataset, base.form, cov)
+            }
             split.inds <- dataset[[cov]] < cutpoint
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]

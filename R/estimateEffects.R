@@ -1,5 +1,5 @@
 estimateEffects <-
-function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, seed = 1){
+function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, continuous.vars = NA, seed = 1){
 
     set.seed(seed)
     
@@ -12,7 +12,11 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
     mod.dependence <- vector(mode="list", length= length(point.inds))
 
     treatment <- frontier.object$treatment
-    
+
+    if(!is.na(continuous.vars)){
+        cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
+    }
+    print(cutpoints)
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
     for(i in 1:length(point.inds)){
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
@@ -25,8 +29,13 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, s
         } else {
             results <- lm(formula, dataset)
         }
-        tryCatch(this.sig.hat <- modelDependence(dataset, treatment, mod.dependence.formula, verbose = FALSE)$sigma.hat.theta,
-                 error = function(e) this.sig.hat <- NA)
+        tryCatch(            
+            this.sig.hat <- modelDependence(dataset,
+                                            treatment,
+                                            mod.dependence.formula,
+                                            verbose = FALSE, cutpoints = cutpoints)$sigma.hat.theta,
+            error = function(e) this.sig.hat <- NA
+        )
 
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]       
