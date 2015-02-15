@@ -63,7 +63,11 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
     }
     print(theta.Ps)
 
-    theta.Ps <- theta.Ps[!is.na(theta.Ps)]
+    if(sum(is.na(theta.Ps)) > 0){
+        cat(paste('For variables', paste(covs[is.na(theta.Ps)], combine = ','), ',', 'cannot estimate model dependence.'))
+        theta.Ps <- theta.Ps[!is.na(theta.Ps)]
+    }
+        
     sigma.hat.theta <- sqrt(sum((theta.Ps - base.theta) ^ 2) / length(theta.Ps))
 
     return(list(sigma.hat.theta = sigma.hat.theta))
