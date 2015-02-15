@@ -17,6 +17,7 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
     # estimate theta_p
 
     theta.Ps <- c()
+    covs <- covs[!(covs %in% treatment)]
     for(cov in covs){
         if(cov == treatment){next}
 
