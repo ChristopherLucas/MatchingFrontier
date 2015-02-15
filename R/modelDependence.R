@@ -8,7 +8,7 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
     covs <- unlist(lapply(covs, trim))
     
     base.theta <- lm(base.form, data = dataset)$coefficients[[treatment]]
-    print(base.theta)
+
     if(verbose){
         cat(paste('Estimate from base model:', round(base.theta, 2), '\n'))
     }
@@ -17,7 +17,7 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
     # estimate theta_p
 
     theta.Ps <- c()
-    covs <- covs[!(covs %in% treatment)]
+
     for(cov in covs){
         if(cov == treatment){next}
 
@@ -44,16 +44,9 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
             dat2 <- dataset[!split.inds,]
         }
 
-        print(cov)
-        print(cutpoint)
         # Get theta_ps
         dat1.est <- lm(this.form, data = dat1)$coefficients[[treatment]]
         dat2.est <- lm(this.form, data = dat2)$coefficients[[treatment]]
-        print(nrow(dat1))
-        print(nrow(dat2))
-        
-        print(dat1.est)
-        print(dat2.est)
         
         this.theta.p <- dat1.est * (nrow(dat1) / N) + dat2.est * (nrow(dat2) / N)        
 
@@ -62,13 +55,8 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
         }
         theta.Ps <- c(theta.Ps, this.theta.p)      
     }
-    print(theta.Ps)
 
-    if(sum(is.na(theta.Ps)) > 0){
-        cat('Cannot estimate model dependence for following variables.')
-        print(covs[is.na(theta.Ps)])
-        theta.Ps <- theta.Ps[!is.na(theta.Ps)]
-    }
+    theta.Ps <- theta.Ps[!is.na(theta.Ps)]
         
     sigma.hat.theta <- sqrt(sum((theta.Ps - base.theta) ^ 2) / length(theta.Ps))
 
