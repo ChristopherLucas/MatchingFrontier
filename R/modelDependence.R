@@ -61,6 +61,7 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
         }
         theta.Ps <- c(theta.Ps, this.theta.p)      
     }
+    print(theta.Ps)
 
     sigma.hat.theta <- sqrt(sum((theta.Ps - base.theta) ^ 2) / length(theta.Ps))
 
