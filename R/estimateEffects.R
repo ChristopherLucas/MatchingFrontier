@@ -13,7 +13,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
 
     treatment <- frontier.object$treatment
 
-    if(!is.na(continuous.vars)){
+    if(!is.na(continuous.vars[1])){
         cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
     }
     print(cutpoints)
