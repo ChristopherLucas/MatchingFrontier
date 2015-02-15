@@ -48,7 +48,9 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
         # Get theta_ps
         dat1.est <- lm(this.form, data = dat1)$coefficients[[treatment]]
         dat2.est <- lm(this.form, data = dat2)$coefficients[[treatment]]
-
+        print(nrow(dat1))
+        print(nrow(dat2))
+        
         print(dat1.est)
         print(dat2.est)
         
