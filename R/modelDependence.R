@@ -8,7 +8,7 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
     covs <- unlist(lapply(covs, trim))
     
     base.theta <- lm(base.form, data = dataset)$coefficients[[treatment]]
-
+    print(base.theta)
     if(verbose){
         cat(paste('Estimate from base model:', round(base.theta, 2), '\n'))
     }
@@ -42,10 +42,15 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
             dat1 <- dataset[split.inds,]
             dat2 <- dataset[!split.inds,]
         }
-        
+
+        print(cov)
+        print(cutpoint)
         # Get theta_ps
         dat1.est <- lm(this.form, data = dat1)$coefficients[[treatment]]
         dat2.est <- lm(this.form, data = dat2)$coefficients[[treatment]]
+
+        print(dat1.est)
+        print(dat2.est)
         
         this.theta.p <- dat1.est * (nrow(dat1) / N) + dat2.est * (nrow(dat2) / N)        
 
