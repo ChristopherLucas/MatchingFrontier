@@ -1,7 +1,7 @@
 makeFrontier <-
 function(dataset, treatment, outcome, match.on, 
          keep.vars = NULL, QOI = 'FSATT', metric = 'Mahal',
-         ratio = 'variable', breaks = NULL){
+         ratio = 'fixed', breaks = NULL){
 
     # Check the frontier arguments 
     checkArgs(QOI, metric, ratio)
