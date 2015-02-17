@@ -49,7 +49,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
             error = function(e) this.mod.dependence <- NA
         )
 
-        if(!is.na(this.mod.dependence)){           
+        if(!is.na(this.mod.dependence[1])){           
             this.sig.hat <- this.mod.dependence$sigma.hat.theta
             for(cov in this.mod.dependence$failed.covs){
                 failed.covs[[cov]] <- failed.covs[[cov]] + 1
@@ -67,7 +67,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
     }
     close(pb)
 
-    print("Failed to partition data for the following variables as follows:\n", failed.covs)
+    print("Failed to partition data for the following variables as follows:"); print(failed.covs)
     
     return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = unlist(mod.dependence), failed.covs = failed.covs))
 }
