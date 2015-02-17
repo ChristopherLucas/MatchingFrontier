@@ -46,14 +46,16 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
                                                    treatment,
                                                    mod.dependence.formula,
                                                    verbose = FALSE, cutpoints = cutpoints)
-            this.sig.hat <- this.mod.dependence$sigma.hat.theta,
-            error = function(e) this.sig.hat <- NA
+            error = function(e) this.mod.dependence <- NA
         )
-            
-        for(cov in this.mod.dependence$failed.covs){
-            failed.covs[[cov]] <- failed.covs[[cov]] + 1
+
+        if(!is.na(this.sig.hat)){           
+            this.sig.hat <- this.mod.dependence$sigma.hat.theta
+            for(cov in this.mod.dependence$failed.covs){
+                failed.covs[[cov]] <- failed.covs[[cov]] + 1
+            }
         }
-        
+                
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]       
         mod.dependence[i] <- this.sig.hat
