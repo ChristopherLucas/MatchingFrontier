@@ -37,7 +37,6 @@ function(estimates.object,
     y1 <- estimates.object$coefs - estimates.object$mod.dependence
 
     remove <- (is.na(x0) | is.na(x1) | is.na(y0) | is.na(y1))
-    print(remove)
     polygon(c(x0, x1),
             c(y0, y1),
             col = mod.dependence.col,
