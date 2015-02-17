@@ -58,12 +58,10 @@ function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA
 
     covs <- covs[!(covs %in% treatment)]
     failed.covs <-covs[is.na(theta.Ps)]
-    print("Couldn't calculate model dependence for the following variables")
-    print(failed.covs)
         
     theta.Ps <- theta.Ps[!is.na(theta.Ps)]
         
     sigma.hat.theta <- sqrt(sum((theta.Ps - base.theta) ^ 2) / length(theta.Ps))
 
-    return(list(sigma.hat.theta = sigma.hat.theta))
+    return(list(sigma.hat.theta = sigma.hat.theta, failed.covs = failed.covs))
 }
