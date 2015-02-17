@@ -45,7 +45,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
             this.mod.dependence <- modelDependence(dataset,
                                                    treatment,
                                                    mod.dependence.formula,
-                                                   verbose = FALSE, cutpoints = cutpoints)
+                                                   verbose = FALSE, cutpoints = cutpoints),
             error = function(e) this.mod.dependence <- NA
         )
 
