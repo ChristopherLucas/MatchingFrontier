@@ -45,7 +45,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
                                                treatment,
                                                mod.dependence.formula,
                                                verbose = FALSE, cutpoints = cutpoints)
-        sigma.hat.theta <- this.mod.dependence$sigma.hat.theta
+        this.sig.hat <- this.mod.dependence$sigma.hat.theta
 
         for(cov in this.mod.dependence$failed.covs){
             failed.covs[[cov]] <- failed.covs[[cov]] + 1
