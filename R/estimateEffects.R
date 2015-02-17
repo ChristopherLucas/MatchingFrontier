@@ -41,12 +41,15 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
             results <- lm(formula, dataset)
         }
 
-        this.mod.dependence <- modelDependence(dataset,
-                                               treatment,
-                                               mod.dependence.formula,
-                                               verbose = FALSE, cutpoints = cutpoints)
-        this.sig.hat <- this.mod.dependence$sigma.hat.theta
-
+        tryCatch( 
+            this.mod.dependence <- modelDependence(dataset,
+                                                   treatment,
+                                                   mod.dependence.formula,
+                                                   verbose = FALSE, cutpoints = cutpoints)
+            this.sig.hat <- this.mod.dependence$sigma.hat.theta,
+            error = function(e) this.sig.hat <- NA
+        )
+            
         for(cov in this.mod.dependence$failed.covs){
             failed.covs[[cov]] <- failed.covs[[cov]] + 1
         }
