@@ -16,8 +16,19 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
     if(!is.na(continuous.vars[1])){
         cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
     }
+
+    covs <- strsplit(as.character(mod.dependence.formula[3]), '\\+')
+    covs <- unlist(lapply(covs, trim))
+    covs <- covs[!(covs %in% treatment)]
+
+    failed.covs <- list()
+    for(cov in covs){
+        failed.covs[covs] <- 0
+    }
+    
     print(cutpoints)
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
+
     for(i in 1:length(point.inds)){
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
@@ -29,14 +40,17 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
         } else {
             results <- lm(formula, dataset)
         }
-        tryCatch(            
-            this.sig.hat <- modelDependence(dataset,
-                                            treatment,
-                                            mod.dependence.formula,
-                                            verbose = FALSE, cutpoints = cutpoints)$sigma.hat.theta,
-            error = function(e) this.sig.hat <- NA
-        )
 
+        this.mod.dependence <- modelDependence(dataset,
+                                               treatment,
+                                               mod.dependence.formula,
+                                               verbose = FALSE, cutpoints = cutpoints)
+        sigma.hat.theta <- this.mod.dependence$sigma.hat.theta
+
+        for(cov in this.mod.dependence$failed.covs){
+            failed.covs[[cov]] <- failed.covs[[cov]] + 1
+        }
+        
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]       
         mod.dependence[i] <- this.sig.hat
@@ -44,7 +58,9 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
         setTxtProgressBar(pb, i)
     }
     close(pb)
+
+    print("Failed to partition data for the following variables as follows:\n", failed.covs)
     
-    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = unlist(mod.dependence)))
+    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = unlist(mod.dependence), failed.covs = failed.covs))
 }
 
