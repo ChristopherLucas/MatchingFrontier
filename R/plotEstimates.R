@@ -24,7 +24,8 @@ function(estimates.object,
     
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
          xlim = xlim,
-         ylim = ylim)
+         ylim = ylim,
+         ...)
     
     keep <- which(!is.na(estimates.object$mod.dependence))
     estimates.object$Xs <- estimates.object$Xs[keep]
