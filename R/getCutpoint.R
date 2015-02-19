@@ -10,5 +10,6 @@ function(dataset, base.form, cov){
     seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = mean(dataset[[cov]]))
     print(seg.reg)
     cutpoint <- seg.reg$psi[2]
+    cutpoint <- mean(dataset[[cov]])
     return(cutpoint)
 }
