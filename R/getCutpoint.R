@@ -5,8 +5,7 @@ function(dataset, base.form, cov){
                                  as.character(base.form[1]),
                                  cov))
     print(cov)
-    print(mean(dataset[[cov]]))
-    print(base.mod)
+    print(base.mod); print(mod.form[c(1,3)]); print(mean(dataset[[cov]]))
     seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = mean(dataset[[cov]]))
     print(seg.reg)
     cutpoint <- seg.reg$psi[2]
