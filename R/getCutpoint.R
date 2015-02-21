@@ -1,6 +1,6 @@
 getCutpoint <-
 function(dataset, base.form, cov){
-    if(length(unique(dataset[[as.character(base.form)]])) == 2){
+    if(length(unique(dataset[[as.character(base.form[2])]])) == 2){
         base.mod <- glm(base.form, data = dataset, family = 'binomial')
     } else{
         base.mod <- lm(base.form, data = dataset)
