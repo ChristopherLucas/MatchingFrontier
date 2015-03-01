@@ -33,8 +33,23 @@ plotEstimates(estimates.object,
   \item{main}{
     The main label. Defaults to 'Effects Plot'.
   }
+  \item{xlim}{
+    The x-axis limits. 
+  }
+  \item{ylim}{
+    The y-axis limits. 
+  }
   \item{\dots}{
     Additional arguments to be passed to \code{plot}.
+  }
+  \item{mod.dependence.col}{
+    The color to shade the model dependence region.
+  }
+  \item{mod.dependence.border.col}{
+    The model dependence region border color.
+  }
+  \item{line.col}{
+    The color of the line displaying point estimates.
   }
 }
 \details{

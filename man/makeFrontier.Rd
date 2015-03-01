@@ -28,6 +28,12 @@ makeFrontier(dataset, treatment, outcome, match.on,
   \item{match.on}{
     A vector of colnames indicating which variables are to be matched on.
   }
+  \item{keep.vars}{
+    A character vector of variable names that are not in treatment,
+    outcome, or 'match.on' but that the user would like to store
+    in the data, either for calculation of model depedence
+    intervals or for use in exported data sets. 
+  }
   \item{QOI}{
     The quantity of interest to be estimated. By default, feasible
     sample average treatment effect on the treated or FSATT. The other
