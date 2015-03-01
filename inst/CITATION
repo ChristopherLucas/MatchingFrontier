@@ -28,7 +28,7 @@ citEntry(entry = "Article",
          textVersion  =
              paste("King, Gary, Christopher Lucas, and Richard Nielsen. 2015.",
                    "The Balance-Sample Size Frontier in Matching Methods for Causal Inference.",
-                   "Available at http://gking.harvard.edu/files/gking/files/frontier_2.pdf)")
+                   "Available at http://gking.harvard.edu/files/gking/files/frontier_2.pdf)"),
          
          header       = "For the underlying method please cite the following paper:"
          )

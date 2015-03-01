@@ -46,8 +46,9 @@ base.form <- as.formula('re78 ~ treat + age + education
                          + black + hispanic + married +
                          nodegree + re74 + re75')
 
-mod.dependence <- modelDependence(lalonde, treatment, base.form, cutpoints = list('age' = mean(lalonde$age)))
-print(mod.dependence$sigma.hat.theta)
+md <- modelDependence(lalonde, treatment, base.form,
+                      cutpoints = list('age' = mean(lalonde$age)))
+print(md$sigma.hat.theta)
 }
 \references{
   Athey, Susan, and Guido W. Imbens. "A Measure of Robustness to Misspecification." (2014).

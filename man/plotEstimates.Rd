@@ -8,8 +8,16 @@
   \code{plotEstimates()} plots estimates along the frontier. 
 }
 \usage{
-plotEstimates(estimates.object, xlab = "Number of Observations Pruned",
-              ylab = "Estimate", main = "Effects Plot", ...)
+plotEstimates(estimates.object,
+         xlab = 'Number of Observations Pruned',
+         ylab = 'Estimate',
+         main = 'Effects Plot',
+         xlim = NULL,
+         ylim = NULL,
+         mod.dependence.col = rgb(255,0,0,127, maxColorValue=255),
+         mod.dependence.border.col = rgb(255,0,0,200, maxColorValue=255),
+         line.col = rgb(102,0,0,255, maxColorValue=255),
+         ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -8,14 +8,14 @@
   \code{plotMeans()} plots means along the frontier. 
 }
 \usage{
-plotEstimates(frontier.object,
-         xlab = 'Number of Observations Pruned',
-         main = 'Means Plot',
-         xlim = c(1,max(frontier.object$frontier$Xs)),
-         ylim = c(0, 1),
-         cols = rainbow(length(frontier.object$match.on)),
-         diff.in.means = FALSE,
-         ...)
+plotMeans(frontier.object,
+          xlab = 'Number of Observations Pruned',
+          main = 'Means Plot',
+          xlim = c(1,max(frontier.object$frontier$Xs)),
+          ylim = c(0, 1),
+          cols = rainbow(length(frontier.object$match.on)),
+          diff.in.means = FALSE,
+          ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

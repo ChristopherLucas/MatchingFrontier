@@ -10,8 +10,9 @@
     effects along the balance - sample size frontier.
 }
 \usage{
-makeFrontier(dataset, treatment, outcome, match.on, QOI = "FSATT",
-             metric = "Mahal", ratio = "variable", breaks = NULL)
+makeFrontier(dataset, treatment, outcome, match.on, 
+             keep.vars = NULL, QOI = 'FSATT', metric = 'Mahal',
+             ratio = 'fixed', breaks = NULL)
 }
 \arguments{
   \item{dataset}{

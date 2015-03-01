@@ -9,7 +9,9 @@
     treatment along the entire frontier. 
 }
 \usage{
-estimateEffects(frontier.object, formula, prop.estimated = 1)
+estimateEffects(frontier.object, formula, prop.estimated = 1,
+                mod.dependence.formula, continuous.vars = NA,
+                seed = 1, means.as.cutpoints = FALSE)
 }
 \arguments{
   \item{frontier.object}{
