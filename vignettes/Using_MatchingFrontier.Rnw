@@ -386,7 +386,8 @@ mahal.estimates <- estimateEffects(mahal.frontier,
                                    're78 ~ treat',
                                    mod.dependence.formula = my.form,
                                    continuous.vars = c('age', 'education', 're74', 're75'),
-                                   prop.estimated = .1
+                                   prop.estimated = .1,
+                                   means.as.cutpoints = TRUE
                                    )
 
 # Estimate effects for the L1 frontier
@@ -394,7 +395,8 @@ L1.estimates <- estimateEffects(L1.frontier,
                                 're78 ~ treat',
                                 mod.dependence.formula = my.form,
                                 continuous.vars = c('age', 'education', 're74', 're75'),
-                                prop.estimated = .1
+                                prop.estimated = .1,
+                                means.as.cutpoints = TRUE
                                 )
 @ 
 
