@@ -1,3 +1,4 @@
+%\VignetteIndexEntry{Using MatchingFrontier}
 \documentclass[nojss]{jss}
 
 \usepackage{float}

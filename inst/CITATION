@@ -24,6 +24,7 @@ citEntry(entry = "Article",
              as.person("Richard A. Nielsen")),
          year         = "2014",
          url          = "http://projects.iq.harvard.edu/frontier",
+         journal      = 'submitted',
          
          textVersion  =
              paste("King, Gary, Christopher Lucas, and Richard Nielsen. 2015.",
