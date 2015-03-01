@@ -55,8 +55,3 @@ parallelPlot(mahal.frontier,
              control.col = 'blue'
              )
 }
-\references{
-  King, Gary, Christopher Lucas, and Richard
-  Nielsen. "The Balance-Sample 
-  Size Frontier in Matching Methods for Causal Inference." (2015).
-}
