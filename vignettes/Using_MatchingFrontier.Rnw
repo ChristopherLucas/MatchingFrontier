@@ -488,7 +488,6 @@ plotEstimates(L1.estimates,
                   c(-10000, 3000),
               cex.lab = 1.4,
               cex.axis = 1.4,
-              type = 'l',
               panel.first = 
                  grid(NULL,
                       NULL,
