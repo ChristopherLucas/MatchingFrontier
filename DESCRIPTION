@@ -12,6 +12,6 @@ Description: MatchingFrontier returns the subset of the data with the minimum im
 	     and data export. MatchingFrontier also contains functions for calculating
 	     model dependence, as proposed by Athey and Imbens. 
 URL: http://projects.iq.harvard.edu/frontier
-Imports: MASS, igraph, rpart
+Imports: MASS, igraph, rpart, segmented
 LazyData: true
 License: GPL-3
