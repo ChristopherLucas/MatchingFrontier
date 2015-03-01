@@ -37,15 +37,16 @@ plotFrontier(frontier.object, xlab = "Number of Observations Pruned",
 \examples{
 data(lalonde)
 
-# set seed for sampling a small data set for this example
-set.seed(02139) 
-lalonde <- lalonde[c(which(lalonde$treat == 1),
-                     sample(which(lalonde$treat == 0), 500)), ]
-
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
+
 plotFrontier(my.frontier)
+}
+\references{
+  King, Gary, Christopher Lucas, and Richard
+  Nielsen. "The Balance-Sample 
+  Size Frontier in Matching Methods for Causal Inference." (2015).
 }

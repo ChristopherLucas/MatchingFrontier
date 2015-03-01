@@ -1,5 +1,5 @@
 Package: MatchingFrontier
-Version: 0.14.28
+Version: 0.15.28
 Date: 2015-01-20
 Type: Package
 Title: Computation of the Balance - Sample Size Frontier in Matching Methods for Causal Inference 

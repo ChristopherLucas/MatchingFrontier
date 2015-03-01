@@ -10,7 +10,7 @@ function(dataset, base.form, cov){
                                  cov))
     print(cov)
     print(base.mod); print(mod.form[c(1,3)]); print(mean(dataset[[cov]]))
-    seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]), control = seg.control(it.max = 100000))
+    seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]), control = seg.control(it.max = 10000))
     cutpoint <- seg.reg$psi[2]
 #    cutpoint <- mean(dataset[[cov]])
     return(cutpoint)

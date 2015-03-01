@@ -18,7 +18,8 @@ estimateEffects(frontier.object, formula, prop.estimated = 1)
   \item{formula}{
     An object of class formula (or one that can be
     coerced to that class). This will be passed to
-    \code{lm()}.
+    \code{lm()} to estimate the point estimates for
+    the causal effect estimates across the frontier.
   }
   \item{prop.estimated}{
     The proportion of points on the frontier to estimate.
@@ -27,14 +28,24 @@ estimateEffects(frontier.object, formula, prop.estimated = 1)
     pass the proportion to be estimated to prop.estimated
     (for example, .6 to estimate 60\% of the points).
   }
+  \item{mod.dependence.formula}{
+    The formula used as the base formula for the Athey-Imbens
+    model dependence estimates.
+  }
+  \item{continuous.vars}{
+    All continuous control variables in mod.dependence.formula
+    must be passed as a character vector to continuous.vars. A
+    cutpoint for each of these variables will be estimated
+    with segmented regression.
+  }
+  \item{seed}{
+    The seed used before estimation of the effects. If prop.estimated
+    is less than 1, this is necessary in order to replicate the
+    exact plot.
+  }
 }
 \examples{
 data(lalonde)
-
-# set seed for sampling a small data set for this example
-set.seed(02139) 
-lalonde <- lalonde[c(which(lalonde$treat == 1),
-                     sample(which(lalonde$treat == 0), 500)), ]
 
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78',
                                 'treat'))]
@@ -43,6 +54,17 @@ my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
+
+my.form <- as.formula(re78 ~ treat + age + black + education + hispanic +
+                          married + nodegree + re74 + re75)
+
 my.estimates <- estimateEffects(my.frontier, 're78 ~ treat',
-                                prop.estimated = .05)
+                                mod.dependence.formula = my.form,
+                                continuous.vars = c('age', 'education', 're74', 're75'),
+                                prop.estimated = .1)
+}
+\references{
+  King, Gary, Christopher Lucas, and Richard
+  Nielsen. "The Balance-Sample 
+  Size Frontier in Matching Methods for Causal Inference." (2015).
 }

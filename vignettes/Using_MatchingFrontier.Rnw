@@ -377,35 +377,37 @@ the treatment along all values of the frontier. With the Lalonde
 example, the code is as follows.
 
 <<eval=TRUE, echo=TRUE, results = hide>>=
+# Set base form
+my.form <- as.formula(re78 ~ treat + age + black + education + hispanic +
+                          married + nodegree + re74 + re75)
+
 # Estimate effects for the mahalanobis frontier
-mahal.estimates <- estimateEffects(mahal.frontier, 're78 ~ treat')
+mahal.estimates <- estimateEffects(mahal.frontier, 
+                                   're78 ~ treat',
+                                   mod.dependence.formula = my.form,
+                                   continuous.vars = c('age', 'education', 're74', 're75'),
+                                   prop.estimated = .1
+                                   )
 
 # Estimate effects for the L1 frontier
-L1.estimates <- estimateEffects(L1.frontier, 're78 ~ treat',
-                                model.dependence.points = 100)
+L1.estimates <- estimateEffects(L1.frontier, 
+                                're78 ~ treat',
+                                mod.dependence.formula = my.form,
+                                continuous.vars = c('age', 'education', 're74', 're75'),
+                                prop.estimated = .1
+                                )
 @ 
 
-\code{estimateEffects()} takes two arguments. The first argument is
-the output from \code{makeFrontier()} and the second is the formula
-passed to the \code{lm()} function. \code{estimateEffects} stores the
-estimates and the 95\% confidence interval for each point it
-estimates.
 
-Alternatively, we could also condition on the variables that we are
-matching on (stored in \code{match.on}) by specifying a different
-formula, as follows.
 
-<<eval=TRUE, echo=TRUE, results = hide>>=
-# Estimate effects for the mahalanobis frontier
-mahal.estimates.controls <- 
-    estimateEffects(mahal.frontier, paste('re78 ~ treat +', 
-                                          paste(match.on, collapse = ' + ')))
-
-# Estimate effects for the L1 frontier
-L1.estimates.controls <- 
-    estimateEffects(L1.frontier, paste('re78 ~ treat +', 
-                                       paste(match.on, collapse = ' + ')))
-@ 
+\code{estimateEffects()} plots estimates of the causal effect and
+Athey-Imbens model dependence intervals \citep{AthImb15}.
+To do so, it requires the object returned by \code{makeFrontier()},
+a model formula to use when calculating point estimates (in the 
+above, the difference in means), and a base formula to use for the model
+dependence estimates (\code{my.form} above). Control variables that 
+are continuous should be passed to \code{continuous.vars} so cutpoints
+can be estimated. 
 
 We've now estimated effects along the full frontier for AMI with and
 without controls and for $L_1$ with and without controls. Next, we
@@ -422,33 +424,33 @@ same.
 
 First, we will plot the frontier, where the $y$-axis is $L1$ and the
 $x$-axis is the number of observations pruned. This is displayed in
-Figure~\ref{fig:mahal_frontier_plain} next to the code that generated
+Figure~\ref{fig:l1_frontier_plain} next to the code that generated
 it.
 
 \begin{minipage}{0.45\textwidth}
-<<mahal_frontier_plain, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=
+<<l1_frontier_plain, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=
 # Plot frontier
 plotFrontier(L1.frontier)
 @ 
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \begin{figure}[H]
-\includegraphics{Using_MatchingFrontier-mahal_frontier_plain.pdf}
-\caption{\label{fig:mahal_frontier_plain} The L1 frontier without optional arguments}
+\includegraphics{Using_MatchingFrontier-l1_frontier_plain.pdf}
+\caption{\label{fig:l1_frontier_plain} The L1 frontier without optional arguments}
 \end{figure}
 \end{minipage} \hfill
 
-However, Figure~\ref{fig:mahal_frontier_plain} is not especially
+However, Figure~\ref{fig:l1_frontier_plain} is not especially
 attractive.  The font is too small and the dots constituting the
 frontier run into each other and create an ugly, fat line. All of the
 plotting functions in \pkg{MatchingFrontier} use \proglang{R}'s
 ellipsis feature to permit access to the base plotting
-functionality. Figure~\ref{fig:mahal_frontier_pretty} shows an
+functionality. Figure~\ref{fig:l1_frontier_pretty} shows an
 example, along with the corresponding code.
 
 
 \begin{minipage}{0.45\textwidth}
-<<mahal_frontier_pretty, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=  
+<<l1_frontier_pretty, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=  
 # Plot frontier
 plotFrontier(L1.frontier,
              cex.lab = 1.4,
@@ -463,8 +465,8 @@ plotFrontier(L1.frontier,
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \begin{figure}[H]
-\includegraphics{Using_MatchingFrontier-mahal_frontier_pretty.pdf}
-\caption{\label{fig:mahal_frontier_pretty} The $L1$ frontier with optional arguments}
+\includegraphics{Using_MatchingFrontier-l1_frontier_pretty.pdf}
+\caption{\label{fig:l1_frontier_pretty} The $L1$ frontier with optional arguments}
 \end{figure}
 \end{minipage} \hfill
 
@@ -473,11 +475,11 @@ plotFrontier(L1.frontier,
 Next, we can plot estimates along the frontier. As in the previous
 section, we will use the $L1$ frontier without controls. To do so,
 we'll use the results from \code{makeFrontier()} and
-\code{frontierEst()}. Figure~\ref{fig:mahal_frontier_est} displays these
+\code{frontierEst()}. Figure~\ref{fig:l1_frontier_est} displays these
 results.
 
 \begin{minipage}{0.45\textwidth}
-<<mahal_frontier_est, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=    
+<<l1_frontier_est, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=    
 # Plot estimates
 plotEstimates(L1.estimates, 
               ylim = 
@@ -495,8 +497,28 @@ plotEstimates(L1.estimates,
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \begin{figure}[H]
-\includegraphics{Using_MatchingFrontier-mahal_frontier_est.pdf}
-\caption{\label{fig:mahal_frontier_est} Estimates across the $L1$ frontier.}
+\includegraphics{Using_MatchingFrontier-l1_frontier_est.pdf}
+\caption{\label{fig:l1_frontier_est} Estimates across the $L1$ frontier.}
+\end{figure}
+\end{minipage} \hfill
+
+\subsection{Plotting Means}
+
+Next, we can inspect covariate means along the frontier. Again, we
+will use the $L1$ frontier without controls. To do so, we'll use the
+results from \code{makeFrontier()}. Figure~\ref{fig:l1_means}
+displays these results.
+
+\begin{minipage}{0.45\textwidth}
+<<l1_means, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=    
+# Plot estimates
+plotMeans(L1.frontier)
+@ 
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{figure}[H]
+\includegraphics{Using_MatchingFrontier-l1_means.pdf}
+\caption{\label{fig:l1_means} Estimates across the $L1$ frontier.}
 \end{figure}
 \end{minipage} \hfill
 
@@ -514,7 +536,7 @@ have been dropped. We will color treated units \textcolor{blue}{blue}
 and control units \textcolor{gray}{gray}.
 
 \begin{minipage}{0.45\textwidth}
-<<mahal_parplot, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=      
+<<l1_parplot, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=      
 # Make parallel plot
 parallelPlot(L1.frontier,
              N = 400,
@@ -529,12 +551,12 @@ parallelPlot(L1.frontier,
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \begin{figure}[H]
-\includegraphics{Using_MatchingFrontier-mahal_parplot.pdf}
-\caption{\label{fig:mahal_parplot} Parallel plot for pruning 785 observations.}
+\includegraphics{Using_MatchingFrontier-l1_parplot.pdf}
+\caption{\label{fig:l1_parplot} Parallel plot for pruning 785 observations.}
 \end{figure}
 \end{minipage} \hfill
 
-Figure \ref{fig:mahal_parplot} makes obvious the fact that there are
+Figure \ref{fig:l1_parplot} makes obvious the fact that there are
 many more control than treated units and that the sample still
 contains a large number of controls that are not good matches for
 treated units, at least on these dimensions. Though this implies that

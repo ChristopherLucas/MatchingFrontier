@@ -20,7 +20,7 @@ plotEstimates(estimates.object, xlab = "Number of Observations Pruned",
     The label for the x-axis. Defaults to 'Number of Observations Pruned'.
   }
   \item{ylab}{
-    The label for the y-axis. Defaults to Estimate'.
+    The label for the y-axis. Defaults to 'Estimate'.
   }
   \item{main}{
     The main label. Defaults to 'Effects Plot'.
@@ -37,17 +37,25 @@ plotEstimates(estimates.object, xlab = "Number of Observations Pruned",
 \examples{
 data(lalonde)
 
-# set seed for sampling a small data set for this example
-set.seed(02139) 
-lalonde <- lalonde[c(which(lalonde$treat == 1),
-                     sample(which(lalonde$treat == 0), 500)), ]
-
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
                             outcome = 're78',
                             match.on = match.on)
-my.estimates <- estimateEffects(my.frontier, 're78 ~ treat',
-                                prop.estimated = .05)
+
+base.form <- as.formula('re78 ~ treat + age + education
+                         + black + hispanic + married +
+                         nodegree + re74 + re75')
+my.estimates <- estimateEffects(my.frontier,
+                                're78 ~ treat',
+                                mod.dependence.formula = base.form,
+                                continuous.vars = c('age', 'education', 're74', 're75'),
+                                prop.estimated = .1)
+
 plotEstimates(my.estimates)
+}
+\references{
+  King, Gary, Christopher Lucas, and Richard
+  Nielsen. "The Balance-Sample 
+  Size Frontier in Matching Methods for Causal Inference." (2015).
 }
