@@ -64,12 +64,13 @@ my.frontier <- makeFrontier(dataset = lalonde,
 
 my.form <- as.formula(re78 ~ treat + age + black + education + hispanic +
                           married + nodegree + re74 + re75)
-
+\dontrun{
 my.estimates <- estimateEffects(my.frontier, 're78 ~ treat',
                                 mod.dependence.formula = my.form,
                                 continuous.vars = c('age', 'education', 're74', 're75'),
                                 prop.estimated = .1,
                                 means.as.cutpoints = TRUE)
+}
 }
 \references{
   King, Gary, Christopher Lucas, and Richard

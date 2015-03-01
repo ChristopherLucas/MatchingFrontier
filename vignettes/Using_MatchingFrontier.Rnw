@@ -1,4 +1,5 @@
 %\VignetteIndexEntry{Using MatchingFrontier}
+%\VignetteDepends{stargazer} \\
 \documentclass[nojss]{jss}
 
 \usepackage{float}
