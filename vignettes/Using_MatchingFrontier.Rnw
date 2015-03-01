@@ -1,5 +1,3 @@
-%\VignetteIndexEntry{Using MatchingFrontier}
-%\VignetteDepends{stargazer} \\
 \documentclass[nojss]{jss}
 
 \usepackage{float}
@@ -97,6 +95,8 @@
 %% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
+%\VignetteIndexEntry{Using MatchingFrontier}
+%\VignetteDepends{stargazer}
 
 %% include your article here, just as usual
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
