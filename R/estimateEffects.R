@@ -1,6 +1,7 @@
 estimateEffects <-
-function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, continuous.vars = NA, seed = 1){
-
+function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, continuous.vars = NA, seed = 1,
+         means.as.cutpoints = FALSE){
+    
     set.seed(seed)
     
     # These are the points that we'll estimate
@@ -14,6 +15,10 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
     treatment <- frontier.object$treatment
 
     if(!is.na(continuous.vars[1])){
+        if(means.as.cutpoints){
+            cutpoints <- lapply(continuous.vars, function(x) mean(frontier.object$dataset[[x]]))
+            names(cutpoints) <- continuous.vars
+        }
         cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
     }
 

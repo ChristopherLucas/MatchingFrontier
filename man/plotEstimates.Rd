@@ -50,7 +50,8 @@ my.estimates <- estimateEffects(my.frontier,
                                 're78 ~ treat',
                                 mod.dependence.formula = base.form,
                                 continuous.vars = c('age', 'education', 're74', 're75'),
-                                prop.estimated = .1)
+                                prop.estimated = .1,
+                                means.as.cutpoints = TRUE)
 
 plotEstimates(my.estimates)
 }

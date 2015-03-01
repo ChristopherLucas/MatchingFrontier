@@ -43,6 +43,11 @@ estimateEffects(frontier.object, formula, prop.estimated = 1)
     is less than 1, this is necessary in order to replicate the
     exact plot.
   }
+  \item{means.as.cutpoints}{
+    FALSE by default. If TRUE, cutpoints are calculated as the
+    mean instead of the breakpoint in a segmented regression.
+    This is sometimes much faster. 
+  }
 }
 \examples{
 data(lalonde)
@@ -61,7 +66,8 @@ my.form <- as.formula(re78 ~ treat + age + black + education + hispanic +
 my.estimates <- estimateEffects(my.frontier, 're78 ~ treat',
                                 mod.dependence.formula = my.form,
                                 continuous.vars = c('age', 'education', 're74', 're75'),
-                                prop.estimated = .1)
+                                prop.estimated = .1,
+                                means.as.cutpoints = TRUE)
 }
 \references{
   King, Gary, Christopher Lucas, and Richard
