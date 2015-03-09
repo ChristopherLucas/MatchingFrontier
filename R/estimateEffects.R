@@ -55,7 +55,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
         )
 
         if(!is.na(this.mod.dependence[1])){           
-            this.sig.hat <- this.mod.dependence$sigma.hat.theta
+            this.sig.hat <- this.mod.dependence
             for(cov in this.mod.dependence$failed.covs){
                 failed.covs[[cov]] <- failed.covs[[cov]] + 1
             }
