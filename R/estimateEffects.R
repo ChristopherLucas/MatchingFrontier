@@ -25,11 +25,6 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
     covs <- strsplit(as.character(mod.dependence.formula[3]), '\\+')
     covs <- unlist(lapply(covs, trim))
     covs <- covs[!(covs %in% treatment)]
-
-    failed.covs <- list()
-    for(cov in covs){
-        failed.covs[covs] <- 0
-    }
     
     print(cutpoints)
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
@@ -56,9 +51,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
 
         if(!is.na(this.mod.dependence[1])){           
             this.sig.hat <- this.mod.dependence
-            for(cov in this.mod.dependence$failed.covs){
-                failed.covs[[cov]] <- failed.covs[[cov]] + 1
-            }
+
         } else{
             this.sig.hat <- NA
         }
@@ -71,9 +64,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
         setTxtProgressBar(pb, i)
     }
     close(pb)
-
-    print("Failed to partition data for the following variables as follows:"); print(failed.covs)
     
-    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = unlist(mod.dependence), failed.covs = failed.covs))
+    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = unlist(mod.dependence)))
 }
 
