@@ -11,7 +11,7 @@
 }
 \usage{
 modelDependence(dataset, treatment, base.form, verbose = TRUE,
-seed = 1, cutpoints = NA)
+seed = 1, cutpoints = NA, median = TRUE)
 }
 \arguments{
   \item{dataset}{
@@ -37,6 +37,11 @@ seed = 1, cutpoints = NA)
     these variables will not be estimated. Otherwise,
     cutpoints are estimated with segmented regression.
   }
+  \item{median}{
+    If TRUE, the cutpoint is set at the median. If false,
+    the cutpoint is estimated with segmeted (piecewise)
+    regression.
+  }
 }
 \examples{
 data(lalonde)
@@ -48,7 +53,7 @@ base.form <- as.formula('re78 ~ treat + age + education
 
 md <- modelDependence(lalonde, treatment, base.form,
                       cutpoints = list('age' = mean(lalonde$age)))
-print(md$sigma.hat.theta)
+print(md)
 }
 \references{
   Athey, Susan, and Guido W. Imbens. "A Measure of Robustness to Misspecification." (2014).
