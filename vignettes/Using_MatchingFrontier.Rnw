@@ -387,7 +387,10 @@ my.form <- as.formula(re78 ~ treat + age + black + education + hispanic +
 mahal.estimates <- estimateEffects(mahal.frontier, 
                                    're78 ~ treat',
                                    mod.dependence.formula = my.form,
-                                   continuous.vars = c('age', 'education', 're74', 're75'),
+                                   continuous.vars = c('age', 
+                                       'education', 
+                                       're74', 
+                                       're75'),
                                    prop.estimated = .1,
                                    means.as.cutpoints = TRUE
                                    )
@@ -396,7 +399,10 @@ mahal.estimates <- estimateEffects(mahal.frontier,
 L1.estimates <- estimateEffects(L1.frontier, 
                                 're78 ~ treat',
                                 mod.dependence.formula = my.form,
-                                continuous.vars = c('age', 'education', 're74', 're75'),
+                                continuous.vars = c('age', 
+                                    'education', 
+                                    're74', 
+                                    're75'),
                                 prop.estimated = .1,
                                 means.as.cutpoints = TRUE
                                 )
@@ -487,7 +493,8 @@ results.
 # Plot estimates
 plotEstimates(L1.estimates, 
               ylim = 
-                  c(-10000, 3000),
+                  c(-10000, 
+                    3000),
               cex.lab = 1.4,
               cex.axis = 1.4,
               panel.first = 
@@ -536,7 +543,7 @@ allows the user to visually inspect multiple dimensions of a data set
 and requires only the output of \code{makeFrontier()}. For
 illustration, we will create a parallel plot that displays 
 the treated and control values on `age', `re74', `re75', and
-`black' for the point on the frontier where 785 observations
+`black' for the point on the frontier where 985 observations
 have been dropped. We will color treated units \textcolor{blue}{blue}
 and control units \textcolor{gray}{gray}.
 
@@ -544,13 +551,13 @@ and control units \textcolor{gray}{gray}.
 <<l1_parplot, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=      
 # Make parallel plot
 parallelPlot(L1.frontier,
-             N = 400,
+             N = 200,
              variables = c('age',
              're74',
              're75',
              'black'),
-             treated.col = 'blue',
-             control.col = 'gray'
+             treated.col = 'gray',
+             control.col = 'blue'
              )
 @ 
 \end{minipage}
@@ -570,7 +577,7 @@ illustration, let's now export this data set, using
 \code{generateDataset()} as follows.
 
 <<eval=TRUE, echo=TRUE>>=        
-n <- 400 # Identify the point from which to select the data
+n <- 200 # Identify the point from which to select the data
 matched.data <- generateDataset(L1.frontier, N = n)
 @ 
 
