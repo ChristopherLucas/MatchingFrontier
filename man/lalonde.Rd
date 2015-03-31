@@ -8,7 +8,7 @@ explanatory purposes only.
 }
 \usage{data(lalonde)}
 \format{
-  A data frame with 16437 observations on the following 11 variables.
+  A data frame with 1185 observations on the following 11 variables.
   \describe{
     \item{\code{treat}}{treatment variable indicator}
     \item{\code{age}}{age}

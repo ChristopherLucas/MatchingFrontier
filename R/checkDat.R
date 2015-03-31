@@ -21,7 +21,7 @@ function(dataset, treatment, outcome, match.on, keep.vars){
 
     # Check treatment
     if(sum(!(dataset[,treatment] %in% c(0,1))) != 0){
-        customStop("the treatment must be either 0/1 (integers) or TRUE/FALSE (logical).", 'makeFrontier()')
+        customStop('the treatment must be either 0/1 (integers) or "TRUE"/"FALSE" (logical).', 'makeFrontier()')
     }
     
     # Trim the dataset to the stuff we need
