@@ -20,7 +20,7 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
             names(cutpoints) <- continuous.vars
         }
         cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
-    }
+    } else{ cutpoints <- NA }
 
     covs <- strsplit(as.character(mod.dependence.formula[3]), '\\+')
     covs <- unlist(lapply(covs, trim))

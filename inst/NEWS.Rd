@@ -1,5 +1,5 @@
 \name{NEWS}
-\title{NEWS file for the stm package}
+\title{NEWS file for the MatchingFrontier package}
 
 \section{Version 0.8.28}{
   \itemize{
