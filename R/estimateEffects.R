@@ -28,7 +28,10 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
     
     print(cutpoints)
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
-
+    if(length(point.inds) == 1){
+        print('No imbalance, use full data set')
+        return()
+    }
     for(i in 1:length(point.inds)){
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
