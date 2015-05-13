@@ -1,13 +1,18 @@
 estimateEffects <-
-function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, continuous.vars = NA, seed = 1,
-         means.as.cutpoints = FALSE){
+function(frontier.object,
+         formula,
+         prop.estimated = 1,
+         mod.dependence.formula,
+         continuous.vars = NA,
+         seed = 1,
+         means.as.cutpoints = TRUE){
     
     set.seed(seed)
     
     # These are the points that we'll estimate
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
-
+    print(point.inds)
     coefs <- vector(mode="list", length = length(point.inds))
     CIs <- vector(mode="list", length= length(point.inds))
     mod.dependence <- vector(mode="list", length= length(point.inds))
@@ -26,12 +31,8 @@ function(frontier.object, formula, prop.estimated = 1, mod.dependence.formula, c
     covs <- unlist(lapply(covs, trim))
     covs <- covs[!(covs %in% treatment)]
     
-    print(cutpoints)
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
-    if(length(point.inds) == 1){
-        print('No imbalance, use full data set')
-        return()
-    }
+    
     for(i in 1:length(point.inds)){
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
