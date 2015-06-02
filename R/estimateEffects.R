@@ -12,7 +12,6 @@ function(frontier.object,
     # These are the points that we'll estimate
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
-    print(point.inds)
     coefs <- vector(mode="list", length = length(point.inds))
     CIs <- vector(mode="list", length= length(point.inds))
     mod.dependence <- vector(mode="list", length= length(point.inds))
