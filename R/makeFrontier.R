@@ -14,7 +14,8 @@ function(dataset, treatment, outcome, match.on,
                                        outcome = outcome,
                                        dataset = dataset,
                                        ratio = ratio,
-                                       match.on = match.on)
+                                       match.on = match.on,
+                                       keep.vars = keep.vars)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
@@ -23,7 +24,8 @@ function(dataset, treatment, outcome, match.on,
                                        outcome = outcome,
                                        dataset = dataset,
                                        ratio = ratio,
-                                       match.on = match.on)
+                                       match.on = match.on,
+                                       keep.vars = keep.vars)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)
     }
@@ -32,7 +34,8 @@ function(dataset, treatment, outcome, match.on,
                                    outcome = outcome,
                                    dataset = dataset,
                                    breaks = breaks,
-                                   match.on = match.on)
+                                   match.on = match.on,
+                                   keep.vars = keep.vars)
         class(frontier) <- "L1SATTClass"
         return(frontier)
     }

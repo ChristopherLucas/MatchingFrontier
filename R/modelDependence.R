@@ -1,67 +1,66 @@
 modelDependence <-
-function(dataset, treatment, base.form, verbose = TRUE, seed = 1, cutpoints = NA, median = TRUE){
+function(dataset,
+         treatment,
+         outcome,
+         covariates = NULL,
+         model.dependence.ests = 100,
+         verbose = TRUE,
+         ratio = 'fixed'){
+    if(is.null(covariates)){
+        covariates <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome, 'matched.to'))]
+    }
     set.seed(1)
-    
-    base.form <- as.formula(base.form)
-    
-    covs <- strsplit(as.character(base.form[3]), '\\+')
-    covs <- unlist(lapply(covs, trim))
-    
-    base.theta <- lm(base.form, data = dataset)$coefficients[[treatment]]
-    
-    if(verbose){
-        cat(paste('Estimate from base model:', round(base.theta, 2), '\n'))
-    }
+    # Get points to estimate
 
-    N <- nrow(dataset)
-    # estimate theta_p
-
-    theta.Ps <- c()
-    
-    for(cov in covs){
-        if(cov == treatment){next}
-
-        # Formula for this iteration
-        this.form <- paste(as.character(base.form[2]),
-                           as.character(base.form[1]),
-                           paste(covs[!(covs %in% cov)], collapse = ' + '))
-
-        base.mod <- lm(base.form, data = dataset)
-
-        # Split data
-        if(length(unique(dataset[[cov]])) == 2){
-            split.inds <- dataset[[cov]] == unique(dataset[[cov]])[1]            
-            dat1 <- dataset[split.inds,]
-            dat2 <- dataset[!split.inds,]
-        }else{
-            if(cov %in% names(cutpoints)){
-                cutpoint <- cutpoints[names(cutpoints) == cov]
-            }else{
-                cutpoint <- getCutpoint(dataset, base.form, cov, median)
+    coef.dist <- c()
+    for(k in 1:model.dependence.ests){
+        covs <- sample(covariates, sample(1:length(covariates), 1))
+        
+        cov.polys <- c()
+        for(cov in covs){
+            if(length(unique(dataset[[cov]])) <= 3){
+                cov.polys <- c(cov.polys, cov)
+                next
             }
-            split.inds <- dataset[[cov]] < cutpoint
-            dat1 <- dataset[split.inds,]
-            dat2 <- dataset[!split.inds,]
+            cov.polys <- c(cov.polys, paste('poly(', cov, ',', sample(1:3, 1), ', raw = TRUE)', sep = ''))
         }
-
-        # Get theta_ps
-        dat1.est <- lm(this.form, data = dat1)$coefficients[[treatment]]
-        dat2.est <- lm(this.form, data = dat2)$coefficients[[treatment]]
-
-        this.theta.p <- dat1.est * (nrow(dat1) / N) + dat2.est * (nrow(dat2) / N)        
-
-        if(verbose){
-            cat(paste('Estimate from', cov, 'partition:', round(this.theta.p, 2), '\n'))
+        
+        # Double interactions
+        if(length(covs) > 1){
+            possible.interactions <- combn(covs, 2, simplify = FALSE)
+            cov.cols <- sample(1:length(possible.interactions), sample(1:length(possible.interactions), 1))
+            cov.interactions <- c()
+            for(cov.ind in 1:length(cov.cols)){
+                this.interaction <- paste(possible.interactions[[cov.ind]], collapse = ':')
+                cov.interactions <- c(cov.interactions, this.interaction)
+            }
+            formula <- paste(outcome,
+                             '~',
+                             paste(treatment, '+'),
+                             paste(paste(cov.polys, collapse = ' + ')),
+                             '+',
+                             paste(paste(cov.interactions, collapse = ' + '))
+                             )
+        }else{
+            formula <- paste(outcome,
+                             '~',
+                             paste(treatment, '+'),
+                             paste(paste(cov.polys, collapse = ' + '))
+                             )
         }
-        theta.Ps <- c(theta.Ps, this.theta.p)      
+        if(k == 1){
+            formula <- paste(outcome, '~',  treatment)
+        }
+        # run model
+        if(ratio == 'variable'){
+            w <- makeWeights(dataset, treatment)
+            dataset$w <- w            
+            results <- lm(formula, dataset, weights = w)
+        } else {
+            results <- lm(formula, dataset)
+        }
+        print(formula)
+        coef.dist <- c(coef.dist, coef(results)[treatment])
     }
-
-    covs <- covs[!(covs %in% treatment)]
-    failed.covs <-covs[is.na(theta.Ps)]
-        
-    theta.Ps <- theta.Ps[!is.na(theta.Ps)]
-        
-    sigma.hat.theta <- sqrt(sum((theta.Ps - base.theta) ^ 2) / length(theta.Ps))
-
-    return(sigma.hat.theta)
+    return(coef.dist)
 }
