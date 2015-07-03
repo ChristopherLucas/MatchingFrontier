@@ -59,7 +59,6 @@ function(dataset,
         } else {
             results <- lm(formula, dataset)
         }
-        print(formula)
         coef.dist <- c(coef.dist, coef(results)[treatment])
     }
     return(coef.dist)
