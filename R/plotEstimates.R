@@ -10,21 +10,22 @@ function(estimates.object,
          line.col = rgb(102,0,0,255, maxColorValue=255),
          ...){
 
-    mod.dependence.mins <- unlist(lapply(estimates.object$mod.dependence, min))
-    mod.dependence.maxs <- unlist(lapply(estimates.object$mod.dependence, max))
+    mod.dependence.mins <- lapply(estimates.object$mod.dependence, min)
+    mod.dependence.maxs <- lapply(estimates.object$mod.dependence, max)
     
     if(is.null(xlim)){
         xlim <- c(0, max(estimates.object$Xs, na.rm = TRUE))
     }
     if(is.null(ylim)){
-        ylim <- c(mod.dependence.mins, mod.dependence.maxs)
+        ylim <- c(min(mod.dependence.mins), max(mod.dependence.maxs))
     }
-    
+    print(ylim)
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
          xlim = xlim,
          ylim = ylim,
          ...)
-    
+}
+
     x0 <- rev(estimates.object$Xs)
     x1 <- estimates.object$Xs
     y0 <- rev(mod.dependence.mins)

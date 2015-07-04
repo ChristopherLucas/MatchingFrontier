@@ -41,7 +41,7 @@ function(frontier.object,
                 
         coefs[i] <- coef(results)[frontier.object$treatment]
         CIs[[i]] <- confint(results)[frontier.object$treatment,]       
-        mod.dependence[[i]] <- range(this.mod.dependence)
+        mod.dependence[[i]] <- this.mod.dependence
         
         setTxtProgressBar(pb, i)
     }

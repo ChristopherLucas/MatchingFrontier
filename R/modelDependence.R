@@ -61,5 +61,5 @@ function(dataset,
         }
         coef.dist <- c(coef.dist, coef(results)[treatment])
     }
-    return(coef.dist)
+    return(range(coef.dist))
 }
