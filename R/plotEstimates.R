@@ -24,7 +24,6 @@ function(estimates.object,
          xlim = xlim,
          ylim = ylim,
          ...)
-}
 
     x0 <- rev(estimates.object$Xs)
     x1 <- estimates.object$Xs
