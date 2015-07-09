@@ -50,6 +50,6 @@ function(frontier.object,
     }
     close(pb)
     
-    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = unlist(mod.dependence)))
+    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence))
 }
 
