@@ -3,7 +3,7 @@ function(dataset,
          treatment,
          outcome,
          covariates = NULL,
-         model.dependence.ests = NULL,
+         mod.dependence.ests = NULL,
          verbose = TRUE,
          ratio = 'fixed',
          specifications = NULL){
@@ -17,15 +17,19 @@ function(dataset,
     }
     
     if(is.null(specifications)){
-        specifications <- getSpecifications(covariates, treatment, outcome, dataset, model.dependence.ests)
+        specifications <- getSpecifications(covariates, treatment, outcome, dataset, mod.dependence.ests)
     }    
-    
-    if(length(specifications) != model.dependence.ests){
-        stop("'model.dependence.ests' must equal the length of 'specifications'.")
+
+    if(is.null(mod.dependence.ests)){
+        mod.dependence.ests <- length(specifications)
+    }    
+
+    if(length(specifications) != mod.dependence.ests){
+        stop("'mod.dependence.ests' must equal the length of 'specifications'.")
     }
     
     coef.dist <- c()
-    for(k in 1:model.dependence.ests){
+    for(k in 1:mod.dependence.ests){
         if(k == 10){ print(k) }
         formula <- specifications[k]
         # run model
