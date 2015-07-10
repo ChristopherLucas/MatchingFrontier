@@ -18,7 +18,11 @@ function(frontier.object,
     outcome <- frontier.object$outcome
     covs <- frontier.object$match.on
 
-    specifications <- getSpecifications(covs, treatment, outcome, dataset, model.dependence.ests)
+    specifications <- getSpecifications(covs,
+                                        treatment,
+                                        outcome,
+                                        frontier.object$dataset,
+                                        model.dependence.ests)
 
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
     for(i in 1:length(point.inds)){
