@@ -30,7 +30,6 @@ function(dataset,
     
     coef.dist <- c()
     for(k in 1:mod.dependence.ests){
-        if(k == 10){ print(specifications[k]) }
         formula <- specifications[k]
         # run model
         if(ratio == 'variable'){
