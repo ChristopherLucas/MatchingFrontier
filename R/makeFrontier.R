@@ -29,6 +29,26 @@ function(dataset, treatment, outcome, match.on,
         class(frontier) <- "MahalFSATTClass"
         return(frontier)
     }
+    if(QOI == 'FSATT' & metric == 'Euclid' & ratio == 'variable'){
+        frontier <- EuclidFrontierFSATT(treatment = treatment,
+                                       outcome = outcome,
+                                       dataset = dataset,
+                                       ratio = ratio,
+                                       match.on = match.on,
+                                       keep.vars = keep.vars)
+        class(frontier) <- "EuclidFSATTClass"
+        return(frontier)        
+    }
+    if(QOI == 'FSATT' & metric == 'Euclid' & ratio == 'fixed'){
+        frontier <- EuclidFrontierFSATT(treatment = treatment,
+                                       outcome = outcome,
+                                       dataset = dataset,
+                                       ratio = ratio,
+                                       match.on = match.on,
+                                       keep.vars = keep.vars)
+        class(frontier) <- "EuclidFSATTClass"
+        return(frontier)
+    }
     if(QOI == 'SATT' & metric == 'L1' & ratio == 'fixed'){
         frontier <- L1FrontierSATT(treatment = treatment,
                                    outcome = outcome,

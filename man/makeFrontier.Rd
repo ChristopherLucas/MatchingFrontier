@@ -41,7 +41,8 @@ makeFrontier(dataset, treatment, outcome, match.on,
   }
   \item{metric}{
     The metric used to measure imbalance. Defaults to average
-    mahalanobis distance to nearest match. The other option is L1.
+    mahalanobis distance to nearest match. The other options are 'L1'
+    and 'Euclid'.
   }
   \item{ratio}{
     Variable or fixed ratio. See King, Lucas, and Nielsen for details.
