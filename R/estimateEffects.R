@@ -17,8 +17,14 @@ function(frontier.object,
     treatment <- frontier.object$treatment
     outcome <- frontier.object$outcome
     covs <- frontier.object$match.on
+
+    specifications <- getSpecifications(covs,
+                                        treatment,
+                                        outcome,
+                                        frontier.object$dataset,
+                                        model.dependence.ests)
+
     pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
-    
     for(i in 1:length(point.inds)){
         this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
         dataset <- frontier.object$dataset[this.dat.inds,]
@@ -29,7 +35,8 @@ function(frontier.object,
                                                covs,
                                                model.dependence.ests,
                                                verbose = FALSE,
-                                               frontier.object$ratio)
+                                               frontier.object$ratio,
+                                               specifications = specifications)
 
         if(frontier.object$ratio == 'variable'){
             w <- makeWeights(dataset, treatment)
