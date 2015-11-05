@@ -8,7 +8,8 @@ export(plotFrontier,
        plotEstimates,
        parallelPlot,
        estimateEffects,
-       modelDependence
+       modelDependence,
+       plotPrunedMeans
        )
 S3method(print,L1SATTClass)
 S3method(print,MahalFSATTClass)
