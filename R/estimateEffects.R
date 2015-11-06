@@ -5,7 +5,8 @@ function(frontier.object,
          mod.dependence.formula = NULL,
          continuous.vars = NULL,
          seed = 1,
-         model.dependence.ests = 100){
+         model.dependence.ests = 100,
+         means.as.cutpoints = TRUE){
     
     set.seed(seed)
     
