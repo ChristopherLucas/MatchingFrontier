@@ -81,24 +81,24 @@ function(dataset,
             covariates <- colnames(dataset)[!(colnames(dataset) %in% c(treatment, outcome, 'matched.to'))]
         }
         
-        if(is.null(mod.dependence.ests) & is.null(specifications)){
-            stop("Must specify either 'specifications' or 'mod.dependence.ests'.")
+        if(is.null(model.dependence.ests) & is.null(specifications)){
+            stop("Must specify either 'specifications' or 'model.dependence.ests'.")
         }
         
         if(is.null(specifications)){
-            specifications <- getSpecifications(covariates, treatment, outcome, dataset, mod.dependence.ests)
+            specifications <- getSpecifications(covariates, treatment, outcome, dataset, model.dependence.ests)
         }    
         
-        if(is.null(mod.dependence.ests)){
-            mod.dependence.ests <- length(specifications)
+        if(is.null(model.dependence.ests)){
+            model.dependence.ests <- length(specifications)
         }    
         
-        if(length(specifications) != mod.dependence.ests){
-            stop("'mod.dependence.ests' must equal the length of 'specifications'.")
+        if(length(specifications) != model.dependence.ests){
+            stop("'model.dependence.ests' must equal the length of 'specifications'.")
         }
         
         coef.dist <- c()
-        for(k in 1:mod.dependence.ests){
+        for(k in 1:model.dependence.ests){
             formula <- specifications[k]
                                         # run model
             if(ratio == 'variable'){
