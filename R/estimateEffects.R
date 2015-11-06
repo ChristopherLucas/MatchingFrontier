@@ -105,9 +105,8 @@ function(frontier.object,
             
             
             coefs[i] <- coef(results)[frontier.object$treatment]
-            CIs[[i]] <- confint(results)[frontier.object$treatment,]       
-            mod.dependence[[i]] <- c(coefs[i] - this.sig.hat, coefs[i] + this.sig.hat)
-            
+            CIs[[i]] <- confint(results)[frontier.object$treatment,]
+            mod.dependence[[i]] <- c(coefs[[i]] - this.sig.hat, coefs[[i]] + this.sig.hat)
             setTxtProgressBar(pb, i)
         }
         close(pb)
