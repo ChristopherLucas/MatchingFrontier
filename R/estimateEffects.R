@@ -2,6 +2,8 @@ estimateEffects <-
 function(frontier.object,
          formula,
          prop.estimated = 1,
+         mod.dependence.formula = NULL,
+         continuous.vars = NULL,
          seed = 1,
          model.dependence.ests = 100){
     
@@ -15,45 +17,102 @@ function(frontier.object,
     mod.dependence <- vector(mode="list", length= length(point.inds))
 
     treatment <- frontier.object$treatment
-    outcome <- frontier.object$outcome
-    covs <- frontier.object$match.on
-
-    specifications <- getSpecifications(covs,
-                                        treatment,
-                                        outcome,
-                                        frontier.object$dataset,
-                                        model.dependence.ests)
-
-    pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
-    for(i in 1:length(point.inds)){
-        this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
-        dataset <- frontier.object$dataset[this.dat.inds,]
-
-        this.mod.dependence <- modelDependence(dataset,
-                                               treatment,
-                                               outcome,
-                                               covs,
-                                               model.dependence.ests,
-                                               verbose = FALSE,
-                                               frontier.object$ratio,
-                                               specifications = specifications)
-
-        if(frontier.object$ratio == 'variable'){
-            w <- makeWeights(dataset, treatment)
-            dataset$w <- w            
-            results <- lm(formula, dataset, weights = w)
-        } else {
-            results <- lm(formula, dataset)
-        }
-                
-        coefs[i] <- coef(results)[frontier.object$treatment]
-        CIs[[i]] <- confint(results)[frontier.object$treatment,]       
-        mod.dependence[[i]] <- this.mod.dependence
+  
+    if(is.null(mod.dependence.formula)){
+        outcome <- frontier.object$outcome
+        covs <- frontier.object$match.on
+        specifications <- getSpecifications(covs,
+                                            treatment,
+                                            outcome,
+                                            frontier.object$dataset,
+                                            model.dependence.ests)
         
-        setTxtProgressBar(pb, i)
+        pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
+        for(i in 1:length(point.inds)){
+            this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
+            dataset <- frontier.object$dataset[this.dat.inds,]
+            
+            this.mod.dependence <- modelDependence(dataset = dataset,
+                                                   treatment = treatment,
+                                                   outcome = outcome,
+                                                   covariates = covs,
+                                                   model.dependence.ests = model.dependence.ests,
+                                                   verbose = FALSE,
+                                                   ratio = frontier.object$ratio,
+                                                   specifications = specifications)
+            
+            if(frontier.object$ratio == 'variable'){
+                w <- makeWeights(dataset, treatment)
+                dataset$w <- w            
+                results <- lm(formula, dataset, weights = w)
+            } else {
+                results <- lm(formula, dataset)
+            }
+            
+            coefs[i] <- coef(results)[frontier.object$treatment]
+            CIs[[i]] <- confint(results)[frontier.object$treatment,]       
+            mod.dependence[[i]] <- this.mod.dependence
+            
+            setTxtProgressBar(pb, i)
+        }
+        close(pb)
+        
+        return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence))
+        
+    } else {
+        if(!is.na(continuous.vars[1])){
+            if(means.as.cutpoints){
+                cutpoints <- lapply(continuous.vars, function(x) mean(frontier.object$dataset[[x]]))
+                names(cutpoints) <- continuous.vars
+            }
+            cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
+        } else{ cutpoints <- NA }
+        
+        covs <- strsplit(as.character(mod.dependence.formula[3]), '\\+')
+        covs <- unlist(lapply(covs, trim))
+        covs <- covs[!(covs %in% treatment)]
+        
+        pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
+        
+        for(i in 1:length(point.inds)){
+            this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
+            dataset <- frontier.object$dataset[this.dat.inds,]
+            
+            if(frontier.object$ratio == 'variable'){
+                w <- makeWeights(dataset, treatment)
+                dataset$w <- w            
+                results <- lm(formula, dataset, weights = w)
+            } else {
+                results <- lm(formula, dataset)
+            }
+            
+            tryCatch( 
+                this.mod.dependence <- modelDependence(dataset = dataset,
+                                                       treatment = treatment,
+                                                       base.form = mod.dependence.formula,
+                                                       verbose = FALSE,
+                                                       cutpoints = cutpoints),
+                error = function(e) this.mod.dependence <- NA
+                )
+            
+            if(!is.na(this.mod.dependence[1])){           
+                this.sig.hat <- this.mod.dependence
+                
+            } else{
+                this.sig.hat <- NA
+            }
+            
+            
+            coefs[i] <- coef(results)[frontier.object$treatment]
+            CIs[[i]] <- confint(results)[frontier.object$treatment,]       
+            mod.dependence[[i]] <- c(coefs[i] - this.sig.hat, coefs[i] + this.sig.hat)
+            
+            setTxtProgressBar(pb, i)
+        }
+        close(pb)
+        
+        return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence))
+        
     }
-    close(pb)
-    
-    return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence))
 }
 
