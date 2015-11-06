@@ -1,10 +1,10 @@
 checkArgs <-
 function(QOI, metric, ratio){
-    if(!(QOI %in% c('FSATT', 'SATT'))){
+    if(!(QOI %in% c("FSATT", "SATT"))){
         customStop("QOI must be either 'FSATT' or 'SATT'.", 'makeFrontier()')
     }
 
-    if(!(metric %in% c('L1', 'Mahal'))){
+    if(!(metric %in% c('L1', 'Mahal', 'Euclid'))){
         customStop("metric must be either 'L1' or 'Mahal'.", 'makeFrontier()')
     }
 
