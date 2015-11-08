@@ -1,5 +1,5 @@
 getCutpoint <-
-function(dataset, base.form, cov, median = TRUE){
+function(dataset, base.form, cov, median = FALSE){
     if(!median){
         mod.form <- as.formula(paste(as.character(base.form[2]),
                                      as.character(base.form[1]),
