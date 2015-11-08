@@ -65,8 +65,9 @@ function(frontier.object,
             if(means.as.cutpoints){
                 cutpoints <- lapply(continuous.vars, function(x) mean(frontier.object$dataset[[x]]))
                 names(cutpoints) <- continuous.vars
+            } else {
+                cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
             }
-            cutpoints <- getCutpointList(frontier.object$dataset, mod.dependence.formula, continuous.vars)
         } else{ cutpoints <- NA }
         
         covs <- strsplit(as.character(mod.dependence.formula[3]), '\\+')
