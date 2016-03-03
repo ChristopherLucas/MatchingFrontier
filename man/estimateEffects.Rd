@@ -50,6 +50,9 @@ estimateEffects(frontier.object, formula, prop.estimated = 1,
     mean instead of the breakpoint in a segmented regression.
     This is sometimes much faster. 
   }
+  \item{alpha}{
+    0.95 by default. Confidence interval for estimated effects. 
+  }  
 }
 \examples{
 data(lalonde)
