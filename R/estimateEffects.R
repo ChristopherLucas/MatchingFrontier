@@ -6,7 +6,8 @@ function(frontier.object,
          continuous.vars = NULL,
          seed = 1,
          model.dependence.ests = 100,
-         means.as.cutpoints = TRUE){
+         means.as.cutpoints = TRUE,
+         alpha=0.95){
     
     set.seed(seed)
     
@@ -51,7 +52,7 @@ function(frontier.object,
             }
             
             coefs[i] <- coef(results)[frontier.object$treatment]
-            CIs[[i]] <- confint(results)[frontier.object$treatment,]       
+            CIs[[i]] <- confint(results, level = alpha)[frontier.object$treatment,]       
             mod.dependence[[i]] <- this.mod.dependence
             
             setTxtProgressBar(pb, i)
@@ -105,7 +106,7 @@ function(frontier.object,
             
             
             coefs[i] <- coef(results)[frontier.object$treatment]
-            CIs[[i]] <- confint(results)[frontier.object$treatment,]
+            CIs[[i]] <- confint(results, level = alpha)[frontier.object$treatment,]
             mod.dependence[[i]] <- c(coefs[[i]] - this.sig.hat, coefs[[i]] + this.sig.hat)
             setTxtProgressBar(pb, i)
         }
