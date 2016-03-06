@@ -88,15 +88,14 @@ function(frontier.object,
                 results <- lm(formula, dataset)
             }
             
-            tryCatch( 
-                this.mod.dependence <- modelDependence(dataset = dataset,
-                                                       treatment = treatment,
-                                                       base.form = mod.dependence.formula,
-                                                       verbose = FALSE,
-                                                       cutpoints = cutpoints),
-                error = function(e) this.mod.dependence <- NA
-                )
-            
+            this.mod.dependence <- tryCatch(modelDependence(dataset = dataset,
+                                                            treatment = treatment,
+                                                            base.form = mod.dependence.formula,
+                                                            verbose = FALSE,
+                                                            cutpoints = cutpoints),
+                                            error = function(e) NA
+                                            )
+           
             if(!is.na(this.mod.dependence[1])){           
                 this.sig.hat <- this.mod.dependence
                 
