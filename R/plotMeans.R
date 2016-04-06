@@ -72,7 +72,13 @@ function(frontier.object,
             ylab <- 'Scaled means'
         }
     }
-    
+    if(exists('ylab') & typeof(ylab) == "closure"){
+        if(diff.in.means){
+            ylab <- 'Difference in scaled means'
+        }else{
+            ylab <- 'Scaled means'
+        }
+    }
     # make plot
     par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
     x <- frontier.object$frontier$Xs
