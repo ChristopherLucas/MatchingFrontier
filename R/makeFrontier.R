@@ -1,14 +1,40 @@
 makeFrontier <-
 function(dataset, treatment, outcome, match.on, 
          keep.vars = NULL, QOI = 'FSATT', metric = 'Mahal',
-         ratio = 'fixed', breaks = NULL){
+         ratio = 'fixed', breaks = NULL, distance.mat = NULL){
 
     # Check the frontier arguments 
     checkArgs(QOI, metric, ratio)
     
     # Check data and trim to suff we need
     dataset <- checkDat(dataset, treatment, outcome, match.on, keep.vars)
-    
+
+    if(QOI == 'FSATT' & metric == 'Custom' & ratio == 'variable' &
+       is.null(distance.mat) == FALSE){
+        frontier <- CustomFrontierFSATT(treatment = treatment,
+                                        outcome = outcome,
+                                        dataset = dataset,
+                                        ratio = ratio,
+                                        match.on = match.on,
+                                        keep.vars = keep.vars,
+                                        distance.mat = distance.mat)
+        class(frontier) <- "CustomFSATTClass"
+        return(frontier)        
+    }
+
+    if(QOI == 'FSATT' & metric == 'Custom' & ratio == 'fixed' &
+       is.null(distance.mat) == FALSE){
+        frontier <- CustomFrontierFSATT(treatment = treatment,
+                                        outcome = outcome,
+                                        dataset = dataset,
+                                        ratio = ratio,
+                                        match.on = match.on,
+                                        keep.vars = keep.vars,
+                                        distance.mat = distance.mat)
+        class(frontier) <- "CustomFSATTClass"
+        return(frontier)        
+    }
+
     if(QOI == 'FSATT' & metric == 'Mahal' & ratio == 'variable'){
         frontier <- MahalFrontierFSATT(treatment = treatment,
                                        outcome = outcome,
