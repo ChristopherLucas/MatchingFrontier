@@ -18,7 +18,7 @@ function(dataset, treatment, outcome, match.on,
                                         match.on = match.on,
                                         keep.vars = keep.vars,
                                         distance.mat = distance.mat)
-        class(frontier) <- "CustomFSATTClass"
+        class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
 
@@ -31,7 +31,7 @@ function(dataset, treatment, outcome, match.on,
                                         match.on = match.on,
                                         keep.vars = keep.vars,
                                         distance.mat = distance.mat)
-        class(frontier) <- "CustomFSATTClass"
+        class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
 
@@ -62,7 +62,7 @@ function(dataset, treatment, outcome, match.on,
                                        ratio = ratio,
                                        match.on = match.on,
                                        keep.vars = keep.vars)
-        class(frontier) <- "EuclidFSATTClass"
+        class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
     if(QOI == 'FSATT' & metric == 'Euclid' & ratio == 'fixed'){
@@ -72,7 +72,7 @@ function(dataset, treatment, outcome, match.on,
                                        ratio = ratio,
                                        match.on = match.on,
                                        keep.vars = keep.vars)
-        class(frontier) <- "EuclidFSATTClass"
+        class(frontier) <- "MahalFSATTClass"
         return(frontier)
     }
     if(QOI == 'SATT' & metric == 'L1' & ratio == 'fixed'){
