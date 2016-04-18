@@ -4,8 +4,8 @@ function(QOI, metric, ratio){
         customStop("QOI must be either 'FSATT' or 'SATT'.", 'makeFrontier()')
     }
 
-    if(!(metric %in% c('L1', 'Mahal', 'Euclid'))){
-        customStop("metric must be either 'L1' or 'Mahal'.", 'makeFrontier()')
+    if(!(metric %in% c('L1', 'Mahal', 'Euclid', "Custom"))){
+        customStop("metric must be either 'L1', 'Mahal', 'Euclid', or 'Custom'.", 'makeFrontier()')
     }
 
     if(!(ratio %in% c('fixed', 'variable'))){
