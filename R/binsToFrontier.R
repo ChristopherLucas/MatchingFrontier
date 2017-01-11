@@ -27,7 +27,10 @@ function(strataholder){
         }
         Ys <- c(Ys, new.L1)
         drop.order[[length(drop.order) + 1]] <- drop
-        num.control <- num.control - 1        
+        num.control <- num.control - 1
+        if(num.control == 0){
+            break
+        }
     }
     drop.order[[length(drop.order) + 1]] <- unlist(strataholder)
     
