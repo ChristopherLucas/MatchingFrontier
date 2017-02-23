@@ -50,6 +50,7 @@ function(dataset,
                 }else{
                     cutpoint <- getCutpoint(dataset, base.form, cov, median)
                 }
+                cutpoint <- unlist(cutpoint)
                 split.inds <- dataset[[cov]] < cutpoint
                 dat1 <- dataset[split.inds,]
                 dat2 <- dataset[!split.inds,]
