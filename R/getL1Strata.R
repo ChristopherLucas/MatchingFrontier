@@ -2,6 +2,10 @@ getL1Strata <-
 function(treatment, dataset, match.on, breaks){
     # Remove dropped covs
     dataset <- dataset[,match.on]
+    if(length(match.on) == 1){
+        dataset <- as.matrix(dataset)
+        colnames(dataset) <- match.on
+    }
     ## stuff borrowed from cem.main to add user defined breaks
     vnames <- colnames(dataset)
     nv <- dim(dataset)[2]
