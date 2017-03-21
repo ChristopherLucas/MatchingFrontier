@@ -17,7 +17,7 @@ function(estimates.object,
         xlim <- c(0, max(estimates.object$Xs, na.rm = TRUE))
     }
     if(is.null(ylim)){
-        ylim <- c(min(mod.dependence.mins), max(mod.dependence.maxs))
+        ylim <- c(min(mod.dependence.mins, na.rm = TRUE), max(mod.dependence.maxs, na.rm = TRUE))
     }
     print(ylim)
     plot(1, type="n", main, xlab=xlab, ylab=ylab,
