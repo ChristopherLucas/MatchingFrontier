@@ -9,7 +9,7 @@
   removed observations along the frontier.
 }
 \usage{
-plotMeans(frontier.object,
+plotPrunedMeans(frontier.object,
           xlab = 'Number of Observations Pruned',
           main = 'Means Plot',
           xlim = c(1,max(frontier.object$frontier$Xs)),
@@ -61,7 +61,7 @@ my.frontier <- makeFrontier(dataset = lalonde,
                             outcome = 're78',
                             match.on = match.on)
 
-plotMeans(my.frontier)
+plotPrunedMeans(my.frontier)
 }
 \references{
   King, Gary, Christopher Lucas, and Richard

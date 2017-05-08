@@ -10,8 +10,9 @@
 }
 \usage{
 estimateEffects(frontier.object, formula, prop.estimated = 1,
-                mod.dependence.formula, continuous.vars = NA,
-                seed = 1, means.as.cutpoints = FALSE)
+                mod.dependence.formula = NULL, continuous.vars = NA,
+                seed = 1, model.dependence.ests = 100,
+                means.as.cutpoints = TRUE, alpha=0.95)
 }
 \arguments{
   \item{frontier.object}{
@@ -44,6 +45,12 @@ estimateEffects(frontier.object, formula, prop.estimated = 1,
     The seed used before estimation of the effects. If prop.estimated
     is less than 1, this is necessary in order to replicate the
     exact plot.
+  }
+  \item{model.dependence.ests}{
+    The number of points on the frontier to estimate. Note that
+    for each point, a separate linear model must be fitted, so
+    this can greater increase run time if too large. Defaults to
+    100 points.
   }
   \item{means.as.cutpoints}{
     FALSE by default. If TRUE, cutpoints are calculated as the

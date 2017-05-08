@@ -1,3 +1,7 @@
+import(utils)
+import(stats)
+import(graphics)
+import(grDevices)
 importFrom(igraph,graph.data.frame,V,clusters)
 importFrom(MASS,parcoord)
 importFrom(segmented,segmented,seg.control)

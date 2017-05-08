@@ -1,6 +1,6 @@
 Package: MatchingFrontier
-Version: 2.0.2
-Date: 2015-03-31
+Version: 2.0.3
+Date: 2017-05-05
 Type: Package
 Title: Computation of the Balance - Sample Size Frontier in Matching Methods for Causal Inference 
 Author: Gary King, Christopher Lucas, and Richard Nielsen
@@ -12,7 +12,7 @@ Description: Returns the subset of the data with the minimum imbalance for
 	     and data export, and functions for calculating
 	     model dependence as proposed by Athey and Imbens. 
 URL: http://projects.iq.harvard.edu/frontier
-Imports: MASS, igraph, segmented
+Imports: MASS, igraph, segmented, utils, stats, graphics, grDevices
 Suggests: stargazer
 LazyData: true
 License: GPL-3

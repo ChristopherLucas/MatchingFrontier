@@ -12,7 +12,7 @@
 \usage{
 makeFrontier(dataset, treatment, outcome, match.on, 
              keep.vars = NULL, QOI = 'FSATT', metric = 'Mahal',
-             ratio = 'fixed', breaks = NULL)
+             ratio = 'fixed', breaks = NULL, distance.mat = NULL)
 }
 \arguments{
   \item{dataset}{
@@ -49,6 +49,9 @@ makeFrontier(dataset, treatment, outcome, match.on,
   }
   \item{breaks}{
     Can be used with L1 to provide user-specified breaks.
+  }
+  \item{distance.mat}{
+    A treatment by control distance matrix.
   }
 }
 \examples{

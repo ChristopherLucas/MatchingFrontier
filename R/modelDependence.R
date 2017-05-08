@@ -9,8 +9,9 @@ function(dataset,
          specifications = NULL,
          base.form = NULL,
          cutpoints = NULL,
-         median = TRUE){
-    set.seed(1)
+         median = TRUE,
+         seed = 02138){
+    set.seed(seed)
     
     if(!is.null(base.form)){
         base.form <- as.formula(base.form)
