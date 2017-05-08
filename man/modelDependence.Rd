@@ -89,7 +89,8 @@ base.form <- as.formula('re78 ~ treat + age + education
                          + black + hispanic + married +
                          nodegree + re74 + re75')
 
-md <- modelDependence(lalonde, treatment, base.form,
+md <- modelDependence(dataset = lalonde, treatment = treatment,
+                      base.form = base.form,
                       cutpoints = list('age' = mean(lalonde$age)))
 print(md)
 }
