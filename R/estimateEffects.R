@@ -1,6 +1,6 @@
 estimateEffects <-
 function(frontier.object,
-         formula,
+         my.form,
          prop.estimated = 1,
          mod.dependence.formula = NULL,
          continuous.vars = NA,
@@ -18,7 +18,7 @@ function(frontier.object,
     CIs <- vector(mode="list", length= length(point.inds))
     mod.dependence <- vector(mode="list", length= length(point.inds))
 
-    outcome <- all.vars(as.formula(myformula))[1]
+    outcome <- all.vars(as.formula(my.form))[1]
     treatment <- frontier.object$treatment
   
     if(is.null(mod.dependence.formula)){
@@ -46,9 +46,9 @@ function(frontier.object,
             if(frontier.object$ratio == 'variable'){
                 w <- makeWeights(dataset, treatment)
                 dataset$w <- w            
-                results <- lm(formula, dataset, weights = w)
+                results <- lm(my.form, dataset, weights = w)
             } else {
-                results <- lm(formula, dataset)
+                results <- lm(my.form, dataset)
             }
             
             coefs[i] <- coef(results)[frontier.object$treatment]
@@ -84,9 +84,9 @@ function(frontier.object,
             if(frontier.object$ratio == 'variable'){
                 w <- makeWeights(dataset, treatment)
                 dataset$w <- w            
-                results <- lm(formula, dataset, weights = w)
+                results <- lm(my.form, dataset, weights = w)
             } else {
-                results <- lm(formula, dataset)
+                results <- lm(my.form, dataset)
             }
             
             this.mod.dependence <- tryCatch(modelDependence(dataset = dataset,
