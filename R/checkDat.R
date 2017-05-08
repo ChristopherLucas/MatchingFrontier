@@ -1,6 +1,6 @@
 checkDat <-
-function(dataset, treatment, outcome, match.on, keep.vars){
-    keep.columns <- unique(c(treatment, outcome, match.on, keep.vars))
+function(dataset, treatment, match.on, keep.vars){
+    keep.columns <- unique(c(treatment, match.on, keep.vars))
    
     # Check if all the variables are in the data
     if(sum(!(keep.columns %in% colnames(dataset))) > 0){ 
@@ -14,9 +14,6 @@ function(dataset, treatment, outcome, match.on, keep.vars){
     # Make sure user isn't trying to match on the treatment or the outcome
     if(treatment %in% match.on){
         customStop("the treatment is in 'match.on'. You shouldn't match on the treatment, that's bad.", 'makeFrontier()')
-    }
-    if(outcome %in% match.on){
-        customStop("the outcome is in 'match.on'. You shouldn't match on the treatment, that's bad.", 'makeFrontier()')
     }
 
     # Check treatment

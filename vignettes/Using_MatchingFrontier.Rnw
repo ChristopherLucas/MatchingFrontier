@@ -333,7 +333,6 @@ match.on # Print variables in match.on
 # Make the mahalanobis frontier
 mahal.frontier <- makeFrontier(dataset = lalonde, 
                             treatment = 'treat', 
-                            outcome = 're78', 
                             match.on = match.on)
 mahal.frontier
 @ 
@@ -359,7 +358,6 @@ follows.\footnote{For technical explanations of these arguments, we
 # Make the L1 frontier
 L1.frontier <- makeFrontier(dataset = lalonde, 
                             treatment = 'treat', 
-                            outcome = 're78', 
                             match.on = match.on,
                             QOI = 'SATT',
                             metric = 'L1',

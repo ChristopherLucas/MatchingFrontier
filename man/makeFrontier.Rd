@@ -10,7 +10,7 @@
     effects along the balance - sample size frontier.
 }
 \usage{
-makeFrontier(dataset, treatment, outcome, match.on, 
+makeFrontier(dataset, treatment, match.on, 
              keep.vars = NULL, QOI = 'FSATT', metric = 'Mahal',
              ratio = 'fixed', breaks = NULL, distance.mat = NULL)
 }
@@ -21,9 +21,6 @@ makeFrontier(dataset, treatment, outcome, match.on,
   }
   \item{treatment}{
     The name of the treatment.
-  }
-  \item{outcome}{
-    The name of the outcome.
   }
   \item{match.on}{
     A vector of colnames indicating which variables are to be matched on.
@@ -60,7 +57,6 @@ data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
-                            outcome = 're78',
                             match.on = match.on)
 }
 \references{

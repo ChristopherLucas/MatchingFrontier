@@ -18,10 +18,10 @@ function(frontier.object,
     CIs <- vector(mode="list", length= length(point.inds))
     mod.dependence <- vector(mode="list", length= length(point.inds))
 
+    outcome <- all.vars(as.formula(myformula))[1]
     treatment <- frontier.object$treatment
   
     if(is.null(mod.dependence.formula)){
-        outcome <- frontier.object$outcome
         covs <- frontier.object$match.on
         specifications <- getSpecifications(covs,
                                             treatment,

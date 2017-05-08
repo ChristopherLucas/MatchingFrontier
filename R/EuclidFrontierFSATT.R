@@ -1,5 +1,5 @@
 EuclidFrontierFSATT <-
-function(treatment, outcome, dataset, ratio, match.on, keep.vars){    
+function(treatment, dataset, ratio, match.on, keep.vars){    
     distance.mat <- calculateEdist(dataset, treatment, match.on)
     frontier <- distToFrontier(distance.mat)
     dataset$matched.to <- frontier$matched.to
@@ -7,7 +7,6 @@ function(treatment, outcome, dataset, ratio, match.on, keep.vars){
     out <- list(
         frontier = frontier,
         treatment = treatment,
-        outcome = outcome,
         QOI = 'FSATT',
         metric = 'Mahal',
         ratio = ratio,
