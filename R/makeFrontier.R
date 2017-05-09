@@ -1,13 +1,13 @@
 makeFrontier <-
-    function(dataset, treatment, match.on, keep.vars = NULL,
-             QOI = 'FSATT', metric = 'Mahal', ratio = 'fixed',
-             breaks = NULL, distance.mat = NULL){
+    function(dataset, treatment, match.on, QOI = 'FSATT',
+             metric = 'Mahal', ratio = 'fixed', breaks = NULL,
+             distance.mat = NULL){
 
     # Check the frontier arguments 
     checkArgs(QOI, metric, ratio)
     
     # Check data and trim to suff we need
-    dataset <- checkDat(dataset, treatment, match.on, keep.vars)
+    dataset <- checkDat(dataset, treatment, match.on)
 
     if(QOI == 'FSATT' & metric == 'Custom' & ratio == 'variable' &
        is.null(distance.mat) == FALSE){
@@ -15,7 +15,6 @@ makeFrontier <-
                                         dataset = dataset,
                                         ratio = ratio,
                                         match.on = match.on,
-                                        keep.vars = keep.vars,
                                         distance.mat = distance.mat)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)        
@@ -27,7 +26,6 @@ makeFrontier <-
                                         dataset = dataset,
                                         ratio = ratio,
                                         match.on = match.on,
-                                        keep.vars = keep.vars,
                                         distance.mat = distance.mat)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)        
@@ -37,8 +35,7 @@ makeFrontier <-
         frontier <- MahalFrontierFSATT(treatment = treatment,
                                        dataset = dataset,
                                        ratio = ratio,
-                                       match.on = match.on,
-                                       keep.vars = keep.vars)
+                                       match.on = match.on)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
@@ -46,8 +43,7 @@ makeFrontier <-
         frontier <- MahalFrontierFSATT(treatment = treatment,
                                        dataset = dataset,
                                        ratio = ratio,
-                                       match.on = match.on,
-                                       keep.vars = keep.vars)
+                                       match.on = match.on)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)
     }
@@ -55,8 +51,7 @@ makeFrontier <-
         frontier <- EuclidFrontierFSATT(treatment = treatment,
                                        dataset = dataset,
                                        ratio = ratio,
-                                       match.on = match.on,
-                                       keep.vars = keep.vars)
+                                       match.on = match.on)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)        
     }
@@ -64,8 +59,7 @@ makeFrontier <-
         frontier <- EuclidFrontierFSATT(treatment = treatment,
                                        dataset = dataset,
                                        ratio = ratio,
-                                       match.on = match.on,
-                                       keep.vars = keep.vars)
+                                       match.on = match.on)
         class(frontier) <- "MahalFSATTClass"
         return(frontier)
     }
@@ -73,8 +67,7 @@ makeFrontier <-
         frontier <- L1FrontierSATT(treatment = treatment,
                                    dataset = dataset,
                                    breaks = breaks,
-                                   match.on = match.on,
-                                   keep.vars = keep.vars)
+                                   match.on = match.on)
         class(frontier) <- "L1SATTClass"
         return(frontier)
     }

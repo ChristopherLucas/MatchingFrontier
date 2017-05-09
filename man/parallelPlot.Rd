@@ -43,7 +43,6 @@ data(lalonde)
 match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78', 'treat'))]
 mahal.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
-                            outcome = 're78',
                             match.on = match.on)
 parallelPlot(mahal.frontier,
              N = 300,

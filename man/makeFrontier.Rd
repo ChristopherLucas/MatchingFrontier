@@ -10,9 +10,9 @@
     effects along the balance - sample size frontier.
 }
 \usage{
-makeFrontier(dataset, treatment, match.on, 
-             keep.vars = NULL, QOI = 'FSATT', metric = 'Mahal',
-             ratio = 'fixed', breaks = NULL, distance.mat = NULL)
+makeFrontier(dataset, treatment, match.on, QOI = 'FSATT', metric =
+             'Mahal', ratio = 'fixed', breaks = NULL, distance.mat =
+             NULL)
 }
 \arguments{
   \item{dataset}{
@@ -24,12 +24,6 @@ makeFrontier(dataset, treatment, match.on,
   }
   \item{match.on}{
     A vector of colnames indicating which variables are to be matched on.
-  }
-  \item{keep.vars}{
-    A character vector of variable names that are not in treatment,
-    outcome, or 'match.on' but that the user would like to store
-    in the data, either for calculation of model depedence
-    intervals or for use in exported data sets. 
   }
   \item{QOI}{
     The quantity of interest to be estimated. By default, feasible

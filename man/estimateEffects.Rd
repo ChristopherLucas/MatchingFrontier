@@ -69,7 +69,6 @@ match.on <- colnames(lalonde)[!(colnames(lalonde) \%in\% c('re78',
 
 my.frontier <- makeFrontier(dataset = lalonde,
                             treatment = 'treat',
-                            outcome = 're78',
                             match.on = match.on)
 
 mod.dependence.form <- as.formula(re78 ~ treat + age + black + education
