@@ -5,15 +5,16 @@ import(grDevices)
 importFrom(igraph,graph.data.frame,V,clusters)
 importFrom(MASS,parcoord)
 importFrom(segmented,segmented,seg.control)
-export(plotFrontier,
-       plotMeans,
+export(plotMeans,
        generateDataset,
        makeFrontier,
-       plotEstimates,
        parallelPlot,
        estimateEffects,
        modelDependence,
-       plotPrunedMeans
+       plotPrunedMeans       
        )
+S3method(plot,L1SATTClass)
+S3method(plot,MahalFSATTClass)
+S3method(plot,frontierEstimates)
 S3method(print,L1SATTClass)
 S3method(print,MahalFSATTClass)

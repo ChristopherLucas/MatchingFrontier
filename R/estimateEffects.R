@@ -111,9 +111,9 @@ function(frontier.object,
             setTxtProgressBar(pb, i)
         }
         close(pb)
-        
-        return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence))
-        
+        frontierEstimates <- list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence)
+        class(frontierEstimates) <- "frontierEstimates"
+        return(frontierEstimates)        
     }
 }
 

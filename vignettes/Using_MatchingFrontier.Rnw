@@ -252,9 +252,11 @@ illustrate this workflow with the LaLonde data
     \node[make]{\code{makeFrontier()}}
         child { 
             node[estimate] {\code{estimateEffects()}}
-            child { node[plotting] {\code{plotFrontier()} 
-                                    \code{plotEstimates()} 
-                                    \code{plotMeans()}} 
+            child { node[plotting] {\code{plot()} 
+                                    \code{plotMeans()}
+                                    \code{plotPrunedMeans()}
+                                    \code{parallelPlot}
+              } 
               edge from parent node[left,draw=none]{Visualize the full frontier} 
             }
             child { node[export]{\code{generateDataset()} 
@@ -438,7 +440,7 @@ it.
 \begin{minipage}{0.45\textwidth}
 <<l1_frontier_plain, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=
 # Plot frontier
-plotFrontier(L1.frontier)
+plot(L1.frontier)
 @ 
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
@@ -460,15 +462,15 @@ example, along with the corresponding code.
 \begin{minipage}{0.45\textwidth}
 <<l1_frontier_pretty, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=  
 # Plot frontier
-plotFrontier(L1.frontier,
-             cex.lab = 1.4,
-             cex.axis = 1.4,
-             type = 'l',
-             panel.first = 
-                grid(NULL, 
-                     NULL, 
-                     lwd = 2)
-             )
+plot(L1.frontier,
+     cex.lab = 1.4,
+     cex.axis = 1.4,
+     type = 'l',
+     panel.first = 
+         grid(NULL, 
+              NULL, 
+              lwd = 2)
+     )
 @ 
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
@@ -489,18 +491,18 @@ results.
 \begin{minipage}{0.45\textwidth}
 <<l1_frontier_est, eval=TRUE, echo=TRUE, fig = TRUE, include = FALSE>>=    
 # Plot estimates
-plotEstimates(L1.estimates, 
-              ylim = 
-                  c(-10000, 
-                    3000),
-              cex.lab = 1.4,
-              cex.axis = 1.4,
-              panel.first = 
-                 grid(NULL,
+plot(L1.estimates, 
+     ylim = 
+         c(-10000, 
+           3000),
+     cex.lab = 1.4,
+     cex.axis = 1.4,
+     panel.first = 
+         grid(NULL,
                       NULL,
-                      lwd = 2,
+              lwd = 2,
                       )
-              )
+     )
 @ 
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
