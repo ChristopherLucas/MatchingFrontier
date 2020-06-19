@@ -16,6 +16,11 @@ function(dataset, treatment, match.on){
         customStop("missing values in the data; remove them (or impute) and try again.", 'makeFrontier()')
     }
     
+    # Check if a variable name is repeated twice in match.on
+    if (length(match.on) != length(unique(match.on))){
+        customStop("repeated variables in match.on; remove them and try again.", 'makeFrontier()')
+    } 
+    
     rownames(dataset) <- 1:nrow(dataset)
     return(dataset)
 
