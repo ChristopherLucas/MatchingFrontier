@@ -18,10 +18,10 @@ function(dataset, treatment, match.on){
     
     # Check if a variable name is repeated twice in match.on
     if (length(match.on) != length(unique(match.on))){
-        customStop("repeated variables in match.on; remove them and try again.", 'makeFrontier()')
+        customStop("repeated variable names in match.on; remove duplications and try again.", 'makeFrontier()')
     } 
     
     rownames(dataset) <- 1:nrow(dataset)
     return(dataset)
-
 }
+
