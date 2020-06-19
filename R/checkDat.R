@@ -21,6 +21,8 @@ function(dataset, treatment, match.on){
         customStop("repeated variable names in match.on; remove duplications and try again.", 'makeFrontier()')
     } 
     
+    # Convert the dataset to data.frame
+    dataset <- as.data.frame(dataset)
     rownames(dataset) <- 1:nrow(dataset)
     return(dataset)
 }
