@@ -25,7 +25,6 @@ function(dataset, treatment, match.on){
     dataset <- as.data.frame(dataset)
     rownames(dataset) <- 1:nrow(dataset)
     
-    
     # Covert the treatment variable to a 0-1 numeric
     dataset[, treatment] <- as.numeric(dataset[, treatment])
     
