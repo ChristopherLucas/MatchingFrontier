@@ -80,14 +80,14 @@ function(frontier.object,
         }
     }
     # make plot
-    par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
+    par(oma=c(0, 0, 0, 5))
     x <- frontier.object$frontier$Xs
     plot(1, type='n', main=main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab)
     for(i in 1:ncol(covs.mat)){
         this.y <- covs.mat[, colnames(covs.mat)[i]]
         points(x, this.y, type = 'l', col = cols[i])
     }
-
-    legend("topright", inset=c(-0.325,0), lty=c(1,1), legend=colnames(covs.mat), col = cols, title="Group")
+    
+    legend(par('usr')[2], par('usr')[4], bty='n', xpd=NA, lty=c(1,1), legend=colnames(covs.mat), col = cols, title="Group")    
 }    
 
