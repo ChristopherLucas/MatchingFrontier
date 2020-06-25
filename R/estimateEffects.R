@@ -7,7 +7,7 @@ function(frontier.object,
          seed = 1,
          model.dependence.ests = 100,
          means.as.cutpoints = TRUE,
-         CI = TRUE,
+         Athey.Imbens.intervals = TRUE,
          alpha=0.95){
     
     set.seed(seed)
@@ -107,7 +107,7 @@ function(frontier.object,
             
             
             coefs[i] <- coef(results)[frontier.object$treatment]
-            if(CI==TRUE){
+            if(Athey.Imbens.intervals == TRUE){
               CIs[[i]] <- confint(results, level = alpha)[frontier.object$treatment,]
             } else{
                 CIs[[i]] <- NA
