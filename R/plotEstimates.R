@@ -20,7 +20,7 @@ function(estimates.object,
         ylim <- c(min(mod.dependence.mins, na.rm = TRUE), max(mod.dependence.maxs, na.rm = TRUE))
     }
     print(ylim)
-    plot(1, type="n", main, xlab=xlab, ylab=ylab,
+    plot(1, type="n", main=main, xlab=xlab, ylab=ylab,
          xlim = xlim,
          ylim = ylim,
          ...)
@@ -31,6 +31,7 @@ function(estimates.object,
     y1 <- mod.dependence.maxs
 
     remove <- (is.na(x0) | is.na(x1) | is.na(y0) | is.na(y1))
+    
     polygon(c(x0, x1),
             c(y0, y1),
             col = mod.dependence.col,
