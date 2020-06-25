@@ -49,7 +49,7 @@ function(frontier.object,
     # make plot
     par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
     x <- frontier.object$frontier$Xs
-    plot(1, type='n', xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab)
+    plot(1, type='n', main = main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab)
     for(i in 1:ncol(covs.mat)){
         this.y <- covs.mat[, colnames(covs.mat)[i]]
         points(x, this.y, type = 'l', col = cols[i])
