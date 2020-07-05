@@ -7,12 +7,23 @@ function(frontier.object,
          seed = 1,
          model.dependence.ests = 100,
          means.as.cutpoints = TRUE,
-         Athey.Imbens.intervals = TRUE,
+         Athey.Imbens = FALSE,
          alpha=0.95){
     
     set.seed(seed)
     
-    # These are the points that we'll estimate
+  # Check if specify a base specification model when choosing to estimate the Athey-Imbens intervals   
+    if(Athey.Imbens = TRUE & mod.dependence.formula = NULL){
+      msg <- c("must specify 'model.dependence.formula' if Athey.Imbens is set to TRUE.")
+      customStop(msg, 'estimateEffects()')
+    } 
+    
+    if(Athey.Imbens = FALSE & is.null(mod.dependence.formula) = FALSE){
+      msg <- c("please don't specify 'model.dependence.formula' if Athey.Imbens is set to FALSE.")
+      customStop(msg, 'estimateEffects()')
+    } 
+  
+  # These are the points that we'll estimate
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
     coefs <- vector(mode="list", length = length(point.inds))
@@ -60,7 +71,7 @@ function(frontier.object,
         }
         close(pb)
         
-        return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence))
+        return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence, method = "simulated intervals"))
         
     } else {
         if(!is.na(continuous.vars[1])){
@@ -107,16 +118,12 @@ function(frontier.object,
             
             
             coefs[i] <- coef(results)[frontier.object$treatment]
-            if(Athey.Imbens.intervals == TRUE){
-              CIs[[i]] <- confint(results, level = alpha)[frontier.object$treatment,]
-            } else{
-                CIs[[i]] <- NA
-              }
+            CIs[[i]] <- confint(results, level = alpha)[frontier.object$treatment,]
             mod.dependence[[i]] <- c(coefs[[i]] - this.sig.hat, coefs[[i]] + this.sig.hat)
             setTxtProgressBar(pb, i)
         }
         close(pb)
-        frontierEstimates <- list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence)
+        frontierEstimates <- list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence, method = "Athey-Imbens intervals")
         class(frontierEstimates) <- "frontierEstimates"
         return(frontierEstimates)        
     }
