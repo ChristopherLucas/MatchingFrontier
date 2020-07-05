@@ -8,7 +8,7 @@ function(frontier.object,
          col = 'red',
          ...){
   x <- frontier.object$frontier$Xs
-  N <- sum(lalonde.frontier$dataset[, lalonde.frontier$treatment])
+  N <- sum(frontier.object$dataset[, frontier.object$treatment])
   pruned.treat <- c()
   for(i in 1: length(x)){
     pruned.treat <- c(pruned.treat, sum(frontier.object$frontier$drop.order[[i]] <= N))
