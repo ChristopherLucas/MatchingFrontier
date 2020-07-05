@@ -10,7 +10,10 @@ function(dataset, base.form, cov, median = FALSE){
         } else{
             base.mod <- lm(mod.form, data = dataset)
         }
-        
+        if(median(dataset[[cov]], na.rm = T) == min(dataset[[cov]], na.rm = T)){
+            msg <- paste('the means.as.cutpoints must set to be TRUE or remove the variable', cov, 'from the argument continuous.vars. Reason: the minimum and median of', cov, 'are equal.', sep = '')
+            customStop(msg, 'estimateEffects()')
+        } 
         seg.reg <- segmented(base.mod, seg.Z=mod.form[c(1,3)], psi = median(dataset[[cov]]), control = seg.control(it.max = 10000))
         cutpoint <- seg.reg$psi[2]
         print(cov)
