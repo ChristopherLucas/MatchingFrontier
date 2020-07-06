@@ -14,12 +14,12 @@ function(frontier.object,
     
   # Check if specify a base specification model when choosing to estimate the Athey-Imbens intervals   
     if(Athey.Imbens = TRUE & mod.dependence.formula = NULL){
-      msg <- c("must specify 'model.dependence.formula' if Athey.Imbens is set to TRUE.")
+      msg <- c("please specify `model.dependence.formula` if Athey.Imbens is set to be TRUE.")
       customStop(msg, 'estimateEffects()')
     } 
     
     if(Athey.Imbens = FALSE & is.null(mod.dependence.formula) = FALSE){
-      msg <- c("please don't specify 'model.dependence.formula' if Athey.Imbens is set to FALSE.")
+      msg <- c("please don't specify `model.dependence.formula` if Athey.Imbens is set to be FALSE.")
       customStop(msg, 'estimateEffects()')
     } 
   
