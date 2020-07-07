@@ -2,7 +2,7 @@ getCutpoint <-
 function(dataset, base.form, cov, median = FALSE){
     if(!median){
         if(median(dataset[[cov]], na.rm = T) == min(dataset[[cov]], na.rm = T)){
-            msg <- paste('the Athey-Imbens intervals cannot be calculated since the minimum and median of ', cov, ' are equal. Solutions: (1)set the argument `means.as.cutpoints` to be TRUE; or (2)remove the variable ', cov, ' from the argument `continuous.vars`; or (3)set the argument `Athey.Imbens` to be FALSE.', sep = '')
+            msg <- paste('the Athey-Imbens intervals cannot be calculated since the minimum and median of ', cov, ' are equal. Solutions: (1)set the argument `means.as.cutpoints` to be TRUE; or (2)set the argument `Athey.Imbens` to be FALSE.', sep = '')
             customStop(msg, 'estimateEffects()')
         } 
         mod.form <- as.formula(paste(as.character(base.form[2]),
@@ -21,7 +21,7 @@ function(dataset, base.form, cov, median = FALSE){
         print(cutpoint)
     }
     else{
-        cutpoint <- median(dataset[[cov]])
+        cutpoint <- median(dataset[[cov]], na.rm = T)
     }
     return(cutpoint)
 }
