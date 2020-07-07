@@ -16,13 +16,10 @@ function(frontier.object,
   pruned.treat <- cumsum(pruned.treat)
   
   # make the plot
-  plot(1, type='n', main = main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab)
+  plot(1, type='n', main = main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...)
   this.y <- c()
   for(i in 1:length(x)){
        this.y[i] <- (N - pruned.treat[i])/ (nrow(frontier.object$dataset) - x[i])
   }
   points(x, this.y, type = 'l', col = col)
 }
-
-
-
