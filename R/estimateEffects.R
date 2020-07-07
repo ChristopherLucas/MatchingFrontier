@@ -1,6 +1,7 @@
 estimateEffects <-
 function(frontier.object,
          my.form,
+         glm.family = NULL,
          prop.estimated = 1,
          mod.dependence.formula = NULL,
          continuous.vars = NA,
@@ -12,6 +13,7 @@ function(frontier.object,
     
     set.seed(seed)
     
+    if(is.null(glm.family)){
   # Check if specify a base specification model when choosing to estimate the Athey-Imbens intervals   
     if(Athey.Imbens = TRUE & mod.dependence.formula = NULL){
       msg <- c("please specify `model.dependence.formula` if Athey.Imbens is set to be TRUE.")
@@ -126,6 +128,24 @@ function(frontier.object,
         frontierEstimates <- list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence, method = "Athey-Imbens intervals")
         class(frontierEstimates) <- "frontierEstimates"
         return(frontierEstimates)        
+    }} else{
+      # These are the points that we'll estimate
+      point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
+                                round(length(frontier.object$frontier$Xs) * prop.estimated)))
+      coefs <- vector(mode="list", length = length(point.inds))
+      CIs <- vector(mode="list", length= length(point.inds))
+      mod.dependence <- vector(mode="list", length= length(point.inds))
+      
+      outcome <- all.vars(as.formula(my.form))[1]
+      treatment <- frontier.object$treatment
+      
+      covs <- frontier.object$match.on
+      specifications <- getSpecifications(covs,
+                                          treatment,
+                                          outcome,
+                                          frontier.object$dataset,
+                                          model.dependence.ests)
+      
     }
 }
 
