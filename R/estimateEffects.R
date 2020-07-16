@@ -15,12 +15,12 @@ function(frontier.object,
     
     if(is.null(glm.family)){
   # Check if specify a base specification model when choosing to estimate the Athey-Imbens intervals   
-    if(Athey.Imbens = TRUE & mod.dependence.formula = NULL){
+    if(Athey.Imbens == TRUE & is.null(mod.dependence.formula) == TRUE){
       msg <- c("please specify `model.dependence.formula` if `Athey.Imbens` is set to be TRUE.")
       customStop(msg, 'estimateEffects()')
     } 
     
-    if(Athey.Imbens = FALSE & is.null(mod.dependence.formula) = FALSE){
+    if(Athey.Imbens == FALSE & is.null(mod.dependence.formula) == FALSE){
       msg <- c("please don't specify `model.dependence.formula` if `Athey.Imbens` is set to be FALSE.")
       customStop(msg, 'estimateEffects()')
     } 
@@ -130,7 +130,7 @@ function(frontier.object,
     }} else{
       # Warning that Athey-Imbens intervals don't work for GLM
       if(Athey.Imbens == TRUE){
-        msg <- c("please change 'Athey.Imbens' to be FALSE since the Athey-Imbens model-dependence intervals don't work for GLM.")
+        msg <- c("please set 'Athey.Imbens' to be FALSE since the Athey-Imbens model-dependence intervals don't work for GLM.")
         customStop(msg, 'estimateEffects()')
       }
       
