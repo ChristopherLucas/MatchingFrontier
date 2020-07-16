@@ -5,6 +5,7 @@ import(grDevices)
 importFrom(igraph,graph.data.frame,V,clusters)
 importFrom(MASS,parcoord)
 importFrom(segmented,segmented,seg.control)
+importFrom(margins, marginal_effects)
 export(plotMeans,
        generateDataset,
        makeFrontier,
