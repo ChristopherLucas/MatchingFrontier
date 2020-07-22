@@ -11,7 +11,6 @@ function(frontier.object,
          Athey.Imbens = FALSE,
          marginal = FALSE,
          alpha=0.95){
-    
     set.seed(seed)
   
     # These are the points that we'll estimate
@@ -77,7 +76,7 @@ function(frontier.object,
         
         return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence, method = "simulated intervals"))
         
-    } else {
+    }else{
         if(!is.na(continuous.vars[1])){
             if(means.as.cutpoints){
                 cutpoints <- lapply(continuous.vars, function(x) mean(frontier.object$dataset[[x]]))
@@ -92,7 +91,6 @@ function(frontier.object,
         covs <- covs[!(covs %in% treatment)]
         
         pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
-        
         for(i in 1:length(point.inds)){
             this.dat.inds <- unlist(frontier.object$frontier$drop.order[point.inds[i]:length(frontier.object$frontier$drop.order)])
             dataset <- frontier.object$dataset[this.dat.inds,]
@@ -129,7 +127,10 @@ function(frontier.object,
         frontierEstimates <- list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence, method = "Athey-Imbens intervals")
         class(frontierEstimates) <- "frontierEstimates"
         return(frontierEstimates)        
-    }} else{
+    }
+    }
+    
+    if(!is.null(glm.family)){
       # Warning that Athey-Imbens intervals don't work for GLM
       if(Athey.Imbens == TRUE){
         msg <- c("the Athey-Imbens model-dependence intervals are not calculable for GLM.")
@@ -205,12 +206,13 @@ function(frontier.object,
         
         AMEs[i] <- results$AME
         CIs[[i]] <- results[, c("lower", "upper")]     
-        mod.dependence[[i]] <- this.mod.dependence}
+        mod.dependence[[i]] <- this.mod.dependence
       
-      setTxtProgressBar(pb, i)
+        setTxtProgressBar(pb, i)
     }
     close(pb)
     return(list(Xs = frontier.object$frontier$Xs[point.inds], AMEs = unlist(AMEs), CIs = CIs, mod.dependence = mod.dependence, method = "simulated AME"))
     }}
+}
 
 
