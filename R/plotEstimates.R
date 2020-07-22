@@ -12,6 +12,7 @@ function(estimates.object,
 
     mod.dependence.mins <- unlist(lapply(estimates.object$mod.dependence, function(x) x[1]))
     mod.dependence.maxs <- unlist(lapply(estimates.object$mod.dependence, function(x) x[2]))
+    method <- estimates.object$method
     
     if(is.null(xlim)){
         xlim <- c(0, max(estimates.object$Xs, na.rm = TRUE))
@@ -36,5 +37,9 @@ function(estimates.object,
             c(y0, y1),
             col = mod.dependence.col,
             border = mod.dependence.border.col)
+            if(method == "simulated AME"){
+    lines(estimates.object$Xs, estimates.object$AMEs, type = 'l', col = line.col)
+            }else{
     lines(estimates.object$Xs, estimates.object$coefs, type = 'l', col = line.col)
+            }
 }
