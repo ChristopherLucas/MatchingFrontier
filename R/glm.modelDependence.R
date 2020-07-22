@@ -90,6 +90,6 @@ glm.modelDependence <-
     min.mod <- specifications[which.min(coef.all)]
     AME.max <- summary(margins(glm(max.mod, dataset, family = glm.family), variables = treatment))$AME
     AME.min <- summary(margins(glm(min.mod, dataset, family = glm.family), variables = treatment))$AME
-    return(c(AME.max, AME.min))
+    return(c(AME.min, AME.max))
     }
   }
