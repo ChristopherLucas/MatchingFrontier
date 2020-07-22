@@ -1,4 +1,4 @@
-glm.estimateEffects <-
+estimateEffects <-
 function(frontier.object,
          my.form,
          glm.family = NULL,
