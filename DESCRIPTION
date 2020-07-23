@@ -1,9 +1,9 @@
 Package: MatchingFrontier
-Version: 2.0.3
+Version: 2.1.2
 Date: 2017-05-05
 Type: Package
 Title: Computation of the Balance - Sample Size Frontier in Matching Methods for Causal Inference 
-Author: Gary King, Christopher Lucas, and Richard Nielsen
+Author: Gechun Lin, Gary King, Christopher Lucas, and Richard Nielsen
 Maintainer: Christopher Lucas <clucas@fas.harvard.edu>
 Description: Returns the subset of the data with the minimum imbalance for 
 	     every possible subset size (N - 1, N - 2, ...), down to the data set with the 
