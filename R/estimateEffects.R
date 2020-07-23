@@ -139,7 +139,7 @@ function(frontier.object,
       
       if(marginal == FALSE){
       covs <- frontier.object$match.on
-      #specifications <- getSpecifications(covs, treatment, outcome,frontier.object$dataset,model.dependence.ests)
+      specifications <- getSpecifications(covs, treatment, outcome,frontier.object$dataset,model.dependence.ests)
       
       pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
       for(i in 1:length(point.inds)){
@@ -177,7 +177,7 @@ function(frontier.object,
   return(list(Xs = frontier.object$frontier$Xs[point.inds], coefs = unlist(coefs), CIs = CIs, mod.dependence = mod.dependence, method = "simulated intervals"))
     }else{
       covs <- frontier.object$match.on
-      #specifications <- getSpecifications(covs, treatment, outcome,frontier.object$dataset,model.dependence.ests)
+      specifications <- getSpecifications(covs, treatment, outcome,frontier.object$dataset,model.dependence.ests)
       
       pb <- txtProgressBar(min = 1, max = length(point.inds), style = 3)
       for(i in 1:length(point.inds)){
