@@ -7,6 +7,7 @@ importFrom(MASS,parcoord)
 importFrom(segmented,segmented,seg.control)
 importFrom(margins, margins)
 export(plotMeans,
+       plotEstimates,
        generateDataset,
        makeFrontier,
        parallelPlot,
