@@ -13,8 +13,8 @@ export(plotMeans,
        parallelPlot,
        estimateEffects,
        modelDependence,
-       plotPrunedMeans       
-       )
+       plotPrunedMeans,
+       plotTreatedProp)
 S3method(plot,L1SATTClass)
 S3method(plot,MahalFSATTClass)
 S3method(plot,frontierEstimates)
