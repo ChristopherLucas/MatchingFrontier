@@ -88,8 +88,16 @@ glm.modelDependence <-
        
     max.mod <- specifications[which.max(coef.all)]
     min.mod <- specifications[which.min(coef.all)]
-    AME.max <- summary(margins(glm(max.mod, dataset, family = glm.family), variables = treatment))$AME
-    AME.min <- summary(margins(glm(min.mod, dataset, family = glm.family), variables = treatment))$AME
+    
+    if(ratio == 'variable'){
+      w <- makeWeights(dataset, treatment)
+      dataset$w <- w 
+    AME.max <- summary(margins(glm(max.mod, dataset, weights = w, family = glm.family), variables = treatment))$AME
+    AME.min <- summary(margins(glm(min.mod, dataset, weights = w, family = glm.family), variables = treatment))$AME
+    }else{
+      AME.max <- summary(margins(glm(max.mod, dataset, family = glm.family), variables = treatment))$AME
+      AME.min <- summary(margins(glm(min.mod, dataset, family = glm.family), variables = treatment))$AME
+    }
     return(c(AME.min, AME.max))
     }
   }
