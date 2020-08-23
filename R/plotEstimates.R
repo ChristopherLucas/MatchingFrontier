@@ -19,6 +19,7 @@ function(estimates.object,
     mod.dependence.maxs <- unlist(lapply(estimates.object$mod.dependence, function(x) x[2]))
     CI.mins <- unlist(lapply(estimates.object$CIs, function(x) x[1]))
     CI.maxs <- unlist(lapply(estimates.object$CIs, function(x) x[2]))
+    
     if(method == "simulated AME"){
         min.effect <- min(estimates.object$AMEs, na.rm = TRUE)
         max.effect <- max(estimates.object$AMEs, na.rm = TRUE)}else{
