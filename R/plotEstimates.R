@@ -1,7 +1,7 @@
 plotEstimates <- 
     function(estimates.object, 
-             CI == NULL,
-             mod.dependence == NULL,
+             CI = TRUE,
+             mod.dependence = TRUE,
              xlab = 'Number of Observations Pruned',
              ylab = 'Estimate',
              main = 'Effects Plot',
@@ -41,7 +41,7 @@ plotEstimates <-
          ylim = ylim,
          ...)
     
-    if(!is.null(mod.dependence)){
+    if(mod.dependence == T){
         mod.x0 <- rev(estimates.object$Xs)
         mod.x1 <- estimates.object$Xs
         mod.y0 <- rev(mod.dependence.mins)
@@ -53,7 +53,7 @@ plotEstimates <-
                 border = mod.dependence.border.col)
     }
     
-    if(!is.null(CI)){
+    if(CI == T){
         CI.x0 <- rev(estimates.object$Xs)
         CI.x1 <- estimates.object$Xs
         CI.y0 <- rev(CI.mins)
