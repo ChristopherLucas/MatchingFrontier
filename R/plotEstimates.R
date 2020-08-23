@@ -1,7 +1,7 @@
 plotEstimates <- 
     function(estimates.object, 
-             CI = TRUE,
-             mod.dependence = TRUE,
+             CI = FALSE,
+             mod.dependence = FALSE,
              xlab = 'Number of Observations Pruned',
              ylab = 'Estimate',
              main = 'Effects Plot',
