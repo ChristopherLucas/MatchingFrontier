@@ -13,12 +13,21 @@ function(estimates.object,
     mod.dependence.mins <- unlist(lapply(estimates.object$mod.dependence, function(x) x[1]))
     mod.dependence.maxs <- unlist(lapply(estimates.object$mod.dependence, function(x) x[2]))
     method <- estimates.object$method
+    if(method == "simulated AME"){
+        min.effect <- min(estimates.object$AMEs, na.rm = TRUE)
+        max.effect <- max(estimates.object$AMEs, na.rm = TRUE)}else{
+            min.effect <- min(estimates.object$coefs, na.rm = TRUE)
+            max.effect <- max(estimates.object$coefs, na.rm = TRUE)
+        }
+    
     
     if(is.null(xlim)){
         xlim <- c(0, max(estimates.object$Xs, na.rm = TRUE))
     }
     if(is.null(ylim)){
-        ylim <- c(min(mod.dependence.mins, na.rm = TRUE), max(mod.dependence.maxs, na.rm = TRUE))
+        min <- min(min(mod.dependence.mins, na.rm = TRUE), min.effect)
+        max <- max(max(mod.dependence.maxs, na.rm = TRUE), max.effect)
+        ylim <- c(min, max)
     }
     print(ylim)
     plot(1, type="n", main=main, xlab=xlab, ylab=ylab,
