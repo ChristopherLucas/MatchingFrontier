@@ -1,19 +1,18 @@
-plotEstimates <-
-function(estimates.object,
-         CI == TRUE,
-         mod.dependence == TRUE,
-         xlab = 'Number of Observations Pruned',
-         ylab = 'Estimate',
-         main = 'Effects Plot',
-         xlim = NULL,
-         ylim = NULL,
-         CI.col = rgb(102,178,255,255, maxColorValue=255),
-         CI.border.col = rgb(0,102,204,255, maxColorValue=255),     
-         mod.dependence.col = rgb(255,0,0,127, maxColorValue=255),
-         mod.dependence.border.col = rgb(255,0,0,200, maxColorValue=255),
-         line.col = rgb(102,0,0,255, maxColorValue=255),
-         ...){
-    
+plotEstimates <- 
+    function(estimates.object, 
+             CI == NULL,
+             mod.dependence == NULL,
+             xlab = 'Number of Observations Pruned',
+             ylab = 'Estimate',
+             main = 'Effects Plot',
+             xlim = NULL,
+             ylim = NULL,
+             CI.col = rgb(102,178,255,255, maxColorValue=255),
+             CI.border.col = rgb(0,102,204,255, maxColorValue=255),
+             mod.dependence.col = rgb(255,0,0,127, maxColorValue=255),
+             mod.dependence.border.col = rgb(255,0,0,200, maxColorValue=255),
+             line.col = rgb(102,0,0,255, maxColorValue=255),
+             ...){
     method <- estimates.object$method
     mod.dependence.mins <- unlist(lapply(estimates.object$mod.dependence, function(x) x[1]))
     mod.dependence.maxs <- unlist(lapply(estimates.object$mod.dependence, function(x) x[2]))
@@ -42,7 +41,7 @@ function(estimates.object,
          ylim = ylim,
          ...)
     
-    if(mod.dependence == T){
+    if(!is.null(mod.dependence)){
         mod.x0 <- rev(estimates.object$Xs)
         mod.x1 <- estimates.object$Xs
         mod.y0 <- rev(mod.dependence.mins)
@@ -54,7 +53,7 @@ function(estimates.object,
                 border = mod.dependence.border.col)
     }
     
-    if(CI == T){
+    if(!is.null(CI)){
         CI.x0 <- rev(estimates.object$Xs)
         CI.x1 <- estimates.object$Xs
         CI.y0 <- rev(CI.mins)
