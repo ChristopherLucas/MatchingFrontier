@@ -32,7 +32,7 @@ plotEstimates <-
     }
     if(is.null(ylim)){
         min <- min(min(mod.dependence.mins, na.rm = TRUE), min(CI.mins, na.rm = TRUE), min.effect)
-        max <- max(max(mod.dependence.maxs, na.rm = TRUE), max(CI.mins, na.rm = TRUE), max.effect)
+        max <- max(max(mod.dependence.maxs, na.rm = TRUE), max(CI.maxs, na.rm = TRUE), max.effect)
         ylim <- c(min, max)
     }
     print(ylim)
