@@ -5,8 +5,8 @@ function(dataset, base.form, cov, median = FALSE){
             msg <- paste('the Athey-Imbens intervals cannot be calculated since the minimum and median of ', cov, ' are equal. Solutions: (1)set the argument `means.as.cutpoints` to be TRUE; or (2)set the argument `Athey.Imbens` to be FALSE.', sep = '')
             customStop(msg, 'estimateEffects()')
         } 
-        mod.form <- as.formula(paste(as.character(base.form[2]),
-                                     as.character(base.form[1]),
+        mod.form <- as.formula(paste(as.character(as.formula(base.form)[2]),
+                                     as.character(as.formula(base.form)[1]),
                                      cov))
         
         if(length(unique(dataset[[as.character(base.form[2])]])) == 2){
