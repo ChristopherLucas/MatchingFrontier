@@ -16,6 +16,7 @@ function(frontier.object,
     # These are the points that we'll estimate
     point.inds <- sort(sample(1:length(frontier.object$frontier$Xs),
                               round(length(frontier.object$frontier$Xs) * prop.estimated)))
+    point.inds <- unique(c(1, point.inds))
     coefs <- vector(mode="list", length = length(point.inds))
     AMEs <- vector(mode="list", length = length(point.inds))
     CIs <- vector(mode="list", length= length(point.inds))
