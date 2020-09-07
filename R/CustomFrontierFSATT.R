@@ -5,7 +5,7 @@ function(treatment, dataset, ratio, match.on,
     original.colnames <- as.numeric(colnames(distance.mat))
     row.max = max(original.rownames)
     col.max = max(original.colnames)
-    if((nrow(distance.mat)+ncol(distance.mat)) != max(row.max, col.max){
+    if((nrow(distance.mat)+ncol(distance.mat)) != max(row.max, col.max)){
         warning('The data index has changed, please see index in the function output.')
         original.index <- sort(c(original.rownames, original.colnames))
         index.df <- data.frame(original.index)
