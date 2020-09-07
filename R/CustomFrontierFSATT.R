@@ -20,7 +20,7 @@ function(treatment, dataset, ratio, match.on,
         out <- list(
             frontier = frontier,
             treatment = treatment,
-            index = index.df
+            index = index.df,
             QOI = 'FSATT',
             metric = 'Custom',
             ratio = ratio,
